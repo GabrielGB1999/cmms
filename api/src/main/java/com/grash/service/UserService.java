@@ -126,18 +126,19 @@ public class UserService {
     }
 
     public void checkUsageBasedLimit(int newUsersCount) {
-        LicensingState licensingState = licenseService.getLicensingState();
-        if (licensingState.isHasLicense()) {
-            if (userRepository.hasMorePaidUsersThan(licensingState.getUsersCount() - newUsersCount))
-                throw new RuntimeException("Cannot create more users than the license allows: " + licensingState.getUsersCount() + ". Refer to https://github.com/Grashjs/cmms/blob/main/dev-docs/Disable%20users.md");
-        }
-        Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_USERS);
-        if (!licenseService.hasEntitlement(LicenseEntitlement.UNLIMITED_USERS)
-                && userRepository.hasMorePaidUsersThan(threshold - newUsersCount
-        ))
-            throw new RuntimeException("Cannot create more users than the free license allows: " + threshold + ". " +
-                    "Refer to" +
-                    " https://github.com/Grashjs/cmms/blob/main/dev-docs/Disable%20users.md");
+        //LicensingState licensingState = licenseService.getLicensingState();
+       // if (licensingState.isHasLicense()) {
+           // if (userRepository.hasMorePaidUsersThan(licensingState.getUsersCount() - newUsersCount))
+               // throw new RuntimeException("Cannot create more users than the license allows: " + licensingState.getUsersCount() + ". Refer to https://github.com/Grashjs/cmms/blob/main/dev-docs/Disable%20users.md");
+       // }
+       // Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_USERS);
+       // if (!licenseService.hasEntitlement(LicenseEntitlement.UNLIMITED_USERS)
+              //  && userRepository.hasMorePaidUsersThan(threshold - newUsersCount
+       // ))
+        //    throw new RuntimeException("Cannot create more users than the free license allows: " + threshold + ". " +
+       //             "Refer to" +
+      //              " https://github.com/Grashjs/cmms/blob/main/dev-docs/Disable%20users.md");
+        Integer threshold = 999;
     }
 
     public SignupSuccessResponse<OwnUser> signup(UserSignupRequest userReq) {
