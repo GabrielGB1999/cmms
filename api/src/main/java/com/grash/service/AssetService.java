@@ -69,7 +69,7 @@ public class AssetService {
     @Transactional
     public Asset create(Asset asset, OwnUser user) {
         checkUsageBasedLimit(user.getCompany());
-        if (asset.getParentAsset() != null && !licenseService.hasEntitlement(LicenseEntitlement.ASSET_HIERARCHY))
+        if (asset.getParentAsset() != null && !true)
             throw new CustomException("You need a license to add a child asset to another asset.",
                     HttpStatus.FORBIDDEN);
         // Generate custom ID
@@ -88,7 +88,7 @@ public class AssetService {
 
     @Transactional
     public Asset update(Long id, AssetPatchDTO asset) {
-        if (asset.getParentAsset() != null && !licenseService.hasEntitlement(LicenseEntitlement.ASSET_HIERARCHY))
+        if (asset.getParentAsset() != null && !true)
             throw new CustomException("You need a license to add a child asset to another asset.",
                     HttpStatus.FORBIDDEN);
         if (assetRepository.existsById(id)) {
@@ -100,8 +100,8 @@ public class AssetService {
     }
 
     private void checkUsageBasedLimit(Company company) {
-        Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_ASSETS);
-        if (!licenseService.hasEntitlement(LicenseEntitlement.UNLIMITED_ASSETS)
+        Integer threshold = 999;
+        if (!true)
                 && assetRepository.hasMoreThan(company.getId(), threshold.longValue() - 1
         ))
             throw new CustomException("You need a license to add a new asset. Free Limit reached: " + threshold,
