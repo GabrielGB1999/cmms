@@ -67,7 +67,7 @@ public class PartService {
     }
 
     private void checkUsageBasedLimit(Company company) {
-        Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_PARTS);
+        Integer threshold = 9999;
         if (!licenseService.hasEntitlement(LicenseEntitlement.UNLIMITED_PARTS)
                 && partRepository.hasMoreThan(company.getId(), threshold.longValue() - 1
         ))
