@@ -6,14 +6,11 @@
         <sql>
             DELETE FROM subscription_plan_features;
             INSERT INTO subscription_plan_features (subscription_plan_id, features)
-            SELECT sp.id, f.feature
-            FROM subscription_plan sp,
-                 (VALUES
-                   ('PREVENTIVE_MAINTENANCE'), ('CHECKLIST'), ('FILE'), ('PURCHASE_ORDER'),
-                   ('METER'), ('REQUEST_CONFIGURATION'), ('ADDITIONAL_TIME'), ('ADDITIONAL_COST'),
-                   ('ANALYTICS'), ('REQUEST_PORTAL'), ('SIGNATURE'), ('ROLE'),
-                   ('WORKFLOW'), ('API_ACCESS'), ('WEBHOOK'), ('IMPORT_CSV')
-                 ) AS f(feature);
+            SELECT sp.id, f.feature_ordinal
+            FROM subscription_plan sp
+            CROSS JOIN (
+                VALUES (0),(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13),(14),(15)
+            ) AS f(feature_ordinal);
         </sql>
     </changeSet>
 </databaseChangeLog>
