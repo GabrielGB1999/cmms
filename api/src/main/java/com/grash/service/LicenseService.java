@@ -43,15 +43,15 @@ public class LicenseService {
     private volatile long lastCheckedTime = 0;
 
     public synchronized LicensingState getLicensingState() {
-        if (isCacheValid()) {
-            return buildLicensingStateFromCache();
-        }
-
-        if (!hasLicenseKey()) {
-            return clearCacheAndReturnInvalid();
-        }
-
-        return validateAndCacheLicense();
+        Set<String> allEntitlements = Arrays.stream(LicenseEntitlement.values())
+                .map(Enum::name)
+                .collect(Collectors.toSet());
+        return LicensingState.builder()
+                .hasLicense(true)
+                .valid(true)
+                .planName("Enterprise")
+                .entitlements(allEntitlements)
+                .build();
     }
 
     public boolean isSSOEnabled() {
@@ -59,8 +59,7 @@ public class LicenseService {
     }
 
     public boolean hasEntitlement(LicenseEntitlement entitlement) {
-        LicensingState state = getLicensingState();
-        return state.isValid() && state.getEntitlements().contains(entitlement.toString());
+        return true;
     }
 
     private boolean isCacheValid() {

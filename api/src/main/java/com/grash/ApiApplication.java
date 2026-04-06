@@ -91,6 +91,7 @@ public class ApiApplication implements SmartInitializingSingleton {
                     .code("FREE")
                     .name("Free")
                     .monthlyCostPerUser(0)
+                    .features(new HashSet<>(Arrays.asList(PlanFeatures.values())))
                     .yearlyCostPerUser(0).build());
         }
 
@@ -99,13 +100,7 @@ public class ApiApplication implements SmartInitializingSingleton {
             subscriptionPlanService.create(SubscriptionPlan.builder()
                     .code("STARTER")
                     .name("Starter")
-                    .features(new HashSet<>(Arrays.asList(
-                            PlanFeatures.PREVENTIVE_MAINTENANCE,
-                            PlanFeatures.CHECKLIST,
-                            PlanFeatures.FILE,
-                            PlanFeatures.METER,
-                            PlanFeatures.ADDITIONAL_COST,
-                            PlanFeatures.ADDITIONAL_TIME)))
+                    .features(new HashSet<>(Arrays.asList(PlanFeatures.values())))
                     .monthlyCostPerUser(10)
                     .yearlyCostPerUser(100).build());
         }
@@ -116,18 +111,7 @@ public class ApiApplication implements SmartInitializingSingleton {
                     .code("PROFESSIONAL")
                     .name("Professional")
                     .monthlyCostPerUser(15)
-                    .features(new HashSet<>(Arrays.asList(
-                            PlanFeatures.PREVENTIVE_MAINTENANCE,
-                            PlanFeatures.CHECKLIST,
-                            PlanFeatures.FILE,
-                            PlanFeatures.METER,
-                            PlanFeatures.ADDITIONAL_COST,
-                            PlanFeatures.ADDITIONAL_TIME,
-                            PlanFeatures.REQUEST_CONFIGURATION,
-                            PlanFeatures.SIGNATURE,
-                            PlanFeatures.ANALYTICS,
-                            PlanFeatures.IMPORT_CSV
-                    )))
+                    .features(new HashSet<>(Arrays.asList(PlanFeatures.values())))
                     .yearlyCostPerUser(150).build());
         }
 
