@@ -6,7 +6,7 @@
              relativeToChangelogFile="true"/>
     <include file="changelog/liquibase-diffChangeLog.xml"
              relativeToChangelogFile="true"/>
-    <include file="changelog/ 2023_07_14_1689357579_add_simplifiedWorkOrder.xml"
+    <include file="changelog/2023_07_14_1689357579_add_simplifiedWorkOrder.xml"
              relativeToChangelogFile="true"/>
     <include file="changelog/2023_07_16_1689459801_drop_barcode_nfcId_unique_constraints.xml"
              relativeToChangelogFile="true"/>
