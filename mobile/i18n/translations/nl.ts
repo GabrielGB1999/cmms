@@ -225,6 +225,7 @@ const locale = {
   feedback_description: 'Geef uw feedback',
   required_feedback: 'Feedback is verplicht',
   signature: 'Handtekening',
+  sign_here: 'Onderteken hier',
   required_signature: 'Handtekening is verplicht',
   close_wo: 'Werkorder sluiten',
   close: 'Sluiten',

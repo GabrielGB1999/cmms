@@ -51,8 +51,19 @@ public class WorkOrder extends WorkOrderBase {
 
     private Status status = Status.OPEN;
 
+    @OneToOne
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED, withModifiedFlag = true)
-    private String signature;
+    @Schema(implementation = IdDTO.class)
+    private File signature;
+
+    /**
+     * Signatures used to be stored inline as a base64 data URI in this column. They now live in
+     * object storage and are referenced by {@link #signature}, but work orders signed before the
+     * change still carry their data URI here, so it stays readable.
+     */
+    @NotAudited
+    @Column(name = "signature", insertable = false, updatable = false)
+    private String legacySignature;
 
     private boolean archived;
 

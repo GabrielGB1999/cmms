@@ -228,6 +228,7 @@ const esJSON = {
   feedback_description: 'Danos tu opinión',
   required_feedback: 'El campo comentario es requerido',
   signature: 'Firma',
+  sign_here: 'Firme aquí',
   required_signature: 'La firma es obligatoria',
   close_wo: 'Cerrar Orden de Trabajo',
   close: 'Cerrar',

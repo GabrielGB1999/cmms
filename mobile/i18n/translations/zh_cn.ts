@@ -197,6 +197,7 @@ const locale = {
   feedback_description: '提供您的反馈',
   required_feedback: '反馈为必填项',
   signature: '签名',
+  sign_here: '在此签名',
   required_signature: '签名为必填项',
   close_wo: '关闭工单',
   close: '关闭',

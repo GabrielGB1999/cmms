@@ -227,6 +227,7 @@ const locale = {
   feedback_description: 'Adja meg visszajelzését',
   required_feedback: 'A visszajelzés megadása kötelező',
   signature: 'Aláírás',
+  sign_here: 'Írjon alá itt',
   required_signature: 'Az aláírás megadása kötelező',
   close_wo: 'Munkamegrendelés lezárása',
   close: 'Lezárás',

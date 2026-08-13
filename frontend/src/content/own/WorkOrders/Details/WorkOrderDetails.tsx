@@ -168,6 +168,9 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
   const [primaryTimeHours, setPrimaryTimeHours] = useState<number>();
   const [primaryTimeMinutes, setPrimaryTimeMinutes] = useState<number>();
   const [savingPrimaryTime, setSavingPrimaryTime] = useState<boolean>(false);
+  // Signatures are stored in the file storage, but work orders signed before that still carry
+  // their base64 data URI.
+  const signatureUrl = workOrder.signature?.url ?? workOrder.legacySignature;
   useEffect(() => {
     [workOrder.createdBy, workOrder.parentRequest?.createdBy].forEach(
       (createdBy) => {
@@ -787,7 +790,7 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
                       <Typography variant="h6">{workOrder.feedback}</Typography>
                     </Grid>
                   )}
-                  {workOrder.signature && (
+                  {signatureUrl && (
                     <Grid item xs={12} lg={6}>
                       <Typography
                         variant="h6"
@@ -796,17 +799,14 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
                         {t('signature')}
                       </Typography>
                       <img
-                        src={workOrder.signature}
+                        src={signatureUrl}
                         style={{
                           borderRadius: 5,
                           height: 100,
                           cursor: 'pointer'
                         }}
                         onClick={() => {
-                          setImageState(
-                            [workOrder.signature],
-                            workOrder.signature
-                          );
+                          setImageState([signatureUrl], signatureUrl);
                         }}
                       />
                     </Grid>

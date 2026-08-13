@@ -94,6 +94,9 @@ export default function WODetailsScreen({
     (state) => state.workOrders
   );
   const workOrder = workOrderInfos[id]?.workOrder ?? workOrderProp;
+  // Signatures are stored in the file storage, but work orders signed before that still carry
+  // their base64 data URI.
+  const signatureUrl = workOrder?.signature?.url ?? workOrder?.legacySignature;
   const { t } = useTranslation();
   const [dropDownValue, setDropdownValue] = useState<string>(
     workOrder?.status ?? ''
@@ -800,7 +803,7 @@ export default function WODetailsScreen({
                       value={workOrder.feedback}
                     />
                   )}
-                  {workOrder.signature && (
+                  {signatureUrl && (
                     <View style={{ marginTop: 20 }}>
                       <Divider style={{ marginBottom: 20 }} />
                       <Text
@@ -810,7 +813,7 @@ export default function WODetailsScreen({
                         {t('signature')}
                       </Text>
                       <Image
-                        source={{ uri: workOrder.signature }}
+                        source={{ uri: signatureUrl }}
                         style={{ height: 200 }}
                       />
                     </View>

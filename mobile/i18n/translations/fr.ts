@@ -333,6 +333,7 @@ const frJSON = {
   feedback_description: 'Donnez votre avis',
   required_feedback: "L'avis est requis",
   signature: 'Signature',
+  sign_here: 'Signez ici',
   required_signature: 'La signature est requise',
   close_wo: 'Terminer le bon de travail',
   close: 'Fermer',

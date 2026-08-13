@@ -32,6 +32,10 @@ public class MultipartFileImpl implements MultipartFile {
             return "text/csv";
         } else if (nameLowerCase.endsWith(".pdf")) {
             return "application/pdf";
+        } else if (nameLowerCase.endsWith(".png")) {
+            return "image/png";
+        } else if (nameLowerCase.endsWith(".jpg") || nameLowerCase.endsWith(".jpeg")) {
+            return "image/jpeg";
         }
         return null;
     }

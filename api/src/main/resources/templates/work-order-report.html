@@ -301,12 +301,12 @@
     <div class="row">
         <div class="col-xs-6">
             <strong th:text="#{signature}+': '"> </strong><br>
-            <img th:if="${workOrder.signature!=null}" th:src="@{${workOrder.signature}}"
+            <img th:if="${signatureUrl!=null}" th:src="${signatureUrl}"
                  height="100">
         </div>
         <div class="col-xs-6">
             <strong th:text="#{date}+': '"> </strong><br>
-            <span th:if="${workOrder.signature!=null && workOrder.completedOn!=null}"
+            <span th:if="${signatureUrl!=null && workOrder.completedOn!=null}"
                   th:text="${utils.getFormattedDate(workOrder.completedOn, dateFormat, timeZone)}"></span>
         </div>
     </div>

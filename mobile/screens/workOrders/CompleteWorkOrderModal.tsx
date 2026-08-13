@@ -4,7 +4,6 @@ import { View } from '../../components/Themed';
 import { RootStackScreenProps } from '../../types';
 import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
-import { CompanySettingsContext } from '../../contexts/CompanySettingsContext';
 import { IField } from '../../models/form';
 import Form from '../../components/form';
 import { getErrorMessage } from '../../utils/api';
@@ -16,7 +15,6 @@ export default function CompleteWorkOrderModal({
 }: RootStackScreenProps<'CompleteWorkOrder'>) {
   const { onComplete, fieldsConfig } = route.params;
   const { t }: { t: any } = useTranslation();
-  const { uploadFiles } = useContext(CompanySettingsContext);
   const { showSnackBar } = useContext(CustomSnackBarContext);
 
   const getFieldsAndShape = (): [Array<IField>, { [key: string]: any }] => {
