@@ -2,7 +2,6 @@ package com.grash.controller;
 
 import com.grash.advancedsearch.SearchCriteria;
 import com.grash.dto.*;
-import com.grash.dto.license.LicenseEntitlement;
 import com.grash.dto.workOrder.WorkOrderPatchDTO;
 import com.grash.dto.workOrder.WorkOrderPostDTO;
 import com.grash.dto.workOrder.WorkOrderShowDTO;
@@ -86,7 +85,6 @@ public class WorkOrderController {
     private final PreventiveMaintenanceMapper preventiveMaintenanceMapper;
     private final BrandingService brandingService;
     private final ScheduleService scheduleService;
-    private final LicenseService licenseService;
 
 
     @Value("${frontend.url}")
@@ -261,9 +259,6 @@ public class WorkOrderController {
         // A cleared canvas submits an empty string; treat it as no signature at all.
         String submittedSignature = workOrder.getSignature() == null || workOrder.getSignature().isBlank() ? null :
                 workOrder.getSignature();
-        if (submittedSignature != null && !licenseService.hasEntitlement(LicenseEntitlement.SIGNATURE_CAPTURE))
-            throw new CustomException("You need a license to add signature to work order",
-                    HttpStatus.FORBIDDEN);
         boolean hasSignature = submittedSignature != null || savedWorkOrder.getSignature() != null ||
                 savedWorkOrder.getLegacySignature() != null;
         if (workOrder.getStatus().equals(Status.COMPLETE) && savedWorkOrder.isRequiredSignature() && !hasSignature)
