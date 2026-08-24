@@ -68,11 +68,6 @@ public class PartService {
 
     private void checkUsageBasedLimit(Company company) {
         Integer threshold = 9999;
-        if (!licenseService.hasEntitlement(LicenseEntitlement.UNLIMITED_PARTS)
-                && partRepository.hasMoreThan(company.getId(), threshold.longValue() - 1
-        ))
-            throw new CustomException("You need a license to add a new part. Free Limit reached: " + threshold,
-                    HttpStatus.FORBIDDEN);
     }
 
     public void consumePart(Long id, double quantity, WorkOrder workOrder, Locale locale) {
@@ -90,7 +85,7 @@ public class PartService {
             partConsumptionService.save(partConsumption);
         } else {
             String message = messageSource.getMessage("notification_part_low", new Object[]{part.getName()}, locale);
-            if (part.getQuantity() < part.getMinQuantity() && licenseService.hasEntitlement(LicenseEntitlement.LOW_STOCK_ALERTS)) {
+            if (part.getQuantity() < part.getMinQuantity()) {
                 notificationService.createMultiple(part.getAssignedTo().stream().map(user ->
                         new Notification(message, user, NotificationType.PART, part.getId())
                 ).collect(Collectors.toList()), true, message);

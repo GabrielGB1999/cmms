@@ -76,7 +76,7 @@ public class WebSecurityConfig {
         );
 
         // OAuth2 Configuration
-        if (enableSso && licenseService.isSSOEnabled()) {
+        if (enableSso) {
             http.oauth2Login(oauth2 -> oauth2
                     .authorizationEndpoint(endpoint -> endpoint.baseUri("/oauth2/authorize"))
                     .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))

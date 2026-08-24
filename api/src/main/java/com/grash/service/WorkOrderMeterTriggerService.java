@@ -27,8 +27,6 @@ public class WorkOrderMeterTriggerService {
 
     @Transactional
     public WorkOrderMeterTrigger create(WorkOrderMeterTrigger workOrderMeterTrigger) {
-        if (!licenseService.hasEntitlement(LicenseEntitlement.CONDITION_BASED_PM))
-            throw new CustomException("You need a license to create a meter trigger", HttpStatus.FORBIDDEN);
         WorkOrderMeterTrigger savedWorkOrderMeterTrigger =
                 workOrderMeterTriggerRepository.saveAndFlush(workOrderMeterTrigger);
         em.refresh(savedWorkOrderMeterTrigger);

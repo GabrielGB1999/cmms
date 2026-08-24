@@ -69,9 +69,6 @@ public class RelationService {
     }
 
     public Relation createPost(RelationPostDTO relationReq, OwnUser user) {
-        if (!licenseService.hasEntitlement(LicenseEntitlement.WORK_ORDER_LINKING))
-            throw new CustomException("You need a license to link work orders", HttpStatus.FORBIDDEN);
-
         WorkOrder parent = relationReq.getParent();
         WorkOrder child = relationReq.getChild();
         RelationTypeInternal relationType = getRelationTypeInternal(relationReq.getRelationType());

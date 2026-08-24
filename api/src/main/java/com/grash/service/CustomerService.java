@@ -31,8 +31,6 @@ public class CustomerService {
 
 
     public Customer create(Customer Customer) {
-        if (!licenseService.hasEntitlement(LicenseEntitlement.CUSTOMER_VENDOR))
-            throw new CustomException("You need a license to create a contractor", HttpStatus.FORBIDDEN);
         return customerRepository.save(Customer);
     }
 

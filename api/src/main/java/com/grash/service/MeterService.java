@@ -54,11 +54,6 @@ public class MeterService {
 
     private void checkUsageBasedLimit(Company company) {
         Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_METERS);
-        if (!licenseService.hasEntitlement(LicenseEntitlement.UNLIMITED_METERS)
-                && meterRepository.hasMoreThan(company.getId(), threshold.longValue() - 1
-        ))
-            throw new CustomException("You need a license to add a new meter. Free Limit reached: " + threshold,
-                    HttpStatus.FORBIDDEN);
     }
 
     @Transactional

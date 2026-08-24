@@ -44,7 +44,6 @@ public class BrandingService {
                 .addressStreet("410, Boulevard Zerktouni, Hamad, №1")
                 .addressCity("Casablanca-Morocco 20040")
                 .build();
-        if (!licenseService.hasEntitlement(LicenseEntitlement.BRANDING)) return defaultConfig;
         if (brandRawConfig == null || brandRawConfig.isEmpty()) {
             return defaultConfig;
         } else {
