@@ -2,9 +2,13 @@ FROM node:21.6.1 AS build
 
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm config set fetch-retry-maxtimeout 6000000
-RUN npm config set fetch-retry-mintimeout 1000000
-RUN NODE_OPTIONS="--max_old_space_size=4096" npm install --legacy-peer-deps
+# Retry slow registry requests, but fail in about a minute rather than sitting silent for the
+# 16 minutes the previous mintimeout imposed before it even retried once.
+RUN npm config set fetch-retry-maxtimeout 60000
+RUN npm config set fetch-retry-mintimeout 10000
+# npm ci installs straight from package-lock.json: deterministic, and it skips the peer dependency
+# resolution pass that made install slow here.
+RUN NODE_OPTIONS="--max_old_space_size=4096" npm ci
 COPY . .
 RUN npm run build
 
