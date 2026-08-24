@@ -13,6 +13,17 @@ interface SignaturePadProps {
 }
 
 const CANVAS_HEIGHT = 200;
+/**
+ * Exporting the canvas costs time proportional to its pixel count, and the result is carried around
+ * as a base64 string, so a 3x display is nearly 2x the cost of a 2x one for no visible gain on a
+ * signature.
+ */
+const MAX_PIXEL_RATIO = 2;
+/**
+ * Writing to the drawing costs an encode plus a form-wide re-render, so it waits until the pen has
+ * been up this long. Anything that could read the value flushes it first, see flushPending below.
+ */
+const COMMIT_DELAY_MS = 400;
 
 const SignaturePad: React.FC<SignaturePadProps> = ({
   label,
@@ -24,21 +35,46 @@ const SignaturePad: React.FC<SignaturePadProps> = ({
 }) => {
   const sigCanvas = useRef<SignatureCanvas>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const commitTimer = useRef<ReturnType<typeof setTimeout>>(null);
+  // Latest onChange, so the document-level listener below never closes over a stale one.
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  // What we last handed upwards, so an echo of our own value does not trigger a restore.
+  const emitted = useRef<string>(value ?? '');
+  // The signature the form opened with, used when a resize wipes an image we cannot redraw.
+  const initialValue = useRef(value);
   const { t }: { t: any } = useTranslation();
   const theme = useTheme();
+
+  const commit = useCallback(() => {
+    if (commitTimer.current) {
+      clearTimeout(commitTimer.current);
+      commitTimer.current = null;
+    }
+    if (!sigCanvas.current) return;
+    const data = sigCanvas.current.isEmpty()
+      ? ''
+      : sigCanvas.current.toDataURL('image/png');
+    if (data === emitted.current) return;
+    emitted.current = data;
+    onChangeRef.current(data);
+  }, []);
 
   /**
    * The canvas bitmap has to be sized in pixels, not with CSS: signature_pad maps pointer
    * coordinates onto the bitmap, so stretching a default 300x150 bitmap over a wider element makes
-   * every stroke land away from the cursor. Resize the bitmap to the element, scale it by the
-   * device pixel ratio to stay sharp on HiDPI screens, and carry the strokes over.
+   * every stroke land away from the cursor. Resize the bitmap to the element, scale it for the
+   * display, and carry the strokes over.
    */
   const fitCanvasToContainer = useCallback(() => {
     const canvas = sigCanvas.current?.getCanvas();
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    const ratio = Math.min(
+      Math.max(window.devicePixelRatio || 1, 1),
+      MAX_PIXEL_RATIO
+    );
     const width = container.clientWidth;
     if (!width) return;
     if (
@@ -48,15 +84,19 @@ const SignaturePad: React.FC<SignaturePadProps> = ({
       return;
 
     // Strokes are stored as points, so they survive the bitmap being resized. An image restored
-    // through fromDataURL is not in that list, hence the value fallback below.
+    // through fromDataURL is not in that list, hence the fallback to the initial value.
     const strokes = sigCanvas.current.toData();
     canvas.width = width * ratio;
     canvas.height = CANVAS_HEIGHT * ratio;
     canvas.getContext('2d').scale(ratio, ratio);
     sigCanvas.current.clear();
     if (strokes.length) sigCanvas.current.fromData(strokes);
-    else if (value) sigCanvas.current.fromDataURL(value, { width, height: CANVAS_HEIGHT });
-  }, [value]);
+    else if (initialValue.current)
+      sigCanvas.current.fromDataURL(initialValue.current, {
+        width,
+        height: CANVAS_HEIGHT
+      });
+  }, []);
 
   useEffect(() => {
     fitCanvasToContainer();
@@ -65,29 +105,50 @@ const SignaturePad: React.FC<SignaturePadProps> = ({
     return () => observer.disconnect();
   }, [fitCanvasToContainer]);
 
-  // Restore a signature the form was opened with. Only meaningful on mount and on an external
-  // reset, since drawing keeps the canvas and the form value in sync.
+  /**
+   * Submitting, or touching any other field, can read the form value while an encode is still
+   * pending. Capture-phase pointerdown runs before the click that submits, so the value is always
+   * current by the time anything looks at it.
+   */
   useEffect(() => {
+    const flushPending = (event: PointerEvent) => {
+      if (!commitTimer.current) return;
+      if (containerRef.current?.contains(event.target as Node)) return;
+      commit();
+    };
+    document.addEventListener('pointerdown', flushPending, true);
+    return () => {
+      document.removeEventListener('pointerdown', flushPending, true);
+      if (commitTimer.current) clearTimeout(commitTimer.current);
+    };
+  }, [commit]);
+
+  // Restore a signature set from outside - opening the form on an existing one, or a reset. Our own
+  // commits are filtered out by the emitted ref so drawing never triggers this.
+  useEffect(() => {
+    const incoming = value ?? '';
+    if (incoming === emitted.current) return;
+    emitted.current = incoming;
+    initialValue.current = value;
     if (!sigCanvas.current) return;
-    if (value && sigCanvas.current.isEmpty()) {
-      sigCanvas.current.fromDataURL(value, {
+    if (incoming) {
+      sigCanvas.current.fromDataURL(incoming, {
         width: containerRef.current?.clientWidth,
         height: CANVAS_HEIGHT
       });
-    } else if (!value && !sigCanvas.current.isEmpty()) {
-      sigCanvas.current.clear();
-    }
+    } else sigCanvas.current.clear();
   }, [value]);
 
   const handleEnd = () => {
-    if (!sigCanvas.current) return;
-    onChange(sigCanvas.current.toDataURL('image/png'));
+    if (commitTimer.current) clearTimeout(commitTimer.current);
+    commitTimer.current = setTimeout(commit, COMMIT_DELAY_MS);
   };
 
   const handleClear = () => {
     if (!sigCanvas.current) return;
     sigCanvas.current.clear();
-    onChange('');
+    initialValue.current = undefined;
+    commit();
   };
 
   return (
