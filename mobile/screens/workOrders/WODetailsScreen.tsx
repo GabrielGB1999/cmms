@@ -44,6 +44,10 @@ import {
   getPartQuantitiesByWorkOrder
 } from '../../slices/partQuantity';
 import { getAdditionalCosts } from '../../slices/additionalCost';
+import {
+  deleteWorkOrderDiscrepancy,
+  getWorkOrderDiscrepancies
+} from '../../slices/workOrderDiscrepancy';
 import { getRelations } from '../../slices/relation';
 import Relation, { relationTypes } from '../../models/relation';
 import { getTasks } from '../../slices/task';
@@ -65,6 +69,7 @@ import Labor from '../../models/labor';
 import { AudioPlayer } from '../../components/AudioPlayer';
 import { Task } from '../../models/tasks';
 import { getErrorMessage } from '../../utils/api';
+import { useAppTheme } from '../../custom-theme';
 
 const getRemainingTasksLength = (tasks: Task[]): number => {
   const SECONDS_MS = 5_000;
@@ -113,6 +118,8 @@ export default function WODetailsScreen({
   const { workOrderConfiguration, generalPreferences } = companySettings;
   const [loading, setLoading] = useState<boolean>(false);
   const theme = useTheme();
+  // Typed view of the same theme, for the palette entries MD3Colors does not declare.
+  const appTheme = useAppTheme();
   const dispatch = useDispatch();
   const { partQuantitiesByWorkOrder, loadingPartQuantities } = useSelector(
     (state) => state.partQuantities
@@ -141,6 +148,10 @@ export default function WODetailsScreen({
     (labor) => labor.logged && labor.assignedTo.id === user.id
   );
   const additionalCosts = costsByWorkOrder[id] ?? [];
+  const { discrepanciesByWorkOrder, loadingDiscrepancies } = useSelector(
+    (state) => state.workOrderDiscrepancies
+  );
+  const discrepancies = discrepanciesByWorkOrder[id] ?? [];
   const runningTimer = primaryTime?.status === 'RUNNING';
   const [controllingTime, setControllingTime] = useState<boolean>(false);
   const { getFormattedDate, getUserNameById, getFormattedCurrency } =
@@ -230,6 +241,7 @@ export default function WODetailsScreen({
       dispatch(getPartQuantitiesByWorkOrder(id));
       dispatch(getLabors(id));
       dispatch(getAdditionalCosts(id));
+      dispatch(getWorkOrderDiscrepancies(id));
       dispatch(getRelations(id));
     }
     dispatch(getTasks(id));
@@ -990,6 +1002,138 @@ export default function WODetailsScreen({
                   </View>
                 </View>
               )}
+              <View style={styles.shadowedCard}>
+                <Text
+                  style={{
+                    marginBottom: 10,
+                    color: theme.colors.onSurfaceVariant
+                  }}
+                >
+                  {t('discrepancies')}
+                </Text>
+                <View>
+                  {!discrepancies.length ? (
+                    <Text style={{ color: theme.colors.onSurfaceVariant }}>
+                      {t('no_discrepancy')}
+                    </Text>
+                  ) : (
+                    <View>
+                      {discrepancies.map((discrepancy) => (
+                        <View
+                          key={discrepancy.id}
+                          style={{ marginBottom: 15 }}
+                        >
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              flexWrap: 'wrap'
+                            }}
+                          >
+                            <Tag
+                              text={t(
+                                `discrepancy_status_${discrepancy.status}`
+                              )}
+                              color="white"
+                              backgroundColor={
+                                discrepancy.status === 'CORRECTED'
+                                  ? appTheme.colors.success
+                                  : discrepancy.status === 'DEFERRED'
+                                  ? appTheme.colors.warning
+                                  : appTheme.colors.error
+                              }
+                            />
+                          </View>
+                          <Text
+                            style={{ fontWeight: 'bold', marginTop: 5 }}
+                            variant="bodyLarge"
+                          >
+                            {discrepancy.description}
+                          </Text>
+                          {!!discrepancy.correctiveMeasure && (
+                            <Text style={{ marginTop: 3 }}>
+                              {t('corrective_measure')}:{' '}
+                              {discrepancy.correctiveMeasure}
+                            </Text>
+                          )}
+                          {discrepancy.derivedWorkOrder ? (
+                            <Text style={{ marginTop: 3 }}>
+                              {t('derived_work_order')}:{' '}
+                              {discrepancy.derivedWorkOrder.title}
+                            </Text>
+                          ) : (
+                            hasEditPermission(
+                              PermissionEntity.WORK_ORDERS,
+                              workOrder
+                            ) && (
+                              <Button
+                                compact
+                                onPress={() =>
+                                  navigation.push('DeriveWorkOrder', {
+                                    workOrder,
+                                    discrepancy
+                                  })
+                                }
+                              >
+                                {t('derive_work_order')}
+                              </Button>
+                            )
+                          )}
+                          {hasEditPermission(
+                            PermissionEntity.WORK_ORDERS,
+                            workOrder
+                          ) && (
+                            <View style={{ flexDirection: 'row' }}>
+                              <Button
+                                compact
+                                onPress={() =>
+                                  navigation.push('AddWorkOrderDiscrepancy', {
+                                    workOrderId: workOrder.id,
+                                    discrepancy
+                                  })
+                                }
+                              >
+                                {t('edit')}
+                              </Button>
+                              <Button
+                                compact
+                                textColor={theme.colors.error}
+                                onPress={() =>
+                                  dispatch(
+                                    deleteWorkOrderDiscrepancy(
+                                      workOrder.id,
+                                      discrepancy.id
+                                    )
+                                  )
+                                }
+                              >
+                                {t('delete')}
+                              </Button>
+                            </View>
+                          )}
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  {hasEditPermission(
+                    PermissionEntity.WORK_ORDERS,
+                    workOrder
+                  ) && (
+                    <Fragment>
+                      <Divider style={{ marginTop: 5 }} />
+                      <Button
+                        onPress={() =>
+                          navigation.push('AddWorkOrderDiscrepancy', {
+                            workOrderId: workOrder.id
+                          })
+                        }
+                      >
+                        {t('add_discrepancy')}
+                      </Button>
+                    </Fragment>
+                  )}
+                </View>
+              </View>
               {!!tasks.length && (
                 <View style={styles.shadowedCard}>
                   <Text

@@ -85,6 +85,7 @@ public class WorkOrderController {
     private final PreventiveMaintenanceMapper preventiveMaintenanceMapper;
     private final BrandingService brandingService;
     private final ScheduleService scheduleService;
+    private final WorkOrderDiscrepancyService workOrderDiscrepancyService;
 
 
     @Value("${frontend.url}")
@@ -400,6 +401,7 @@ public class WorkOrderController {
                 Collection<Relation> relations = relationService.findByWorkOrder(id);
                 Collection<AdditionalCost> additionalCosts = additionalCostService.findByWorkOrder(id);
                 Collection<WorkOrderHistory> workOrderHistories = workOrderHistoryService.findByWorkOrder(id);
+                Collection<WorkOrderDiscrepancy> discrepancies = workOrderDiscrepancyService.findByWorkOrder(id);
                 Map<String, Object> variables = new HashMap<String, Object>() {{
                     put("companyName", user.getCompany().getName());
                     put("companyPhone", user.getCompany().getPhone());
@@ -426,6 +428,7 @@ public class WorkOrderController {
                     put("relations", relations);
                     put("additionalCosts", additionalCosts);
                     put("workOrderHistories", workOrderHistories);
+                    put("discrepancies", discrepancies);
                     put("partQuantities", partQuantities);
                     put("environment", environment);
                     put("tasksImagesUrls", tasksImagesUrls);

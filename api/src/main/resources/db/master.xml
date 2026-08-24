@@ -186,4 +186,6 @@
              relativeToChangelogFile="true"/>
     <include file="changelog/2026_08_13_1786647627_work_order_signature_file.xml"
              relativeToChangelogFile="true"/>
+    <include file="changelog/2026_08_24_1787582178_work_order_discrepancy.xml"
+             relativeToChangelogFile="true"/>
 </databaseChangeLog>

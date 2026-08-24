@@ -255,6 +255,32 @@
             </div>
         </div>
     </div>
+    <div class="row" th:if="${not #lists.isEmpty(discrepancies)}">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><strong th:text="#{discrepancies}"></strong></h3>
+                </div>
+                <div class="panel-body">
+                    <th:block th:each="discrepancy : ${discrepancies}">
+                        <div>
+                            <strong th:text="#{${discrepancy.getStatus()}} + ': '"></strong>
+                            <span th:text="${discrepancy.getDescription()}"></span>
+                        </div>
+                        <div th:if="${discrepancy.getCorrectiveMeasure() != null}">
+                            <strong th:text="#{corrective_measure}+': '"></strong>
+                            <span th:text="${discrepancy.getCorrectiveMeasure()}"></span>
+                        </div>
+                        <div th:if="${discrepancy.getDerivedWorkOrder() != null}">
+                            <strong th:text="#{derived_work_order}+': '"></strong>
+                            <span th:text="${discrepancy.getDerivedWorkOrder().getTitle()}"></span>
+                        </div>
+                        <br/>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row" th:if="${not #lists.isEmpty(workOrderHistories)}">
         <div class="col-md-12">
             <div class="panel panel-default">

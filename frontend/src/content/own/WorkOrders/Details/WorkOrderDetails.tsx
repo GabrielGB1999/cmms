@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Chip,
   CircularProgress,
   debounce,
   Divider,
@@ -86,6 +87,13 @@ import {
   getUserUrl
 } from '../../../../utils/urlPaths';
 import CompleteWOModal from './CompleteWOModal';
+import DiscrepancyModal from './DiscrepancyModal';
+import DeriveWorkOrderModal from './DeriveWorkOrderModal';
+import WorkOrderDiscrepancy from '../../../../models/owns/workOrderDiscrepancy';
+import {
+  deleteWorkOrderDiscrepancy,
+  getWorkOrderDiscrepancies
+} from '../../../../slices/workOrderDiscrepancy';
 import useAuth from '../../../../hooks/useAuth';
 import { PermissionEntity } from '../../../../models/owns/role';
 import { getSingleUserMini } from '../../../../slices/user';
@@ -129,6 +137,14 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
   const [openAddFileModal, setOpenAddFileModal] = useState<boolean>(false);
   const [openAddCostModal, setOpenAddCostModal] = useState<boolean>(false);
   const [openLinkModal, setOpenLinkModal] = useState<boolean>(false);
+  const [openDiscrepancyModal, setOpenDiscrepancyModal] =
+    useState<boolean>(false);
+  // Set when editing an existing discrepancy rather than adding one.
+  const [editingDiscrepancy, setEditingDiscrepancy] =
+    useState<WorkOrderDiscrepancy>(null);
+  // The discrepancy a new work order is being raised for.
+  const [derivingDiscrepancy, setDerivingDiscrepancy] =
+    useState<WorkOrderDiscrepancy>(null);
   const [openCompleteModal, setOpenCompleteModal] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<string>('details');
   const [changingStatus, setChangingStatus] = useState<boolean>(false);
@@ -157,6 +173,10 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
     (state) => state.additionalCosts
   );
   const additionalCosts = costsByWorkOrder[workOrder.id] ?? [];
+  const { discrepanciesByWorkOrder, loadingDiscrepancies } = useSelector(
+    (state) => state.workOrderDiscrepancies
+  );
+  const discrepancies = discrepanciesByWorkOrder[workOrder.id] ?? [];
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -220,6 +240,7 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
     dispatch(getAdditionalCosts(workOrder.id));
     dispatch(getTasksByWorkOrder(workOrder.id));
     dispatch(getRelations(workOrder.id));
+    dispatch(getWorkOrderDiscrepancies(workOrder.id));
   }, []);
   useEffect(() => {
     const [hours, minutes] = getHoursAndMinutesAndSeconds(
@@ -1156,6 +1177,144 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
             <Box>
               <Divider sx={{ mt: 2 }} />
               <Typography sx={{ mt: 2, mb: 1 }} variant="h3">
+                {t('discrepancies')}
+              </Typography>
+              {loadingDiscrepancies[workOrder.id] ? (
+                <Stack width={'100%'} alignItems={'center'}>
+                  <CircularProgress />
+                </Stack>
+              ) : (
+                <Fragment>
+                  {!discrepancies.length ? (
+                    <Typography sx={{ color: theme.colors.alpha.black[70] }}>
+                      {t('no_discrepancy')}
+                    </Typography>
+                  ) : (
+                    <List>
+                      {discrepancies.map((discrepancy) => (
+                        <ListItem
+                          key={discrepancy.id}
+                          alignItems="flex-start"
+                          secondaryAction={
+                            hasEditPermission(
+                              PermissionEntity.WORK_ORDERS,
+                              workOrder
+                            ) && (
+                              <Box>
+                                <IconButton
+                                  onClick={() => {
+                                    setEditingDiscrepancy(discrepancy);
+                                    setOpenDiscrepancyModal(true);
+                                  }}
+                                >
+                                  <EditTwoToneIcon
+                                    fontSize="small"
+                                    color="primary"
+                                  />
+                                </IconButton>
+                                <IconButton
+                                  onClick={() =>
+                                    dispatch(
+                                      deleteWorkOrderDiscrepancy(
+                                        workOrder.id,
+                                        discrepancy.id
+                                      )
+                                    )
+                                  }
+                                >
+                                  <DeleteTwoToneIcon
+                                    fontSize="small"
+                                    color="error"
+                                  />
+                                </IconButton>
+                              </Box>
+                            )
+                          }
+                        >
+                          <ListItemText
+                            primary={
+                              <Stack
+                                direction="row"
+                                spacing={1}
+                                alignItems="center"
+                              >
+                                <Chip
+                                  size="small"
+                                  label={t(
+                                    `discrepancy_status_${discrepancy.status}`
+                                  )}
+                                  color={
+                                    discrepancy.status === 'CORRECTED'
+                                      ? 'success'
+                                      : discrepancy.status === 'DEFERRED'
+                                      ? 'warning'
+                                      : 'error'
+                                  }
+                                />
+                                <Typography variant="h6">
+                                  {discrepancy.description}
+                                </Typography>
+                              </Stack>
+                            }
+                            secondary={
+                              <Box sx={{ mt: 0.5 }}>
+                                {discrepancy.correctiveMeasure && (
+                                  <Typography variant="body2">
+                                    <b>{t('corrective_measure')}: </b>
+                                    {discrepancy.correctiveMeasure}
+                                  </Typography>
+                                )}
+                                {discrepancy.derivedWorkOrder ? (
+                                  <Typography variant="body2">
+                                    <b>{t('derived_work_order')}: </b>
+                                    <Link
+                                      href={`/app/work-orders/${discrepancy.derivedWorkOrder.id}`}
+                                    >
+                                      {discrepancy.derivedWorkOrder.title}
+                                    </Link>
+                                  </Typography>
+                                ) : (
+                                  hasEditPermission(
+                                    PermissionEntity.WORK_ORDERS,
+                                    workOrder
+                                  ) && (
+                                    <Button
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{ mt: 1 }}
+                                      onClick={() =>
+                                        setDerivingDiscrepancy(discrepancy)
+                                      }
+                                    >
+                                      {t('derive_work_order')}
+                                    </Button>
+                                  )
+                                )}
+                              </Box>
+                            }
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  )}
+                </Fragment>
+              )}
+              {hasEditPermission(PermissionEntity.WORK_ORDERS, workOrder) && (
+                <Button
+                  onClick={() => {
+                    setEditingDiscrepancy(null);
+                    setOpenDiscrepancyModal(true);
+                  }}
+                  variant="outlined"
+                  sx={{ mt: 1 }}
+                >
+                  {t('add_discrepancy')}
+                </Button>
+              )}
+            </Box>
+            <Box>
+              <Divider sx={{ mt: 2 }} />
+              <Typography sx={{ mt: 2, mb: 1 }} variant="h3">
                 {t('parts')}
               </Typography>
               {loadingPartQuantities[workOrder.id] ? (
@@ -1395,6 +1554,23 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
             closeOnClickOutside={true}
           />
         </div>
+      )}
+      <DiscrepancyModal
+        open={openDiscrepancyModal}
+        onClose={() => {
+          setOpenDiscrepancyModal(false);
+          setEditingDiscrepancy(null);
+        }}
+        workOrderId={workOrder.id}
+        discrepancy={editingDiscrepancy}
+      />
+      {derivingDiscrepancy && (
+        <DeriveWorkOrderModal
+          open={!!derivingDiscrepancy}
+          onClose={() => setDerivingDiscrepancy(null)}
+          workOrder={workOrder}
+          discrepancy={derivingDiscrepancy}
+        />
       )}
       <CompleteWOModal
         open={openCompleteModal}
