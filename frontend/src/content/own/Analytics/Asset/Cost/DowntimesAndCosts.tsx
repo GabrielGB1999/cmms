@@ -7,6 +7,7 @@ import {
   ComposedChart,
   Legend,
   Line,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -64,7 +65,8 @@ function DowntimesAndCosts({ handleOpenModal, start, end }: WOByPrimaryUserProps
       {loading.downtimesAndCostsByAsset ? (
         <Loading />
       ) : (
-        <ComposedChart width={508} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <ComposedChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" hide />
           <YAxis yAxisId="left-axis" unit={t('hours')} />
@@ -96,6 +98,7 @@ function DowntimesAndCosts({ handleOpenModal, start, end }: WOByPrimaryUserProps
             yAxisId="right-axis"
           />
         </ComposedChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

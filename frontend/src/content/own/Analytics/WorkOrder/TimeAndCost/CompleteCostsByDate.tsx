@@ -5,6 +5,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -77,7 +78,8 @@ function CompleteCostsByDate({ handleOpenModal, start, end }: WOStatusIncomplete
       {loading.completeCostsByDate ? (
         <Loading />
       ) : (
-        <LineChart width={508} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis />
@@ -93,6 +95,7 @@ function CompleteCostsByDate({ handleOpenModal, start, end }: WOStatusIncomplete
             />
           ))}
         </LineChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

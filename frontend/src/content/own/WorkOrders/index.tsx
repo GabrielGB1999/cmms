@@ -100,6 +100,10 @@ import _ from 'lodash';
 import SearchInput from '../components/SearchInput';
 import { PlanFeature } from '../../../models/owns/subscriptionPlan';
 import { getPreventiveMaintenanceUrl } from 'src/utils/urlPaths';
+import {
+  detailDrawerWidth,
+  filterDrawerWidth
+} from 'src/utils/responsiveDrawerWidth';
 import { useGridApiRef } from '@mui/x-data-grid-pro';
 import useGridStatePersist from '../../../hooks/useGridStatePersist';
 import Request from '../../../models/owns/request';
@@ -1056,7 +1060,7 @@ function WorkOrders() {
         open={openDrawer}
         onClose={handleCloseDetails}
         PaperProps={{
-          sx: { width: '50%' }
+          sx: { width: detailDrawerWidth }
         }}
       >
         <WorkOrderDetails
@@ -1071,7 +1075,7 @@ function WorkOrders() {
         open={openFilterDrawer}
         onClose={handleCloseFilterDrawer}
         PaperProps={{
-          sx: { width: '30%' }
+          sx: { width: filterDrawerWidth }
         }}
       >
         <MoreFilters

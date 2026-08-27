@@ -32,6 +32,7 @@ import SetType from '../../../models/owns/setType';
 import SetDetails from './SetDetails';
 import { useParams } from 'react-router-dom';
 import { isNumeric } from '../../../utils/validators';
+import { detailDrawerWidth } from '../../../utils/responsiveDrawerWidth';
 import {
   addMultiParts,
   deleteMultiParts,
@@ -394,7 +395,7 @@ const Sets = ({ setAction }: PropsType) => {
         open={openDrawer}
         onClose={handleCloseDetails}
         PaperProps={{
-          sx: { width: '50%' }
+          sx: { width: detailDrawerWidth }
         }}
       >
         <SetDetails

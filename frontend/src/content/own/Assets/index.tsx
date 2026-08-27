@@ -32,6 +32,7 @@ import { TitleContext } from '../../../contexts/TitleContext';
 import CustomDataGrid, {
   CustomDatagridColumn
 } from '../components/CustomDatagrid';
+import { filterDrawerWidth } from '../../../utils/responsiveDrawerWidth';
 import {
   GridEventListener,
   GridRenderCellParams,
@@ -904,7 +905,7 @@ function Assets() {
           open={openFilterDrawer}
           onClose={handleCloseFilterDrawer}
           PaperProps={{
-            sx: { width: '30%' }
+            sx: { width: filterDrawerWidth }
           }}
         >
           <Filters

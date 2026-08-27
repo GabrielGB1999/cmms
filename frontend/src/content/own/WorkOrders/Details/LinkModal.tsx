@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 
 import { Formik } from 'formik';
 
@@ -41,6 +42,7 @@ export default function LinkModal({
   workOrderId
 }: LinkModalProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const { workOrdersMini } = useSelector((state) => state.workOrders);
   const { showSnackBar } = useContext(CustomSnackBarContext);
@@ -63,7 +65,7 @@ export default function LinkModal({
   const debouncedQueryChange = useMemo(() => debounce(onQueryChange, 1300), []);
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

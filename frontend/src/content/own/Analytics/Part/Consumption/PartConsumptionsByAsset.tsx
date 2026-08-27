@@ -7,6 +7,7 @@ import {
   ComposedChart,
   Legend,
   Line,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -62,7 +63,8 @@ function PartConsumptionsByAsset({ handleOpenModal, start, end }: WOStatusIncomp
       {loading.partConsumptionsByAsset ? (
         <Loading />
       ) : (
-        <BarChart width={508} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis yAxisId="left-axis" />
@@ -79,6 +81,7 @@ function PartConsumptionsByAsset({ handleOpenModal, start, end }: WOStatusIncomp
             ))}
           </Bar>
         </BarChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

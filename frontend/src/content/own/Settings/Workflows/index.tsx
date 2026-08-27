@@ -900,7 +900,7 @@ function Workflows() {
         <Grid item xs={12}>
           {view === 'list' && (
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <Button
                   sx={{
                     mb: 2
@@ -958,7 +958,7 @@ function Workflows() {
                   placeholder={t('title')}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <Typography variant="h6">{t('if')}</Typography>
                 <Select
                   value={currentMainCondition}
@@ -976,7 +976,7 @@ function Workflows() {
                   ))}
                 </Select>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <Typography variant="h6">{t('and_optional')}</Typography>
                 <Stack direction="column" spacing={2}>
                   {currentConditions.map((condition, index) =>
@@ -991,7 +991,7 @@ function Workflows() {
                   </Button>
                 </Stack>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <Typography variant="h6">{t('then')}</Typography>
                 <Select
                   value={currentAction?.type}

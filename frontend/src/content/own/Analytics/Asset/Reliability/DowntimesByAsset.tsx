@@ -7,6 +7,7 @@ import {
   ComposedChart,
   Legend,
   Line,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -66,7 +67,8 @@ function DowntimesByAsset({ handleOpenModal, start, end, assetColors }: WOStatus
       {loading.downtimesByAsset ? (
         <Loading />
       ) : (
-        <ComposedChart width={800} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <ComposedChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" hide />
           <YAxis yAxisId="left-axis" />
@@ -93,6 +95,7 @@ function DowntimesByAsset({ handleOpenModal, start, end, assetColors }: WOStatus
             yAxisId="right-axis"
           />
         </ComposedChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

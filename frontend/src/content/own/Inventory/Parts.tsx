@@ -37,6 +37,7 @@ import {
 } from '../../../slices/part';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { useDispatch, useSelector } from '../../../store';
+import { detailDrawerWidth } from '../../../utils/responsiveDrawerWidth';
 import * as React from 'react';
 import { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
 import * as Yup from 'yup';
@@ -807,7 +808,7 @@ const Parts = ({ setAction }: PropsType) => {
         open={openDrawer}
         onClose={handleCloseDetails}
         PaperProps={{
-          sx: { width: '50%' }
+          sx: { width: detailDrawerWidth }
         }}
       >
         <PartDetails

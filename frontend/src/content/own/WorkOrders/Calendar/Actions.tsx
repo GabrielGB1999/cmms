@@ -72,11 +72,12 @@ const Actions: FC<ActionsProps> = ({
   return (
     <Grid
       container
-      spacing={3}
+      spacing={2}
+      rowSpacing={1}
       alignItems="center"
       justifyContent="space-between"
     >
-      <Grid item>
+      <Grid item xs={12} sm="auto" order={{ xs: 1, sm: 1 }}>
         <Tooltip arrow placement="top" title={t('previous')}>
           <IconButton color="primary" onClick={onPrevious}>
             <ArrowBackTwoToneIcon />
@@ -93,12 +94,18 @@ const Actions: FC<ActionsProps> = ({
           </IconButton>
         </Tooltip>
       </Grid>
-      <Grid item sx={{ display: { xs: 'none', sm: 'inline-block' } }}>
-        <Typography variant="h3" color="text.primary">
+      <Grid item xs={6} sm="auto" order={{ xs: 2, sm: 2 }}>
+        <Typography variant="h3" color="text.primary" noWrap>
           {format(date, 'MMMM yyyy', { locale: dateLocale })}
         </Typography>
       </Grid>
-      <Grid item sx={{ display: { xs: 'none', sm: 'inline-block' } }}>
+      <Grid
+        item
+        xs={6}
+        sm="auto"
+        order={{ xs: 3, sm: 3 }}
+        sx={{ textAlign: 'right', '& .MuiIconButton-root': { p: { xs: 0.5, sm: 1 } } }}
+      >
         {viewOptions.map((viewOption) => {
           const Icon = viewOption.icon;
           return (

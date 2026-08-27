@@ -28,6 +28,7 @@ import {
 } from '../../../slices/meter';
 import { useDispatch, useSelector } from '../../../store';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { detailDrawerWidth } from '../../../utils/responsiveDrawerWidth';
 import { useTranslation } from 'react-i18next';
 import * as React from 'react';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -662,7 +663,7 @@ function Meters() {
             open={openDrawer}
             onClose={handleCloseDetails}
             PaperProps={{
-              sx: { width: '50%' }
+              sx: { width: detailDrawerWidth }
             }}
           >
             <MeterDetails

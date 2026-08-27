@@ -10,6 +10,7 @@ import {
   Typography
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import Form from '../components/form';
 import * as Yup from 'yup';
 import { IField } from '../type';
@@ -55,6 +56,7 @@ interface PropsType {
 
 const Teams = ({ openModal, handleCloseModal }: PropsType) => {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [openUpdateModal, setOpenUpdateModal] = useState<boolean>(false);
@@ -211,7 +213,7 @@ const Teams = ({ openModal, handleCloseModal }: PropsType) => {
   };
 
   const RenderTeamsAddModal = () => (
-    <Dialog fullWidth maxWidth="md" open={openModal} onClose={handleCloseModal}>
+    <Dialog fullWidth maxWidth="md" open={openModal} onClose={handleCloseModal} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

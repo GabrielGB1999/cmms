@@ -40,6 +40,11 @@ import { useTranslation } from 'react-i18next';
 const FullCalendarWrapper = styled(Box)(
   ({ theme }) => `
     padding: ${theme.spacing(3)};
+
+    @media (max-width: ${theme.breakpoints.values.sm}px) {
+      padding: ${theme.spacing(1)};
+    }
+
     position: relative;
    
     & .fc-license-message {
@@ -256,7 +261,7 @@ function ApplicationsCalendar({
 
   return (
     <Grid item xs={12}>
-      <Box p={3}>
+      <Box sx={{ p: { xs: 1, sm: 3 } }}>
         <Actions
           date={date}
           onNext={handleDateNext}

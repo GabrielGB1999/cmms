@@ -7,6 +7,7 @@ import {
   ComposedChart,
   Legend,
   Line,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -64,7 +65,8 @@ function TimeCostByAsset({ handleOpenModal, start, end }: WOStatusIncompleteProp
       {loading.completeTimeCostByAsset ? (
         <Loading />
       ) : (
-        <ComposedChart width={508} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <ComposedChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis yAxisId="left-axis" unit={'h'} type={'number'} domain={['dataMin', 'dataMax']} />
@@ -97,6 +99,7 @@ function TimeCostByAsset({ handleOpenModal, start, end }: WOStatusIncompleteProp
             yAxisId="right-axis"
           />
         </ComposedChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

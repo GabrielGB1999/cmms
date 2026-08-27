@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { deleteRole, getRoles } from '../../../../slices/role';
 import { useDispatch, useSelector } from '../../../../store';
+import { detailDrawerWidth } from '../../../../utils/responsiveDrawerWidth';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import PageHeader from './PageHeader';
 import { useTranslation } from 'react-i18next';
@@ -496,7 +497,7 @@ function Roles() {
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
         PaperProps={{
-          sx: { width: '50%' }
+          sx: { width: detailDrawerWidth }
         }}
       >
         <RoleDetails

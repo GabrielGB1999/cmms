@@ -5,6 +5,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -63,7 +64,8 @@ function RequestsByDate({ handleOpenModal, start, end }: OwnProps) {
       {loading.requestsByDate ? (
         <Loading />
       ) : (
-        <LineChart width={900} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis />
@@ -79,6 +81,7 @@ function RequestsByDate({ handleOpenModal, start, end }: OwnProps) {
             />
           ))}
         </LineChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

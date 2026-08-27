@@ -5,6 +5,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -82,7 +83,8 @@ function TimeByWeek({ handleOpenModal }: WOStatusIncompleteProps) {
           <CircularProgress />
         </Stack>
       ) : (
-        <LineChart width={508} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis />
@@ -98,6 +100,7 @@ function TimeByWeek({ handleOpenModal }: WOStatusIncompleteProps) {
             />
           ))}
         </LineChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

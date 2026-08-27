@@ -18,6 +18,7 @@ import {
 } from '../../../slices/vendor';
 import { useDispatch, useSelector } from '../../../store';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import Form from '../components/form';
 import * as Yup from 'yup';
 import { IField } from '../type';
@@ -59,6 +60,7 @@ interface PropsType {
 
 const Vendors = ({ openModal, handleCloseModal }: PropsType) => {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const brandConfig = useBrand();
   const [isVendorDetailsOpen, setIsVendorDetailsOpen] =
     useState<boolean>(false);
@@ -343,7 +345,7 @@ const Vendors = ({ openModal, handleCloseModal }: PropsType) => {
       );
   };
   const RenderVendorsAddModal = () => (
-    <Dialog fullWidth maxWidth="md" open={openModal} onClose={handleCloseModal}>
+    <Dialog fullWidth maxWidth="md" open={openModal} onClose={handleCloseModal} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

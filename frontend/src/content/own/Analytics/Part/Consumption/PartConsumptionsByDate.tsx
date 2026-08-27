@@ -6,6 +6,7 @@ import {
   CartesianGrid,
   Cell,
   Legend,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -62,7 +63,8 @@ function PartConsumptionsByDate({ handleOpenModal, start, end }: DowntimesByMont
       {loading.partConsumptionsByDate ? (
         <Loading />
       ) : (
-        <BarChart width={900} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis />
@@ -80,6 +82,7 @@ function PartConsumptionsByDate({ handleOpenModal, start, end }: DowntimesByMont
             ))}
           </Bar>
         </BarChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

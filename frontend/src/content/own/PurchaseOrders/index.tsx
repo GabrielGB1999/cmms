@@ -37,6 +37,7 @@ import Form from '../components/form';
 import * as Yup from 'yup';
 import { isNumeric } from '../../../utils/validators';
 import { formatSelect } from '../../../utils/formatters';
+import { detailDrawerWidth } from '../../../utils/responsiveDrawerWidth';
 import { CustomSnackBarContext } from '../../../contexts/CustomSnackBarContext';
 import { CompanySettingsContext } from '../../../contexts/CompanySettingsContext';
 import useAuth from '../../../hooks/useAuth';
@@ -589,7 +590,7 @@ function PurchaseOrders() {
             open={openDrawer}
             onClose={handleCloseDetails}
             PaperProps={{
-              sx: { width: '50%' }
+              sx: { width: detailDrawerWidth }
             }}
           >
             <PurchaseOrderDetails

@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import Form from '../../components/form';
 import * as Yup from 'yup';
 import { IField } from '../../type';
@@ -30,6 +31,7 @@ export default function DiscrepancyModal({
   discrepancy
 }: DiscrepancyModalProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const { showSnackBar } = useContext(CustomSnackBarContext);
   const isEdit = !!discrepancy;
@@ -65,7 +67,7 @@ export default function DiscrepancyModal({
   };
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle sx={{ p: 3 }}>
         <Typography variant="h4" gutterBottom>
           {isEdit ? t('edit_discrepancy') : t('add_discrepancy')}

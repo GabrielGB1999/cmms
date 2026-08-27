@@ -75,13 +75,24 @@ function Header() {
         divider={<Divider orientation="vertical" flexItem />}
         alignItems="center"
         spacing={2}
+        sx={{ minWidth: 0, flexShrink: 1, overflow: 'hidden' }}
       >
         <IconButton onClick={()=>navigate(-1)} disabled={location.key==='default'}>
           <ArrowBackTwoToneIcon/>
           </IconButton>
-        <Typography variant="h2">{title}</Typography>
+        <Typography
+          variant="h2"
+          noWrap
+          sx={{
+            fontSize: { xs: '1.1rem', sm: undefined },
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+        >
+          {title}
+        </Typography>
       </Stack>
-      <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="center" sx={{ flexShrink: 0 }}>
         <HeaderButtons />
         <HeaderUserbox />
         <Box
