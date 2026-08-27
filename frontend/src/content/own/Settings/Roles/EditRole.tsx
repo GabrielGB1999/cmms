@@ -18,6 +18,7 @@ import * as Yup from 'yup';
 import { editRole } from '../../../../slices/role';
 import { PermissionEntity, Role } from '../../../../models/owns/role';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import { useContext } from 'react';
 import { CustomSnackBarContext } from '../../../../contexts/CustomSnackBarContext';
 import { useDispatch } from '../../../../store';
@@ -32,6 +33,7 @@ interface EditRoleProps {
 }
 function EditRole({ role, open, onClose, formatValues }: EditRoleProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const brandConfig = useBrand();
   const { showSnackBar } = useContext(CustomSnackBarContext);
@@ -43,7 +45,7 @@ function EditRole({ role, open, onClose, formatValues }: EditRoleProps) {
     showSnackBar(getErrorMessage(err, t('role_edit_failure')), 'error');
 
   return (
-    <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="md" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

@@ -26,6 +26,7 @@ import { AssetMiniDTO } from '../../../../models/owns/asset';
 import { dayDiff } from '../../../../utils/dates';
 import File from '../../../../models/owns/file';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import { useContext } from 'react';
 import { CompanySettingsContext } from '../../../../contexts/CompanySettingsContext';
 
@@ -47,6 +48,7 @@ export default function WOModal({
   columns
 }: WOModalProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const { getFormattedDate, getUserNameById } = useContext(
     CompanySettingsContext
   );
@@ -212,7 +214,7 @@ export default function WOModal({
     return result;
   };
   return (
-    <Dialog fullWidth maxWidth="lg" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="lg" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

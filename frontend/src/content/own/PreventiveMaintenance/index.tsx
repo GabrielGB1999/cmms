@@ -32,6 +32,7 @@ import {
 } from '../../../slices/preventiveMaintenance';
 import { useDispatch, useSelector } from '../../../store';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { detailDrawerWidth } from '../../../utils/responsiveDrawerWidth';
 import { GridEnrichedColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import CustomDataGrid, {
   CustomDatagridColumn
@@ -804,7 +805,7 @@ function PMs() {
           open={openDrawer}
           onClose={handleCloseDetails}
           PaperProps={{
-            sx: { width: '50%' }
+            sx: { width: detailDrawerWidth }
           }}
         >
           <PMDetails

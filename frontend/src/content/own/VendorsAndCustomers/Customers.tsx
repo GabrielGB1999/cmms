@@ -9,6 +9,7 @@ import {
   Typography
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import Form from '../components/form';
 import * as Yup from 'yup';
 import { IField } from '../type';
@@ -61,6 +62,7 @@ interface PropsType {
 
 const Customers = ({ openModal, handleCloseModal }: PropsType) => {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const [isCustomerDetailsOpen, setIsCustomerDetailsOpen] =
     useState<boolean>(false);
   const { customerId } = useParams();
@@ -363,7 +365,7 @@ const Customers = ({ openModal, handleCloseModal }: PropsType) => {
   const apiRef = useGridApiRef();
   useGridStatePersist(apiRef, columns, 'customer');
   const RenderCustomersAddModal = () => (
-    <Dialog fullWidth maxWidth="md" open={openModal} onClose={handleCloseModal}>
+    <Dialog fullWidth maxWidth="md" open={openModal} onClose={handleCloseModal} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

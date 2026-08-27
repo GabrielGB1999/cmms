@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import useAuth from 'src/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import { PermissionEntity } from 'src/models/owns/role';
 import DownloadTwoToneIcon from '@mui/icons-material/DownloadTwoTone';
 import {
@@ -67,6 +68,7 @@ export type EntityType =
 const Import = ({}: OwnProps) => {
   const { hasViewPermission, hasFeature } = useAuth();
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const entityFromUrl = window.location.href.substring(
     window.location.href.lastIndexOf('/') + 1
   );
@@ -391,7 +393,10 @@ const Import = ({}: OwnProps) => {
         }}
       >
         <Box>
-          <Stepper activeStep={activeStep}>
+          <Stepper
+            activeStep={activeStep}
+            orientation={isMobile ? 'vertical' : 'horizontal'}
+          >
             {steps.map((label, index) => (
               <Step key={index}>
                 <StepLabel>{label}</StepLabel>

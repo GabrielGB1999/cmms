@@ -14,6 +14,11 @@ const TabsContainerWrapper = styled(Box)(
       bottom: -1px;
       max-width: 82%;
 
+      @media (max-width: ${theme.breakpoints.values.sm}px) {
+        padding: 0 ${theme.spacing(1)};
+        max-width: 100%;
+      }
+
       .MuiTabs-root {
         height: 44px;
         min-height: 44px;
@@ -135,7 +140,12 @@ function MultipleTabsLayout(props: SettingsLayoutProps) {
       <Helmet>
         <title>{title}</title>
       </Helmet>
-      <Box display="flex" justifyContent="space-between">
+      <Box
+        display="flex"
+        flexWrap="wrap"
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <TabsContainerWrapper>
           <Tabs
             onChange={handleTabsChange}
@@ -150,7 +160,11 @@ function MultipleTabsLayout(props: SettingsLayoutProps) {
             ))}
           </Tabs>
         </TabsContainerWrapper>
-        <Stack direction="row" spacing={1} sx={{ mr: 4, my: 1 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ mr: { xs: 1, lg: 4 }, my: 1 }}
+        >
           {action && (
             <Button
               startIcon={editAction ? <EditTwoToneIcon /> : <AddTwoToneIcon />}
@@ -178,7 +192,7 @@ function MultipleTabsLayout(props: SettingsLayoutProps) {
         <Card
           variant="outlined"
           sx={{
-            mx: 4
+            mx: { xs: 1, lg: 4 }
           }}
         >
           {children}

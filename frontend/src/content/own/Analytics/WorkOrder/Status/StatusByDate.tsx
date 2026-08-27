@@ -6,6 +6,7 @@ import {
   CartesianGrid,
   Cell,
   Legend,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -68,7 +69,8 @@ function StatusByDate({ handleOpenModal, start, end }: DowntimesByMonthProps) {
       {loading.statusesByDate ? (
         <Loading />
       ) : (
-        <BarChart width={900} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis />
@@ -79,6 +81,7 @@ function StatusByDate({ handleOpenModal, start, end }: DowntimesByMonthProps) {
           <Bar dataKey="inProgress" fill={theme.colors.success.main} name={t('IN_PROGRESS')} stackId={'a'} />
           <Bar dataKey="open" fill={theme.colors.alpha.black[70]} name={t('OPEN')} stackId={'a'} />
         </BarChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

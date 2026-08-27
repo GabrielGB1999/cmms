@@ -19,6 +19,7 @@ import { inviteUsers } from '../../../../slices/user';
 import * as React from 'react';
 import { useContext, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import { emailRegExp } from '../../../../utils/validators';
 import { CustomSnackBarContext } from '../../../../contexts/CustomSnackBarContext';
 import { useDispatch, useSelector } from '../../../../store';
@@ -38,6 +39,7 @@ export default function InviteUserDialog({
   const [isInviteSubmitting, setIsInviteSubmitting] = useState(false);
   const [roleId, setRoleId] = useState<number>();
   const { t } = useTranslation();
+  const isMobile = useMobile();
   const [emails, setEmails] = useState<string[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [currentEmail, setCurrentEmail] = useState<string>('');
@@ -78,7 +80,7 @@ export default function InviteUserDialog({
   };
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

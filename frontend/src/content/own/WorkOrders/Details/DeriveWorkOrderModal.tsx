@@ -1,5 +1,6 @@
 import { Box, Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import Form from '../../components/form';
 import * as Yup from 'yup';
 import { IField } from '../../type';
@@ -36,6 +37,7 @@ export default function DeriveWorkOrderModal({
   discrepancy
 }: DeriveWorkOrderModalProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const { showSnackBar } = useContext(CustomSnackBarContext);
 
@@ -93,7 +95,7 @@ export default function DeriveWorkOrderModal({
   };
 
   return (
-    <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="md" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle sx={{ p: 3 }}>
         <Typography variant="h4" gutterBottom>
           {t('derive_work_order')}

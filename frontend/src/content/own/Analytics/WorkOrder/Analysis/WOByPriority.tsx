@@ -1,6 +1,13 @@
 import { useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Cell, Legend, Pie, PieChart, Tooltip } from 'recharts';
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip
+} from 'recharts';
 import AnalyticsCard from '../../AnalyticsCard';
 import { Filter } from '../WOModal';
 import { useDispatch, useSelector } from '../../../../../store';
@@ -50,7 +57,8 @@ function WOByPriority({ handleOpenModal, start, end }: WOByPrimaryUserProps) {
       {loading.completeByPriority ? (
         <Loading />
       ) : (
-        <PieChart width={200} height={300}>
+        <ResponsiveContainer width="100%" height={300}>
+        <PieChart>
           <Pie
             data={formattedData}
             dataKey="value"
@@ -74,6 +82,7 @@ function WOByPriority({ handleOpenModal, start, end }: WOByPrimaryUserProps) {
           <Tooltip />
           <Legend />
         </PieChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

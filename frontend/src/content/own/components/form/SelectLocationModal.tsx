@@ -12,6 +12,7 @@ import {
   useTheme
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import { useDispatch, useSelector } from '../../../../store';
 import {
   getLocationsMini,
@@ -97,6 +98,7 @@ const SelectLocationModal: React.FC<SelectLocationModalProps> = ({
   initialSelectedLocations = []
 }) => {
   const { t } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const apiRef = useGridApiRef();
   const theme = useTheme();
@@ -252,7 +254,7 @@ const SelectLocationModal: React.FC<SelectLocationModalProps> = ({
   );
 
   return (
-    <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="md" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 2,

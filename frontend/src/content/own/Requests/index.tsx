@@ -26,6 +26,7 @@ import {
 } from '../../../slices/request';
 import { useDispatch, useSelector } from '../../../store';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { detailDrawerWidth } from '../../../utils/responsiveDrawerWidth';
 import { GridEnrichedColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import CustomDataGrid from '../components/CustomDatagrid';
 import {
@@ -602,7 +603,7 @@ function Files() {
           open={openDrawer}
           onClose={handleCloseDetails}
           PaperProps={{
-            sx: { width: '50%' }
+            sx: { width: detailDrawerWidth }
           }}
         >
           <RequestDetails

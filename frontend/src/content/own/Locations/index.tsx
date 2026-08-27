@@ -62,6 +62,7 @@ import { DataGridProProps, useGridApiRef } from '@mui/x-data-grid-pro';
 import { GroupingCellWithLazyLoading } from '../Assets/GroupingCellWithLazyLoading';
 import { AssetRow } from '../../../models/owns/asset';
 import useAuth from '../../../hooks/useAuth';
+import { detailDrawerWidth } from '../../../utils/responsiveDrawerWidth';
 import { PermissionEntity } from '../../../models/owns/role';
 import PermissionErrorMessage from '../components/PermissionErrorMessage';
 import NoRowsMessageWrapper from '../components/NoRowsMessageWrapper';
@@ -829,7 +830,7 @@ function Locations() {
           open={openDrawer}
           onClose={handleCloseDetails}
           PaperProps={{
-            sx: { width: '50%' }
+            sx: { width: detailDrawerWidth }
           }}
         >
           <LocationDetails

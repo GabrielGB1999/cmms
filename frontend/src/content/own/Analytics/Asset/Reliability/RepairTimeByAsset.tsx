@@ -5,6 +5,7 @@ import {
   CartesianGrid,
   Cell, ComposedChart,
   Legend, Line,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -61,7 +62,8 @@ function RepairTimeByAsset({ handleOpenModal, start, end, assetColors }: WOStatu
       {loading.downtimesByAsset ? (
         <Loading />
       ) : (
-        <ComposedChart width={508} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <ComposedChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" hide />
           <YAxis />
@@ -89,6 +91,7 @@ function RepairTimeByAsset({ handleOpenModal, start, end, assetColors }: WOStatu
             stroke="#ff7300"
           />
         </ComposedChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

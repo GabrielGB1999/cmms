@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import Form from '../components/form';
 import * as Yup from 'yup';
 import { IField } from '../type';
@@ -25,6 +26,7 @@ export default function AddTriggerModal({
   meter
 }: AddTriggerProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const { showSnackBar } = useContext(CustomSnackBarContext);
   const { uploadFiles } = useContext(CompanySettingsContext);
@@ -86,7 +88,7 @@ export default function AddTriggerModal({
     showSnackBar(getErrorMessage(err, t('wo_trigger_create_failure')), 'error');
 
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

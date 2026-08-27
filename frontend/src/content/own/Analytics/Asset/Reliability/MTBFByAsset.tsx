@@ -7,6 +7,7 @@ import {
   ComposedChart,
   Legend,
   Line,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -64,7 +65,8 @@ function MTBFByAsset({ handleOpenModal, start, end, assetColors }: WOStatusIncom
       {loading.mtbfByAsset ? (
         <Loading />
       ) : (
-        <ComposedChart width={508} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <ComposedChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" hide />
           <YAxis yAxisId="left-axis" />
@@ -81,6 +83,7 @@ function MTBFByAsset({ handleOpenModal, start, end, assetColors }: WOStatusIncom
             ))}
           </Bar>
         </ComposedChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

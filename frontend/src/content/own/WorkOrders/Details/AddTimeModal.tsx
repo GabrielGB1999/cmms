@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import Form from '../../components/form';
 import * as Yup from 'yup';
 import { IField } from '../../type';
@@ -25,6 +26,7 @@ export default function AddTimeModal({
   workOrderId
 }: AddTimeProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const { hasFeature } = useAuth();
   const { showSnackBar } = useContext(CustomSnackBarContext);
@@ -86,7 +88,7 @@ export default function AddTimeModal({
     startedAt: Yup.date().required(t('required_field'))
   };
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

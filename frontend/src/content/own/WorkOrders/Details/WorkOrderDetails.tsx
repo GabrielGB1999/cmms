@@ -706,7 +706,12 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
                 >
                   <img
                     src={workOrder.image.url}
-                    style={{ borderRadius: 5, height: 250, cursor: 'pointer' }}
+                    style={{
+                      borderRadius: 5,
+                      height: 250,
+                      maxWidth: '100%',
+                      cursor: 'pointer'
+                    }}
                     onClick={() => {
                       setImageState([workOrder.image.url], workOrder.image.url);
                     }}
@@ -824,6 +829,7 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
                         style={{
                           borderRadius: 5,
                           height: 100,
+                          maxWidth: '100%',
                           cursor: 'pointer'
                         }}
                         onClick={() => {

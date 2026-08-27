@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import Form from '../../components/form';
 import * as Yup from 'yup';
 import { IField } from '../../type';
@@ -24,6 +25,7 @@ export default function CompleteWOModal({
   fieldsConfig
 }: SignatureProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const { showSnackBar } = useContext(CustomSnackBarContext);
 
   const getFieldsAndShape = (): [Array<IField>, { [key: string]: any }] => {
@@ -53,7 +55,7 @@ export default function CompleteWOModal({
     return [fields, shape];
   };
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3

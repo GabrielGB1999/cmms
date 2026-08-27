@@ -12,6 +12,7 @@ import {
   useTheme
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import { useDispatch, useSelector } from '../../../../store';
 import { getAssetsMini, resetAssetsHierarchy } from '../../../../slices/asset';
 import CustomDataGrid, { CustomDatagridColumn } from '../CustomDatagrid';
@@ -96,6 +97,7 @@ const SelectAssetModal: React.FC<SelectAssetModalProps> = ({
   initialSelectedAssets = []
 }) => {
   const { t } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const apiRef = useGridApiRef();
   const theme = useTheme();
@@ -247,7 +249,7 @@ const SelectAssetModal: React.FC<SelectAssetModalProps> = ({
   );
 
   return (
-    <Dialog fullWidth maxWidth="md" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="md" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 2,

@@ -6,6 +6,7 @@ import {
   CartesianGrid,
   Cell, ComposedChart,
   Legend, Line,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -65,7 +66,8 @@ function PartConsumptionsPareto({ handleOpenModal, start, end }: DowntimesByMont
       {loading.partConsumptionsByPart ? (
         <Loading />
       ) : (
-        <ComposedChart width={508} height={508} data={formattedData}>
+        <ResponsiveContainer width="100%" height={300}>
+        <ComposedChart data={formattedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />
           <YAxis yAxisId={'left-axis'} type={'number'} domain={['dataMin', 'dataMax']} />
@@ -91,6 +93,7 @@ function PartConsumptionsPareto({ handleOpenModal, start, end }: DowntimesByMont
             yAxisId="right-axis"
           />
         </ComposedChart>
+        </ResponsiveContainer>
       )}
     </AnalyticsCard>
   );

@@ -19,6 +19,7 @@ import {
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import { DropResult } from 'react-beautiful-dnd';
 import { reorder } from '../../../../../utils/items';
 import { Task, TaskType } from '../../../../../models/owns/tasks';
@@ -54,6 +55,7 @@ export default function SelectTasks({
                                       infos
                                     }: SelectTasksProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const { enqueueSnackbar } = useSnackbar();
   const [currentTab, setCurrentTab] = useState<string>('edit');
   const [openChecklist, setOpenChecklist] = useState<boolean>(false);
@@ -219,7 +221,7 @@ export default function SelectTasks({
   };
   return (
     <Box>
-      <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+      <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} fullScreen={isMobile}>
         <DialogTitle
           sx={{
             p: 3

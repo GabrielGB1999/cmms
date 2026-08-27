@@ -48,6 +48,7 @@ import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import useAuth from '../../../../hooks/useAuth';
+import useMobile from '../../../../hooks/useMobile';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import { CustomSelect } from './CustomSelect2';
@@ -67,6 +68,7 @@ interface PropsType {
 
 export default (props: PropsType) => {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const shape: IHash<any> = {};
   const {
     companySettings: { generalPreferences }
@@ -241,11 +243,21 @@ export default (props: PropsType) => {
                             handleChange(formik, field.name, newValue);
                           }}
                           renderInput={(startProps, endProps) => (
-                            <>
-                              <TextField {...startProps} />
-                              <Box sx={{ mx: 2 }}> {t('to')} </Box>
-                              <TextField {...endProps} />
-                            </>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: { xs: 'column', sm: 'row' },
+                                alignItems: { xs: 'stretch', sm: 'center' },
+                                width: '100%'
+                              }}
+                            >
+                              <TextField {...startProps} fullWidth={isMobile} />
+                              <Box sx={{ mx: { xs: 0, sm: 2 }, my: { xs: 1, sm: 0 } }}>
+                                {' '}
+                                {t('to')}{' '}
+                              </Box>
+                              <TextField {...endProps} fullWidth={isMobile} />
+                            </Box>
                           )}
                         />
                       </LocalizationProvider>

@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import useMobile from 'src/hooks/useMobile';
 import Form from '../components/form';
 import * as Yup from 'yup';
 import { IField } from '../type';
@@ -27,6 +28,7 @@ export default function EditTriggerModal({
   workOrderMeterTrigger
 }: EditTriggerProps) {
   const { t }: { t: any } = useTranslation();
+  const isMobile = useMobile();
   const dispatch = useDispatch();
   const { showSnackBar } = useContext(CustomSnackBarContext);
   const { uploadFiles } = useContext(CompanySettingsContext);
@@ -88,7 +90,7 @@ export default function EditTriggerModal({
     return newValues;
   };
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} fullScreen={isMobile}>
       <DialogTitle
         sx={{
           p: 3
