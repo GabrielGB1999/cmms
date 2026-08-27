@@ -925,10 +925,9 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       state.user.role.deleteOtherPermissions.includes(permissionEntity)
     );
   };
-  const hasFeature = (feature: PlanFeature) => {
-    return state.company.subscription.subscriptionPlan.features.includes(
-      feature
-    );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const hasFeature = (_feature: PlanFeature) => {
+    return true;
   };
   const getFilteredFields = (defaultFields: Array<IField>): IField[] => {
     let fields = [...defaultFields];

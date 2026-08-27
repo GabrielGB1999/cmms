@@ -6,7 +6,7 @@
              relativeToChangelogFile="true"/>
     <include file="changelog/liquibase-diffChangeLog.xml"
              relativeToChangelogFile="true"/>
-    <include file="changelog/ 2023_07_14_1689357579_add_simplifiedWorkOrder.xml"
+    <include file="changelog/2023_07_14_1689357579_add_simplifiedWorkOrder.xml"
              relativeToChangelogFile="true"/>
     <include file="changelog/2023_07_16_1689459801_drop_barcode_nfcId_unique_constraints.xml"
              relativeToChangelogFile="true"/>
@@ -187,5 +187,7 @@
     <include file="changelog/2026_08_13_1786647627_work_order_signature_file.xml"
              relativeToChangelogFile="true"/>
     <include file="changelog/2026_08_24_1787582178_work_order_discrepancy.xml"
+             relativeToChangelogFile="true"/>
+    <include file="changelog/2026_04_06_remove_license_restrictions.xml"
              relativeToChangelogFile="true"/>
 </databaseChangeLog>
