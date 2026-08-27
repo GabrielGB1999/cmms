@@ -91,6 +91,8 @@ import SettingsScreen from '../screens/SettingsScreen';
 import WorkOrderFilters from '../screens/workOrders/WorkOrderFilters';
 import CreateAdditionalCost from '../screens/workOrders/CreateAdditionalCost';
 import CreateAdditionalTime from '../screens/workOrders/CreateAdditionalTime';
+import CreateWorkOrderDiscrepancy from '../screens/workOrders/CreateWorkOrderDiscrepancy';
+import DeriveWorkOrderScreen from '../screens/workOrders/DeriveWorkOrderScreen';
 import SelectNfcModal from '../screens/modals/SelectNfcModal';
 import SelectBarcodeModal from '../screens/modals/SelectBarcodeModal';
 import ScanAssetScreen from '../screens/ScanAssetScreen';
@@ -435,6 +437,16 @@ function RootNavigator() {
           name="AddAdditionalTime"
           component={CreateAdditionalTime}
           options={{ title: t('add_time') }}
+        />
+        <Stack.Screen
+          name="AddWorkOrderDiscrepancy"
+          component={CreateWorkOrderDiscrepancy}
+          options={{ title: t('add_discrepancy') }}
+        />
+        <Stack.Screen
+          name="DeriveWorkOrder"
+          component={DeriveWorkOrderScreen}
+          options={{ title: t('derive_work_order') }}
         />
       </Stack.Group>
     </Stack.Navigator>

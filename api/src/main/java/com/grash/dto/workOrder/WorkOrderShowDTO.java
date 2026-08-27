@@ -21,7 +21,13 @@ public class WorkOrderShowDTO extends WorkOrderBaseShowDTO {
 
     private PreventiveMaintenanceMiniDTO parentPreventiveMaintenance;
 
-    private String signature;
+    private FileShowDTO signature;
+
+    /**
+     * Base64 data URI of a signature captured before signatures moved to object storage. Only set
+     * for work orders signed back then, in which case {@link #signature} is null.
+     */
+    private String legacySignature;
 
     private Status status;
 

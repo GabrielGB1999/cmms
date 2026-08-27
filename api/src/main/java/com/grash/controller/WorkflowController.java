@@ -63,7 +63,7 @@ public class WorkflowController {
         if (user.getRole().getViewPermissions().contains(PermissionEntity.SETTINGS)) {
             int workflowsCount =
                     (int) workflowService.findByCompany(user.getCompany().getId()).stream().filter(Workflow::isEnabled).count();
-            if ((user.getCompany().getSubscription().getSubscriptionPlan().getFeatures().contains(PlanFeatures.WORKFLOW) && licenseService.hasEntitlement(LicenseEntitlement.WORKFLOW)) || workflowsCount == 0) {
+            if (user.getCompany().getSubscription().getSubscriptionPlan().getFeatures().contains(PlanFeatures.WORKFLOW) || workflowsCount == 0) {
                 return workflowMapper.toShowDto(createWorkflow(workflowReq, user.getCompany()));
             } else
                 throw new CustomException("You can't create a new workflow. Please upgrade", HttpStatus.NOT_ACCEPTABLE);

@@ -54,10 +54,6 @@ public class LicenseService {
         return validateAndCacheLicense();
     }
 
-    public boolean isSSOEnabled() {
-        return hasEntitlement(LicenseEntitlement.SSO);
-    }
-
     public boolean hasEntitlement(LicenseEntitlement entitlement) {
         LicensingState state = getLicensingState();
         return state.isValid() && state.getEntitlements().contains(entitlement.toString());

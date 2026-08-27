@@ -27,8 +27,6 @@ public class RoleService {
     private final LicenseService licenseService;
 
     public Role create(Role role) {
-        if (role.getCode().equals(RoleCode.USER_CREATED) && !licenseService.hasEntitlement(LicenseEntitlement.CUSTOM_ROLES))
-            throw new CustomException("You need a license to create custom roles", HttpStatus.FORBIDDEN);
         return roleRepository.save(role);
     }
 

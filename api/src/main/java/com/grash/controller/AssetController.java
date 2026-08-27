@@ -80,8 +80,6 @@ public class AssetController {
     @PreAuthorize("permitAll()")
     public AssetShowDTO getByNfcId(@RequestParam String nfcId,
                                    @Parameter(hidden = true) @CurrentUser OwnUser user) {
-        if (!licenseService.hasEntitlement(LicenseEntitlement.NFC_BARCODE))
-            throw new CustomException("You need a license to scan an asset", HttpStatus.FORBIDDEN);
         Optional<Asset> optionalAsset = assetService.findByNfcIdAndCompany(nfcId, user.getCompany().getId());
         return getAsset(optionalAsset, user);
     }
@@ -90,8 +88,6 @@ public class AssetController {
     @PreAuthorize("permitAll()")
     public AssetShowDTO getByBarcode(@RequestParam String data,
                                      @Parameter(hidden = true) @CurrentUser OwnUser user) {
-        if (!licenseService.hasEntitlement(LicenseEntitlement.NFC_BARCODE))
-            throw new CustomException("You need a license to scan an asset", HttpStatus.FORBIDDEN);
         Optional<Asset> optionalAsset = assetService.findByBarcodeAndCompany(data, user.getCompany().getId());
         return getAsset(optionalAsset, user);
     }

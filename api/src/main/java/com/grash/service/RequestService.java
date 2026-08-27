@@ -44,8 +44,6 @@ public class RequestService {
 
     @Transactional
     public Request create(Request request, Company company) {
-        if (request.getAudioDescription() != null && !licenseService.hasEntitlement(LicenseEntitlement.VOICE_NOTES))
-            throw new CustomException("You need a license to add voice notes", HttpStatus.FORBIDDEN);
         Long nextSequence = customSequenceService.getNextRequestSequence(company);
         request.setCustomId("R" + String.format("%06d", nextSequence));
 
