@@ -252,6 +252,9 @@ export const addWorkOrder =
         null
       );
     }
+    // Returned so callers that need to act on the new work order - linking it to the discrepancy
+    // it came from, for instance - can do so without refetching.
+    return workOrderResponse.id;
   };
 export const editWorkOrder =
   (id: number, workOrder): AppThunk =>

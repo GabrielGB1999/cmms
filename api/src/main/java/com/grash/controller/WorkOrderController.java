@@ -2,7 +2,6 @@ package com.grash.controller;
 
 import com.grash.advancedsearch.SearchCriteria;
 import com.grash.dto.*;
-import com.grash.dto.license.LicenseEntitlement;
 import com.grash.dto.workOrder.WorkOrderPatchDTO;
 import com.grash.dto.workOrder.WorkOrderPostDTO;
 import com.grash.dto.workOrder.WorkOrderShowDTO;
@@ -86,7 +85,7 @@ public class WorkOrderController {
     private final PreventiveMaintenanceMapper preventiveMaintenanceMapper;
     private final BrandingService brandingService;
     private final ScheduleService scheduleService;
-    private final LicenseService licenseService;
+    private final WorkOrderDiscrepancyService workOrderDiscrepancyService;
 
 
     @Value("${frontend.url}")
@@ -258,10 +257,14 @@ public class WorkOrderController {
         Status savedWorkOrderStatusBefore = savedWorkOrder.getStatus();
 
         if (workOrder.getStatus() == null) throw new CustomException("Status can't be null", HttpStatus.NOT_ACCEPTABLE);
-        if (workOrder.getSignature() != null && !licenseService.hasEntitlement(LicenseEntitlement.SIGNATURE_CAPTURE))
-            throw new CustomException("You need a license to add signature to work order",
-                    HttpStatus.FORBIDDEN);
-        savedWorkOrder.setSignature(workOrder.getSignature());
+        // A cleared canvas submits an empty string; treat it as no signature at all.
+        String submittedSignature = workOrder.getSignature() == null || workOrder.getSignature().isBlank() ? null :
+                workOrder.getSignature();
+        boolean hasSignature = submittedSignature != null || savedWorkOrder.getSignature() != null ||
+                savedWorkOrder.getLegacySignature() != null;
+        if (workOrder.getStatus().equals(Status.COMPLETE) && savedWorkOrder.isRequiredSignature() && !hasSignature)
+            throw new CustomException("A signature is required to close this work order",
+                    HttpStatus.NOT_ACCEPTABLE);
         savedWorkOrder.setStatus(workOrder.getStatus());
         savedWorkOrder.setFeedback(workOrder.getFeedback());
 
@@ -269,8 +272,14 @@ public class WorkOrderController {
             savedWorkOrder.setCompletedOn(null);
             savedWorkOrder.setCompletedBy(null);
         }
-        if (savedWorkOrder.canBeEditedBy(user) && (workOrder.getSignature() == null ||
+        if (savedWorkOrder.canBeEditedBy(user) && (submittedSignature == null ||
                 user.getCompany().getSubscription().getSubscriptionPlan().getFeatures().contains(PlanFeatures.SIGNATURE))) {
+            // Only overwrite the signature when a new one is submitted, so that later status changes
+            // (which carry no signature) don't wipe the one captured at completion.
+            if (submittedSignature != null) {
+                savedWorkOrder.setSignature(fileService.createFromImageDataUri(submittedSignature, "signature",
+                        "signatures/" + user.getCompany().getId()));
+            }
             if (!workOrder.getStatus().equals(Status.IN_PROGRESS)) {
                 if (workOrder.getStatus().equals(Status.COMPLETE)) {
                     savedWorkOrder.setCompletedBy(user);
@@ -392,11 +401,15 @@ public class WorkOrderController {
                 Collection<Relation> relations = relationService.findByWorkOrder(id);
                 Collection<AdditionalCost> additionalCosts = additionalCostService.findByWorkOrder(id);
                 Collection<WorkOrderHistory> workOrderHistories = workOrderHistoryService.findByWorkOrder(id);
+                Collection<WorkOrderDiscrepancy> discrepancies = workOrderDiscrepancyService.findByWorkOrder(id);
                 Map<String, Object> variables = new HashMap<String, Object>() {{
                     put("companyName", user.getCompany().getName());
                     put("companyPhone", user.getCompany().getPhone());
                     put("companyLogo", user.getCompany().getLogo() == null ? null :
                             storageService.generateSignedUrl(user.getCompany().getLogo(), 5));
+                    put("signatureUrl", savedWorkOrder.getSignature() == null ?
+                            savedWorkOrder.getLegacySignature() :
+                            storageService.generateSignedUrl(savedWorkOrder.getSignature(), 5));
                     put("currency",
                             user.getCompany().getCompanySettings().getGeneralPreferences().getCurrency().getCode());
                     put("utils", utils);
@@ -415,6 +428,7 @@ public class WorkOrderController {
                     put("relations", relations);
                     put("additionalCosts", additionalCosts);
                     put("workOrderHistories", workOrderHistories);
+                    put("discrepancies", discrepancies);
                     put("partQuantities", partQuantities);
                     put("environment", environment);
                     put("tasksImagesUrls", tasksImagesUrls);

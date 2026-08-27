@@ -268,6 +268,9 @@ export default (props: PropsType) => {
                     <SignaturePad
                       label={field.label}
                       value={formik.values[field.name]}
+                      disabled={formik.isSubmitting}
+                      error={!!formik.errors[field.name] || field.error}
+                      errorMessage={formik.errors[field.name] as string}
                       onChange={(signature) => {
                         formik.setFieldValue(field.name, signature);
                       }}

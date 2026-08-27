@@ -39,8 +39,6 @@ public class FieldConfigurationController {
     public FieldConfiguration patch(@Valid @RequestBody FieldConfigurationPatchDTO fieldConfiguration, @PathVariable(
                                             "id") Long id,
                                     HttpServletRequest req) {
-        if (!licenseService.hasEntitlement(LicenseEntitlement.FIELD_CONFIGURATION))
-            throw new CustomException("You need a license to edit field configurations", HttpStatus.FORBIDDEN);
         OwnUser user = userService.whoami(req);
         Optional<FieldConfiguration> optionalFieldConfiguration = fieldConfigurationService.findById(id);
 

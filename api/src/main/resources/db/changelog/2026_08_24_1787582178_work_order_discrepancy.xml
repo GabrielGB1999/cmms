@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!--
+        Discrepancies (squawks) found while carrying out a work order. Each one belongs to the work
+        order it was found on, and may point at the work order raised to deal with it.
+    -->
+
+    <changeSet id="1787582178-1" author="Gabriel">
+        <createTable tableName="work_order_discrepancy">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="work_order_discrepancy_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="bigint"/>
+            <column name="updated_by" type="bigint"/>
+            <column name="company_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="corrective_measure" type="text"/>
+            <!-- Ordinal-mapped enum, matching every other enum column since the enums_to_smallint change. -->
+            <column name="status" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="work_order_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="derived_work_order_id" type="bigint"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1787582178-2" author="Gabriel">
+        <!-- Hibernate's AUTO id generation reads <table>_seq, allocating 50 at a time. -->
+        <createSequence sequenceName="work_order_discrepancy_seq" dataType="bigint"
+                        startValue="1" incrementBy="50" cacheSize="1" cycle="false"
+                        maxValue="9223372036854775807" minValue="1"/>
+    </changeSet>
+
+    <changeSet id="1787582178-3" author="Gabriel">
+        <addForeignKeyConstraint baseTableName="work_order_discrepancy" baseColumnNames="company_id"
+                                 constraintName="fk_work_order_discrepancy_company"
+                                 referencedTableName="company" referencedColumnNames="id"/>
+        <!-- Discrepancies only exist as part of their work order, so they go when it does. -->
+        <addForeignKeyConstraint baseTableName="work_order_discrepancy" baseColumnNames="work_order_id"
+                                 constraintName="fk_work_order_discrepancy_work_order"
+                                 referencedTableName="work_order" referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <!-- The derived work order stands on its own; losing it just unlinks the discrepancy. -->
+        <addForeignKeyConstraint baseTableName="work_order_discrepancy" baseColumnNames="derived_work_order_id"
+                                 constraintName="fk_work_order_discrepancy_derived_work_order"
+                                 referencedTableName="work_order" referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+        <createIndex tableName="work_order_discrepancy" indexName="idx_work_order_discrepancy_work_order">
+            <column name="work_order_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

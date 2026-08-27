@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!--
+        The signature drawn when closing a work order is now uploaded to object storage and
+        referenced through the file table, instead of being kept inline as a base64 data URI
+        in work_order.signature.
+
+        work_order.signature_id already exists on databases created before the base64 era and
+        was never dropped, so every change here is guarded by a precondition and marked as run
+        when the object is already in place.
+
+        The legacy work_order.signature text column is intentionally left alone: it is mapped
+        read-only so already-signed work orders keep rendering.
+    -->
+
+    <changeSet id="1786647627-1" author="Gabriel">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="work_order" columnName="signature_id"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="work_order">
+            <column name="signature_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1786647627-2" author="Gabriel">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="work_order"
+                                            foreignKeyName="fk_work_order_signature_id"/>
+            </not>
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="work_order"
+                                            foreignKeyName="fks33w3o0htu3jkkj4r40w1plvs"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableName="work_order"
+                                 baseColumnNames="signature_id"
+                                 constraintName="fk_work_order_signature_id"
+                                 referencedTableName="file"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"
+                                 onUpdate="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="1786647627-3" author="Gabriel">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="work_order_aud" columnName="signature_id"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="work_order_aud">
+            <column name="signature_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1786647627-4" author="Gabriel">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="work_order_aud" columnName="signature_MOD"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="work_order_aud">
+            <column name="signature_MOD" type="boolean"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

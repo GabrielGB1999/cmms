@@ -10,6 +10,7 @@ import {
 } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import WorkOrder from './models/workOrder';
+import WorkOrderDiscrepancy from './models/workOrderDiscrepancy';
 import Part, { PartMiniDTO } from './models/part';
 import { Task } from './models/tasks';
 import { Customer, CustomerMiniDTO } from './models/customer';
@@ -142,6 +143,15 @@ export type RootStackParamList = {
     onFilterChange: (filterFields: FilterField[]) => void;
   };
   AddAdditionalCost: { workOrderId: number };
+  AddWorkOrderDiscrepancy: {
+    workOrderId: number;
+    /** Passing one switches the screen to editing that discrepancy. */
+    discrepancy?: WorkOrderDiscrepancy;
+  };
+  DeriveWorkOrder: {
+    workOrder: WorkOrder;
+    discrepancy: WorkOrderDiscrepancy;
+  };
   AddAdditionalTime: { workOrderId: number };
   ScanAsset: undefined;
 };

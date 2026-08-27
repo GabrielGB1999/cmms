@@ -105,11 +105,6 @@ public class PreventiveMaintenanceService {
 
     private void checkUsageBasedLimit(Company company) {
         Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_PM_SCHEDULES);
-        if (!licenseService.hasEntitlement(LicenseEntitlement.UNLIMITED_PM_SCHEDULES)
-                && preventiveMaintenanceRepository.hasMoreThan(company.getId(), threshold.longValue() - 1
-        ))
-            throw new CustomException("You need a license to add a new PM schedule. Free Limit reached: " + threshold,
-                    HttpStatus.FORBIDDEN);
 
     }
 
@@ -134,8 +129,6 @@ public class PreventiveMaintenanceService {
     }
 
     public List<CalendarEvent<PreventiveMaintenance>> getEvents(Date end, Long companyId) {
-        if (!licenseService.hasEntitlement(LicenseEntitlement.PM_CALENDAR))
-            return Collections.emptyList();
         List<PreventiveMaintenance> preventiveMaintenances =
                 preventiveMaintenanceRepository.findByCreatedAtBeforeAndCompany_Id(end, companyId);
         List<CalendarEvent<PreventiveMaintenance>> result = new ArrayList<>();

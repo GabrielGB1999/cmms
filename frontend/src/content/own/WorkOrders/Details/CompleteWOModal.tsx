@@ -4,7 +4,6 @@ import Form from '../../components/form';
 import * as Yup from 'yup';
 import { IField } from '../../type';
 import { useContext } from 'react';
-import { CompanySettingsContext } from '../../../../contexts/CompanySettingsContext';
 import { StoreReturnType } from '../../../../store';
 import { getErrorMessage } from '../../../../utils/api';
 import { CustomSnackBarContext } from '../../../../contexts/CustomSnackBarContext';
@@ -25,7 +24,6 @@ export default function CompleteWOModal({
   fieldsConfig
 }: SignatureProps) {
   const { t }: { t: any } = useTranslation();
-  const { uploadFiles } = useContext(CompanySettingsContext);
   const { showSnackBar } = useContext(CustomSnackBarContext);
 
   const getFieldsAndShape = (): [Array<IField>, { [key: string]: any }] => {

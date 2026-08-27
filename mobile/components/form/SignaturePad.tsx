@@ -1,10 +1,10 @@
-import React, { useRef, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
+import { View, StyleSheet } from 'react-native';
 import SignatureScreen, {
   SignatureViewRef
 } from 'react-native-signature-canvas';
 import { Button, Text, useTheme } from 'react-native-paper';
-import { IHash } from '../../models/form';
+import { useTranslation } from 'react-i18next';
 
 interface SignaturePadProps {
   label: string;
@@ -19,66 +19,76 @@ const SignaturePad: React.FC<SignaturePadProps> = ({
 }) => {
   const ref = useRef<SignatureViewRef>(null);
   const theme = useTheme();
-  const [hasChanged, setHasChanged] = useState(false);
+  const { t }: { t: any } = useTranslation();
+  // Only the signature the form opened with is worth pushing into the canvas. Feeding every later
+  // value back in would re-inject the image the user just drew on each stroke.
+  const initialValue = useRef(value);
 
-  const handleOK = (signature: string) => {
-    onChange(signature);
-    setHasChanged(false);
-  };
-
-  const handleBegin = () => {
-    setHasChanged(true);
-  };
-
-  const saveSignature = () => {
-    ref.current.readSignature(); // This triggers onOK
-  };
+  // readSignature() is what hands us the image, through onOK. Calling it as soon as a stroke ends
+  // keeps the form value in step with the canvas, so there is no separate "save" step to forget.
+  const handleEnd = () => ref.current?.readSignature();
 
   const handleClear = () => {
-    ref.current.clearSignature();
+    ref.current?.clearSignature();
     onChange('');
-    setHasChanged(false);
   };
 
-  const style = `.m-signature-pad--footer .button {
-    background-color: ${theme.colors.primary};
-    color: ${theme.colors.onPrimary};
-  }
-   body, html {
+  const webStyle = `
+    .m-signature-pad {
+      box-shadow: none;
+      border: none;
+      margin: 0;
+    }
+    .m-signature-pad--footer {
+      display: none;
+    }
+    body, html {
       height: 100%;
       margin: 0;
       padding: 0;
+      background-color: transparent;
+    }
+    .m-signature-pad--body {
+      border: none;
     }
     .m-signature-pad--body canvas {
       width: 100%;
       height: 100%;
+      box-shadow: none;
     }`;
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <View style={styles.signatureContainer}>
+      <View
+        style={[
+          styles.signatureContainer,
+          { borderColor: theme.colors.outline }
+        ]}
+      >
         <SignatureScreen
           ref={ref}
-          onOK={handleOK}
-          onBegin={handleBegin}
-          webStyle={style}
-          dataURL={value}
+          onOK={onChange}
+          onEnd={handleEnd}
+          onEmpty={() => onChange('')}
+          dataURL={initialValue.current}
+          imageType="image/png"
+          trimWhitespace
+          webStyle={webStyle}
         />
+        {!value && (
+          <Text
+            style={[styles.hint, { color: theme.colors.onSurfaceVariant }]}
+            pointerEvents="none"
+          >
+            {t('sign_here')}
+          </Text>
+        )}
       </View>
       <View style={styles.buttonContainer}>
-        <Button mode="outlined" onPress={handleClear} style={styles.button}>
-          Clear
+        <Button mode="outlined" onPress={handleClear}>
+          {t('clear')}
         </Button>
-        {hasChanged && (
-          <Button
-            mode="contained"
-            onPress={saveSignature}
-            style={styles.button}
-          >
-            Save Signature
-          </Button>
-        )}
       </View>
     </View>
   );
@@ -93,20 +103,21 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   signatureContainer: {
-    height: 200,
-    borderColor: '#ccc',
+    height: 250,
     borderWidth: 1,
     borderRadius: 5,
     overflow: 'hidden'
   },
+  hint: {
+    position: 'absolute',
+    left: 16,
+    bottom: 12,
+    fontSize: 12
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 10,
-    gap: 10
-  },
-  button: {
-    marginLeft: 10
+    marginTop: 10
   }
 });
 

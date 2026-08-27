@@ -54,10 +54,6 @@ public class LicenseService {
                 .build();
     }
 
-    public boolean isSSOEnabled() {
-        return hasEntitlement(LicenseEntitlement.SSO);
-    }
-
     public boolean hasEntitlement(LicenseEntitlement entitlement) {
         return true;
     }

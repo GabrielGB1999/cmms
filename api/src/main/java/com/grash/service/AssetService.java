@@ -252,8 +252,6 @@ public class AssetService {
 
     public void importAsset(Asset asset, AssetImportDTO dto, Company company) {
         checkUsageBasedLimit(company);
-        if (!licenseService.hasEntitlement(LicenseEntitlement.ASSET_HIERARCHY) && dto.getParentAssetName() != null && !dto.getParentAssetName().isEmpty())
-            throw new CustomException("You need a license to import assets with hierarchy", HttpStatus.FORBIDDEN);
         Long companySettingsId = company.getCompanySettings().getId();
         Long companyId = company.getId();
         asset.setArea(dto.getArea());

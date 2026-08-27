@@ -22,6 +22,7 @@ import { reducer as floorPlanReducer } from '../slices/floorPlan';
 import { reducer as currenciesReducer } from '../slices/currency';
 import { reducer as workOrderHistoriesReducer } from '../slices/workOrderHistory';
 import { reducer as relationReducer } from '../slices/relation';
+import { reducer as workOrderDiscrepancyReducer } from '../slices/workOrderDiscrepancy';
 import { reducer as readingReducer } from '../slices/reading';
 import { reducer as fileReducer } from '../slices/file';
 import { reducer as subscriptionPlanReducer } from '../slices/subscriptionPlan';
@@ -62,6 +63,7 @@ const rootReducer = combineReducers({
   currencies: currenciesReducer,
   workOrderHistories: workOrderHistoriesReducer,
   relations: relationReducer,
+  workOrderDiscrepancies: workOrderDiscrepancyReducer,
   readings: readingReducer,
   files: fileReducer,
   subscriptionPlans: subscriptionPlanReducer,

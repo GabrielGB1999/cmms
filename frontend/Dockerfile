@@ -1,10 +1,15 @@
 FROM node:21.6.1 AS build
 
 WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm config set fetch-retry-maxtimeout 6000000
-RUN npm config set fetch-retry-mintimeout 1000000
-RUN NODE_OPTIONS="--max_old_space_size=4096" npm install --legacy-peer-deps
+# .npmrc carries legacy-peer-deps=true. Without it the install fails on the i18next/typescript
+# peer conflict, since i18next 25 wants typescript 5 and this project is pinned to 4.7.
+COPY package*.json .npmrc ./
+# Retry slow registry requests, but fail in about a minute rather than sitting silent for the
+# 16 minutes the previous mintimeout imposed before it even retried once.
+RUN npm config set fetch-retry-maxtimeout 60000
+RUN npm config set fetch-retry-mintimeout 10000
+# Installs straight from package-lock.json, so the image gets the same tree as a local checkout.
+RUN NODE_OPTIONS="--max_old_space_size=4096" npm ci
 COPY . .
 RUN npm run build
 
