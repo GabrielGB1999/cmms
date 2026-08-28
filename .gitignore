@@ -6,3 +6,5 @@
 atlas_backups
 docker-compose-dev.yml
 logo
+# graphify knowledge-graph outputs (generated; contains machine-specific paths)
+graphify-out/

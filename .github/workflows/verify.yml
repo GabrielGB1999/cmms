@@ -1,0 +1,161 @@
+name: Verify
+
+# Fast correctness gate for the three independent builds (api / frontend / mobile).
+# Targets the footguns in CLAUDE.md: MapStruct regeneration breaks, entity/schema
+# drift against `ddl-auto: validate`, and TS regressions hidden by the i18next noise.
+#
+# push-docker.yml still publishes `latest` on every push to main on its own. To gate
+# it on this workflow, change its trigger to:
+#   on:
+#     workflow_run:
+#       workflows: ["Verify"]
+#       types: [completed]
+#       branches: [main]
+# and add `if: ${{ github.event.workflow_run.conclusion == 'success' }}` to its jobs.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-build:
+    name: api · compile + unit tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      # `mvn test` compiles main + test sources, so this also catches the MapStruct
+      # regeneration breaks that `mvn compile` alone would.
+      - run: mvn -B -ntp test
+
+  api-context:
+    name: api · Spring context + Liquibase + ddl-auto validate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: atlas
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Required vars (every ${VAR} in application.yml without a default). Blank is
+      # fine for all but the datasource + JWT secret — see CLAUDE.md.
+      DB_URL: localhost:5432/atlas
+      DB_USER: postgres
+      DB_PWD: postgres
+      JWT_SECRET_KEY: dGVzdC1qd3Qtc2VjcmV0LWtleS1mb3ItY2ktb25seS1ub3QtYS1yZWFsLXNlY3JldA==
+      STORAGE_TYPE: minio
+      OAUTH2_PROVIDER: ''
+      KEYGEN_PRODUCT_TOKEN: ''
+      ENABLE_EMAIL_NOTIFICATIONS: 'false'
+      INVITATION_VIA_EMAIL: 'false'
+      MAIL_RECIPIENTS: ''
+      PUBLIC_API_URL: http://localhost:8080
+      PUBLIC_FRONT_URL: http://localhost:3000
+      # Leave every MINIO_* unset so MinioService.init() skips (CLAUDE.md).
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - run: mvn -B -ntp -DskipTests package
+      - name: Boot the application (Liquibase runs, then Hibernate validates the schema)
+        run: |
+          set -euo pipefail
+          java --add-opens=java.base/java.lang=ALL-UNNAMED -jar target/*.jar > app.log 2>&1 &
+          APP_PID=$!
+          for i in $(seq 1 60); do
+            if ! kill -0 "$APP_PID" 2>/dev/null; then
+              echo "::error::Application process exited during startup"; cat app.log; exit 1
+            fi
+            if grep -q "Started ApiApplication" app.log; then
+              echo "Application started cleanly."; kill "$APP_PID" 2>/dev/null || true; exit 0
+            fi
+            if grep -qE "APPLICATION FAILED TO START|SchemaManagementException|Schema-validation" app.log; then
+              echo "::error::Startup failed (schema drift or Liquibase error)"; cat app.log; kill "$APP_PID" 2>/dev/null || true; exit 1
+            fi
+            sleep 3
+          done
+          echo "::error::Timed out waiting for startup"; cat app.log; kill "$APP_PID" 2>/dev/null || true; exit 1
+
+  frontend:
+    name: frontend · types + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      # .npmrc (legacy-peer-deps=true) is load-bearing — npm ci reads it automatically.
+      - run: npm ci
+      - name: tsc --noEmit (ignoring pre-existing node_modules/i18next noise)
+        run: |
+          set -o pipefail
+          OUT=$(npx tsc --noEmit -p tsconfig.json | grep -v '^node_modules/' || true)
+          if [ -n "$OUT" ]; then
+            echo "$OUT"
+            echo "::error::TypeScript errors outside node_modules"
+            exit 1
+          fi
+      - name: Production build (the real deploy path)
+        run: npm run build
+        env:
+          CI: 'false' # mirror the Dockerfile, which builds with CI unset
+
+  mobile:
+    name: mobile · types
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit -p tsconfig.json
+
+  model-sync:
+    name: models · frontend ↔ mobile drift (advisory)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Report divergence between frontend/src/models/owns and mobile/models
+        run: |
+          echo "Files that differ or are missing between the two hand-synced model trees:"
+          diff -rq frontend/src/models/owns mobile/models || true
+          echo ""
+          echo "This job never fails — it is a heads-up that the duplicated types may have drifted."
