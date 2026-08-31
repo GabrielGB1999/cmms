@@ -143,6 +143,9 @@ public class UserController {
     public UserResponseDTO patchRole(@PathVariable("id") Long id,
                                      @RequestParam("role") Long roleId,
                                      @Parameter(hidden = true) @CurrentUser OwnUser requester) {
+        if (requester.getId().equals(id)) {
+            throw new CustomException("You can't change your own role", HttpStatus.NOT_ACCEPTABLE);
+        }
         Optional<OwnUser> optionalUserToPatch = userService.findByIdAndCompany(id, requester.getCompany().getId());
         Optional<Role> optionalRole = roleService.findById(roleId);
 
