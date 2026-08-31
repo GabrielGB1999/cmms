@@ -8,6 +8,7 @@ import com.grash.model.AdditionalCost;
 import com.grash.model.OwnUser;
 import com.grash.model.enums.RoleType;
 import com.grash.repository.AdditionalCostRepository;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class AdditionalCostService {
 
     @Transactional
     public AdditionalCost create(AdditionalCost additionalCost) {
+        Sanitizer.sanitizeAdditionalCost(additionalCost);
         AdditionalCost savedAdditionalCost = additionalCostRepository.saveAndFlush(additionalCost);
         em.refresh(savedAdditionalCost);
         return savedAdditionalCost;
@@ -41,7 +43,9 @@ public class AdditionalCostService {
         if (additionalCostRepository.existsById(id)) {
             AdditionalCost savedAdditionalCost = additionalCostRepository.findById(id).get();
             AdditionalCost updatedAdditionalCost =
-                    additionalCostRepository.saveAndFlush(additionalCostMapper.updateAdditionalCost(savedAdditionalCost, additionalCost));
+                    additionalCostMapper.updateAdditionalCost(savedAdditionalCost, additionalCost);
+            Sanitizer.sanitizeAdditionalCost(updatedAdditionalCost);
+            updatedAdditionalCost = additionalCostRepository.saveAndFlush(updatedAdditionalCost);
             em.refresh(updatedAdditionalCost);
             return updatedAdditionalCost;
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);

@@ -12,6 +12,7 @@ import com.grash.model.enums.Priority;
 import com.grash.model.enums.RoleType;
 import com.grash.repository.RequestRepository;
 import com.grash.utils.Helper;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,6 +47,7 @@ public class RequestService {
     public Request create(Request request, Company company) {
         Long nextSequence = customSequenceService.getNextRequestSequence(company);
         request.setCustomId("R" + String.format("%06d", nextSequence));
+        Sanitizer.sanitizeRequest(request);
 
         Request savedRequest = requestRepository.saveAndFlush(request);
         em.refresh(savedRequest);
@@ -56,7 +58,9 @@ public class RequestService {
     public Request update(Long id, RequestPatchDTO request) {
         if (requestRepository.existsById(id)) {
             Request savedRequest = requestRepository.findById(id).get();
-            Request updatedRequest = requestRepository.saveAndFlush(requestMapper.updateRequest(savedRequest, request));
+            Request updatedRequest = requestMapper.updateRequest(savedRequest, request);
+            Sanitizer.sanitizeRequest(updatedRequest);
+            updatedRequest = requestRepository.saveAndFlush(updatedRequest);
             em.refresh(updatedRequest);
             return updatedRequest;
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);

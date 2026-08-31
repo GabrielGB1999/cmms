@@ -7,6 +7,7 @@ import com.grash.model.CostCategory;
 import com.grash.model.OwnUser;
 import com.grash.model.enums.RoleType;
 import com.grash.repository.CostCategoryRepository;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class CostCategoryService {
     private final CostCategoryMapper costCategoryMapper;
 
     public CostCategory create(CostCategory costCategory) {
+        Sanitizer.sanitizeCategory(costCategory);
         Optional<CostCategory> categoryWithSameName = costCategoryRepository.findByNameIgnoreCaseAndCompanySettings_Id(costCategory.getName(), costCategory.getCompanySettings().getId());
         if (categoryWithSameName.isPresent()) {
             throw new CustomException("CostCategory with same name already exists", HttpStatus.NOT_ACCEPTABLE);
@@ -32,7 +34,9 @@ public class CostCategoryService {
     public CostCategory update(Long id, CategoryPatchDTO costCategory) {
         if (costCategoryRepository.existsById(id)) {
             CostCategory savedCostCategory = costCategoryRepository.findById(id).get();
-            return costCategoryRepository.save(costCategoryMapper.updateCostCategory(savedCostCategory, costCategory));
+            CostCategory updatedCostCategory = costCategoryMapper.updateCostCategory(savedCostCategory, costCategory);
+            Sanitizer.sanitizeCategory(updatedCostCategory);
+            return costCategoryRepository.save(updatedCostCategory);
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
 
     }

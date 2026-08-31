@@ -13,6 +13,7 @@ import com.grash.model.enums.AssetStatus;
 import com.grash.model.enums.NotificationType;
 import com.grash.repository.AssetRepository;
 import com.grash.utils.Helper;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -75,6 +76,7 @@ public class AssetService {
         // Generate custom ID
         Company company = user.getCompany();
         asset.setCustomId(getAssetNumber(company));
+        Sanitizer.sanitizeAsset(asset);
 
         Asset savedAsset = assetRepository.saveAndFlush(asset);
         em.refresh(savedAsset);
@@ -93,7 +95,9 @@ public class AssetService {
                     HttpStatus.FORBIDDEN);
         if (assetRepository.existsById(id)) {
             Asset savedAsset = assetRepository.findById(id).get();
-            Asset patchedAsset = assetRepository.saveAndFlush(assetMapper.updateAsset(savedAsset, asset));
+            Asset patchedAsset = assetMapper.updateAsset(savedAsset, asset);
+            Sanitizer.sanitizeAsset(patchedAsset);
+            patchedAsset = assetRepository.saveAndFlush(patchedAsset);
             em.refresh(patchedAsset);
             return patchedAsset;
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);

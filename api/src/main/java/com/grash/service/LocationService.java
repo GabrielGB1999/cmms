@@ -12,6 +12,7 @@ import com.grash.model.*;
 import com.grash.model.enums.NotificationType;
 import com.grash.model.enums.RoleType;
 import com.grash.repository.LocationRepository;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -49,6 +50,7 @@ public class LocationService {
     public Location create(Location location, Company company) {
         checkUsageBasedLimit(company);
         location.setCustomId(getLocationNumber(company));
+        Sanitizer.sanitizeLocation(location);
 
         Location savedLocation = locationRepository.saveAndFlush(location);
         em.refresh(savedLocation);
@@ -59,8 +61,9 @@ public class LocationService {
     public Location update(Long id, LocationPatchDTO location) {
         if (locationRepository.existsById(id)) {
             Location savedLocation = locationRepository.findById(id).get();
-            Location patchedLocation = locationRepository.saveAndFlush(locationMapper.updateLocation(savedLocation,
-                    location));
+            Location patchedLocation = locationMapper.updateLocation(savedLocation, location);
+            Sanitizer.sanitizeLocation(patchedLocation);
+            patchedLocation = locationRepository.saveAndFlush(patchedLocation);
             em.refresh(patchedLocation);
             return patchedLocation;
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);

@@ -12,6 +12,7 @@ import com.grash.model.*;
 import com.grash.model.enums.NotificationType;
 import com.grash.model.enums.RoleType;
 import com.grash.repository.MeterRepository;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -47,6 +48,7 @@ public class MeterService {
     @Transactional
     public Meter create(Meter meter, OwnUser user) {
         checkUsageBasedLimit(user.getCompany());
+        Sanitizer.sanitizeMeter(meter);
         Meter savedMeter = meterRepository.saveAndFlush(meter);
         em.refresh(savedMeter);
         return savedMeter;
@@ -60,7 +62,9 @@ public class MeterService {
     public Meter update(Long id, MeterPatchDTO meter) {
         if (meterRepository.existsById(id)) {
             Meter savedMeter = meterRepository.findById(id).get();
-            Meter patchedMeter = meterRepository.saveAndFlush(meterMapper.updateMeter(savedMeter, meter));
+            Meter patchedMeter = meterMapper.updateMeter(savedMeter, meter);
+            Sanitizer.sanitizeMeter(patchedMeter);
+            patchedMeter = meterRepository.saveAndFlush(patchedMeter);
             em.refresh(patchedMeter);
             return patchedMeter;
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
