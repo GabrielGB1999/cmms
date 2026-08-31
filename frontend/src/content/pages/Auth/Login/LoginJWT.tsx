@@ -19,6 +19,7 @@ import useRefMounted from 'src/hooks/useRefMounted';
 import { useTranslation } from 'react-i18next';
 import { CustomSnackBarContext } from '../../../../contexts/CustomSnackBarContext';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { getErrorMessage } from '../../../../utils/api';
 import { apiUrl, isSSOEnabled, oauth2Provider } from '../../../../config';
 
 const LoginJWT: FC = () => {
@@ -50,7 +51,12 @@ const LoginJWT: FC = () => {
         setSubmitting(true);
         return login(values.email, values.password)
           .catch((err) => {
-            showSnackBar(t('wrong_credentials'), 'error');
+            showSnackBar(
+              err?.status === 429
+                ? getErrorMessage(err, t('wrong_credentials'))
+                : t('wrong_credentials'),
+              'error'
+            );
             setStatus({ success: false });
           })
           .finally(() => {

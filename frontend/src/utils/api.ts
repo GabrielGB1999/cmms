@@ -5,7 +5,11 @@ function api<T>(url: string, options: Options): Promise<T> {
   return fetch(url, { headers: authHeader(false), ...options }).then(
     async (response) => {
       if (!response.ok) {
-        throw new Error(JSON.stringify(await response.json()));
+        const err = new Error(JSON.stringify(await response.json())) as Error & {
+          status?: number;
+        };
+        err.status = response.status;
+        throw err;
       }
       if (options?.raw) return response as unknown as Promise<T>;
       return response.json() as Promise<T>;
