@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface PartRepository extends JpaRepository<Part, Long>, JpaSpecificationExecutor<Part> {
@@ -16,7 +17,7 @@ public interface PartRepository extends JpaRepository<Part, Long>, JpaSpecificat
 
     Optional<Part> findByNameIgnoreCaseAndCompany_Id(String name, Long companyId);
 
-    Optional<Part> findByBarcodeAndCompany_Id(String barcode, Long companyId);
+    List<Part> findByBarcodeAndCompany_Id(String barcode, Long companyId);
 
     void deleteByCompany_IdAndIsDemoTrue(Long companyId);
 
