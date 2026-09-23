@@ -73,6 +73,9 @@ const CreatePurchaseOrders = Loader(
 );
 const Locations = Loader(lazy(() => import('../content/own/Locations')));
 const WorkOrders = Loader(lazy(() => import('../content/own/WorkOrders')));
+const RiskAssessments = Loader(
+  lazy(() => import('../content/own/RiskAssessments'))
+);
 
 const VendorsAndCustomers = Loader(
   lazy(() => import('../content/own/VendorsAndCustomers'))
@@ -224,6 +227,10 @@ const appRoutes = [
       { path: '', element: <WorkOrders /> },
       { path: ':workOrderId', element: <WorkOrders /> }
     ]
+  },
+  {
+    path: 'risk-assessments',
+    element: <RiskAssessments />
   },
   {
     path: 'inventory',
