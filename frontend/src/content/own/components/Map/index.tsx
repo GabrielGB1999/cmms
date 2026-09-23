@@ -1,14 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   GoogleMap,
-  InfoWindow,
-  Marker,
-  withGoogleMap,
-  withScriptjs
-} from 'react-google-maps';
+  InfoWindowF,
+  MarkerF,
+  useJsApiLoader
+} from '@react-google-maps/api';
 import { mapStyle } from './mapStyle';
 import { googleMapsConfig } from '../../../../config';
 import { Box, Link, Typography } from '@mui/material';
+
+// Must be a stable reference: the loader reloads the script if the array identity changes.
+const libraries: ('geometry' | 'drawing' | 'places')[] = [
+  'geometry',
+  'drawing',
+  'places'
+];
 
 interface Location {
   id: number;
@@ -25,25 +31,31 @@ interface MapProps {
 }
 
 function LocalMap({ locations, select, onSelect, selected }) {
-  const mapRef = useRef<GoogleMap>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location>();
   const [selectedCoordinates, setSelectedCoordinates] = useState<{
     lat: number;
     lng: number;
   }>();
 
-  useEffect(() => {
-    const bounds = new window.google.maps.LatLngBounds();
-    if (locations.length) {
-      locations.forEach((location) => bounds.extend(location.coordinates));
-      mapRef.current.fitBounds(bounds);
-    }
-  }, [mapRef]);
-
+  const markerIcon = {
+    url: '/static/images/markers/red.png',
+    scaledSize: new window.google.maps.Size(25, 25)
+  };
   const defaultCenter = { lat: 0, lng: 0 };
   return (
     <GoogleMap
-      ref={mapRef}
+      mapContainerStyle={{ height: '100%' }}
+      // Set the starting view once, like the old defaultCenter/defaultZoom; passing center and zoom
+      // as props would snap the map back on every re-render (selecting a marker, picking a point).
+      onLoad={(map) => {
+        map.setCenter(selected ?? defaultCenter);
+        map.setZoom(locations?.length ? 6 : 2);
+        if (locations.length) {
+          const bounds = new window.google.maps.LatLngBounds();
+          locations.forEach((location) => bounds.extend(location.coordinates));
+          map.fitBounds(bounds);
+        }
+      }}
       onClick={(event) => {
         if (select && onSelect) {
           const coordinates = {
@@ -54,27 +66,21 @@ function LocalMap({ locations, select, onSelect, selected }) {
           onSelect(coordinates);
         }
       }}
-      defaultCenter={selected ?? defaultCenter}
-      defaultZoom={locations?.length ? 6 : 2}
-      defaultOptions={{ styles: mapStyle }}
-      options={{ streetViewControl: false }}
+      options={{ styles: mapStyle, streetViewControl: false }}
     >
       {!select && (
         <>
           {locations.map((location, index) => (
-            <Marker
+            <MarkerF
               key={index}
               position={location.coordinates}
               title={location.title}
               onClick={() => setSelectedLocation(location)}
-              icon={{
-                url: '/static/images/markers/red.png',
-                scaledSize: new window.google.maps.Size(25, 25)
-              }}
+              icon={markerIcon}
             />
           ))}
           {selectedLocation && (
-            <InfoWindow
+            <InfoWindowF
               onCloseClick={() => setSelectedLocation(null)}
               position={selectedLocation.coordinates}
             >
@@ -90,18 +96,12 @@ function LocalMap({ locations, select, onSelect, selected }) {
                   {selectedLocation.address}
                 </Typography>
               </Box>
-            </InfoWindow>
+            </InfoWindowF>
           )}
         </>
       )}
-      {select && (
-        <Marker
-          position={selectedCoordinates ?? selected}
-          icon={{
-            url: '/static/images/markers/red.png',
-            scaledSize: new window.google.maps.Size(25, 25)
-          }}
-        />
+      {select && (selectedCoordinates ?? selected) && (
+        <MarkerF position={selectedCoordinates ?? selected} icon={markerIcon} />
       )}
     </GoogleMap>
   );
@@ -114,17 +114,10 @@ export default function Map({
   onSelect
 }: MapProps) {
   const { apiKey } = googleMapsConfig;
-
-  const MapWrapped = withScriptjs(
-    withGoogleMap(() => (
-      <LocalMap
-        locations={locations}
-        select={select}
-        onSelect={onSelect}
-        selected={selected}
-      />
-    ))
-  );
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: apiKey,
+    libraries
+  });
 
   return (
     <div
@@ -133,12 +126,14 @@ export default function Map({
         height: dimensions.height ?? 500
       }}
     >
-      <MapWrapped
-        googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${apiKey}`}
-        loadingElement={<div style={{ height: `100%` }} />}
-        containerElement={<div style={{ height: `100%` }} />}
-        mapElement={<div style={{ height: `100%` }} />}
-      />
+      {isLoaded && (
+        <LocalMap
+          locations={locations}
+          select={select}
+          onSelect={onSelect}
+          selected={selected}
+        />
+      )}
     </div>
   );
 }

@@ -24,6 +24,7 @@
     "@mui/x-date-pickers-pro": "^5.0.17",
     "@nik0di3m/utm-tracker-hook": "^1.3.0",
     "@paddle/paddle-js": "^1.6.1",
+    "@react-google-maps/api": "^2.20.8",
     "@reduxjs/toolkit": "1.8.2",
     "@stomp/stompjs": "^7.0.0",
     "@types/check-types": "^7.3.4",
@@ -82,7 +83,6 @@
     "react-dropzone": "14.2.1",
     "react-ga4": "^2.1.0",
     "react-gauge-chart": "0.4.0",
-    "react-google-maps": "^9.4.5",
     "react-helmet-async": "1.3.0",
     "react-i18next": "11.17.0",
     "react-quill": "2.0.0-beta.4",
@@ -180,5 +180,8 @@
       "prettier --write",
       "git add"
     ]
+  },
+  "overrides": {
+    "core-js": "^3.50.0"
   }
 }
