@@ -64,6 +64,11 @@ const ownMenuItems: MenuItems[] = [
         permission: PermissionEntity.PREVENTIVE_MAINTENANCES
       },
       {
+        name: 'risk_assessment',
+        link: '/app/risk-assessments',
+        icon: HealthAndSafetyTwoToneIcon
+      },
+      {
         name: 'Statistics',
         icon: InsertChartTwoToneIcon,
         permission: PermissionEntity.ANALYTICS,

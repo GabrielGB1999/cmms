@@ -52,8 +52,7 @@ import { UserMiniDTO } from '../../../models/user';
 import WorkOrderDetails from './Details/WorkOrderDetails';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { LocationMiniDTO } from '../../../models/owns/location';
-import { AssetMiniDTO, assetStatuses } from '../../../models/owns/asset';
-import { formatSelect, formatSelectMultiple } from '../../../utils/formatters';
+import { AssetMiniDTO } from '../../../models/owns/asset';
 import {
   addWorkOrder,
   clearSingleWorkOrder,
@@ -89,6 +88,11 @@ import {
   SortDirection
 } from '../../../models/owns/page';
 import WorkOrderCalendar from './Calendar';
+import {
+  formatWorkOrderValues,
+  getWorkOrderFields,
+  getWorkOrderShape
+} from './workOrderForm';
 import MoreVertTwoToneIcon from '@mui/icons-material/MoreVertTwoTone';
 import { exportEntity } from '../../../slices/exports';
 import FilterAltTwoToneIcon from '@mui/icons-material/FilterAltTwoTone';
@@ -319,22 +323,7 @@ function WorkOrders() {
     }
   }, [locationParamObject, assetParamObject]);
 
-  const formatValues = (values) => {
-    const newValues = { ...values };
-    newValues.assetStatus = newValues.assetStatus?.value ?? null;
-    newValues.primaryUser = formatSelect(newValues.primaryUser);
-    newValues.location = formatSelect(newValues.location);
-    newValues.team = formatSelect(newValues.team);
-    newValues.asset = formatSelect(newValues.asset);
-    newValues.assignedTo = formatSelectMultiple(newValues.assignedTo);
-    newValues.customers = formatSelectMultiple(newValues.customers);
-    newValues.priority = newValues.priority ? newValues.priority.value : 'NONE';
-    newValues.requiredSignature = Array.isArray(newValues.requiredSignature)
-      ? newValues?.requiredSignature.includes('on')
-      : newValues.requiredSignature;
-    newValues.category = formatSelect(newValues.category);
-    return newValues;
-  };
+  const formatValues = formatWorkOrderValues;
   const onCreationSuccess = () => {
     setOpenAddModal(false);
     showSnackBar(t('wo_create_success'), 'success');
@@ -556,131 +545,8 @@ function WorkOrders() {
     dueDate: 'dueDate'
   };
 
-  const defaultFields: Array<IField> = [
-    {
-      name: 'title',
-      type: 'text',
-      label: t('title'),
-      placeholder: t('wo.title_description'),
-      required: true
-    },
-    {
-      name: 'description',
-      type: 'text',
-      label: t('description'),
-      placeholder: t('description'),
-      multiple: true
-    },
-    {
-      name: 'image',
-      type: 'file',
-      fileType: 'image',
-      label: t('image')
-    },
-    {
-      name: 'dueDate',
-      type: 'date',
-      label: t('due_date')
-    },
-    {
-      name: 'estimatedStartDate',
-      type: 'date',
-      label: t('estimated_start_date')
-    },
-    {
-      name: 'estimatedDuration',
-      type: 'number',
-      label: t('estimated_duration'),
-      placeholder: t('hours')
-    },
-    {
-      name: 'priority',
-      type: 'select',
-      label: t('priority'),
-      type2: 'priority'
-    },
-    {
-      name: 'category',
-      type: 'select',
-      label: t('category'),
-      type2: 'category',
-      category: 'work-order-categories'
-    },
-    {
-      name: 'primaryUser',
-      type: 'select',
-      label: t('primary_worker'),
-      type2: 'user'
-    },
-    {
-      name: 'assignedTo',
-      type: 'select',
-      label: t('additional_workers'),
-      type2: 'user',
-      multiple: true
-    },
-    {
-      name: 'customers',
-      type: 'select',
-      label: t('customers'),
-      type2: 'customer',
-      multiple: true
-    },
-    {
-      name: 'team',
-      type: 'select',
-      type2: 'team',
-      label: t('team'),
-      placeholder: t('select_team')
-    },
-    {
-      name: 'location',
-      type: 'select',
-      type2: 'location',
-      label: t('location'),
-      placeholder: t('select_location')
-    },
-    {
-      name: 'asset',
-      type: 'select',
-      type2: 'asset',
-      label: t('asset'),
-      placeholder: t('select_asset'),
-      relatedFields: [{ field: 'location' }]
-    },
-    {
-      name: 'assetStatus',
-      type: 'select',
-      label: t('asset_status'),
-      placeholder: t('select_asset_status'),
-      items: assetStatuses.map((assetStatus) => ({
-        label: t(assetStatus.status),
-        value: assetStatus.status
-      }))
-    },
-    {
-      name: 'tasks',
-      type: 'select',
-      type2: 'task',
-      label: t('tasks'),
-      placeholder: t('select_tasks')
-    },
-    {
-      name: 'files',
-      type: 'file',
-      multiple: true,
-      label: t('files'),
-      fileType: 'file'
-    },
-    {
-      name: 'requiredSignature',
-      type: 'switch',
-      label: t('requires_signature')
-    }
-  ];
-  const defaultShape: { [key: string]: any } = {
-    title: Yup.string().required(t('required_wo_title'))
-  };
+  const defaultFields: Array<IField> = getWorkOrderFields(t);
+  const defaultShape: { [key: string]: any } = getWorkOrderShape(t);
   const getFieldsAndShapes = (): [Array<IField>, { [key: string]: any }] => {
     return getWOFieldsAndShapes(defaultFields, defaultShape);
   };
