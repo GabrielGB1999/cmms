@@ -4,12 +4,19 @@ WORKDIR /usr/src/app
 # .npmrc carries legacy-peer-deps=true. Without it the install fails on the i18next/typescript
 # peer conflict, since i18next 25 wants typescript 5 and this project is pinned to 4.7.
 COPY package*.json .npmrc ./
-# Retry slow registry requests, but fail in about a minute rather than sitting silent for the
-# 16 minutes the previous mintimeout imposed before it even retried once.
-RUN npm config set fetch-retry-maxtimeout 60000
-RUN npm config set fetch-retry-mintimeout 10000
+# The registry connection from inside the build can be flaky (ETIMEDOUT mid-install), so retry
+# harder and open fewer parallel connections - many simultaneous downloads is what usually stalls.
+RUN npm config set fetch-retries 6 \
+ && npm config set fetch-retry-mintimeout 10000 \
+ && npm config set fetch-retry-maxtimeout 60000 \
+ && npm config set fetch-timeout 120000 \
+ && npm config set maxsockets 4
 # Installs straight from package-lock.json, so the image gets the same tree as a local checkout.
-RUN NODE_OPTIONS="--max_old_space_size=4096" npm ci
+# The npm cache lives in a BuildKit cache mount, which survives a failed build: every attempt keeps
+# what it managed to download, so retrying `docker compose up --build` gets further each time
+# instead of starting from zero.
+RUN --mount=type=cache,target=/root/.npm \
+    NODE_OPTIONS="--max_old_space_size=4096" npm ci --prefer-offline
 COPY . .
 RUN npm run build
 
