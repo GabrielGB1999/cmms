@@ -72,7 +72,6 @@ services:
     container_name: atlas-cmms-frontend
     environment:
         API_URL: ${PUBLIC_API_URL}
-        GOOGLE_KEY: ${GOOGLE_KEY:- }
         GOOGLE_TRACKING_ID: ${GOOGLE_TRACKING_ID:- }
         MUI_X_LICENSE: ${MUI_X_LICENSE:- }
         INVITATION_VIA_EMAIL: ${INVITATION_VIA_EMAIL:-false}

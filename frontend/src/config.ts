@@ -18,10 +18,6 @@ export const firebaseConfig = {
   measurementId: getRuntimeValue('MEASUREMENT_ID')
 };
 
-export const googleMapsConfig = {
-  apiKey: getRuntimeValue('GOOGLE_KEY')
-};
-
 const rawApiUrl = getRuntimeValue('API_URL');
 export const apiUrl = rawApiUrl
   ? rawApiUrl.endsWith('/')

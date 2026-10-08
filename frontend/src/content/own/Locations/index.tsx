@@ -73,7 +73,6 @@ import MoreVertTwoToneIcon from '@mui/icons-material/MoreVertTwoTone';
 import { PlanFeature } from '../../../models/owns/subscriptionPlan';
 import useGridStatePersist from '../../../hooks/useGridStatePersist';
 import { Pageable, Sort } from '../../../models/owns/page';
-import { googleMapsConfig } from '../../../config';
 import { getErrorMessage } from '../../../utils/api';
 import SplitButton from '../components/SplitButton';
 
@@ -84,7 +83,6 @@ function Locations() {
   const { showSnackBar } = useContext(CustomSnackBarContext);
   const { getFormattedDate } = useContext(CompanySettingsContext);
   const [openDelete, setOpenDelete] = useState<boolean>(false);
-  const { apiKey } = googleMapsConfig;
 
   const { locationsHierarchy, locations, loadingGet } = useSelector(
     (state) => state.locations
@@ -102,7 +100,7 @@ function Locations() {
   const apiRef = useGridApiRef();
   const tabs = [
     { value: 'list', label: t('list_view') },
-    ...(apiKey ? [{ value: 'map', label: t('map_view') }] : [])
+    { value: 'map', label: t('map_view') }
   ];
   const handleTabsChange = (_event: ChangeEvent<{}>, value: string): void => {
     setCurrentTab(value);
@@ -395,29 +393,25 @@ function Locations() {
       label: t('customers'),
       placeholder: 'Select customers'
     },
-    ...(apiKey
-      ? ([
-          {
-            name: 'mapSwitch',
-            type: 'checkbox',
-            label: t('put_location_in_map'),
-            relatedFields: [
-              { field: 'mapTitle', value: false, hide: true },
-              { field: 'coordinates', value: false, hide: true }
-            ]
-          },
-          {
-            name: 'mapTitle',
-            type: 'titleGroupField',
-            label: t('map_coordinates')
-          },
-          {
-            name: 'coordinates',
-            type: 'coordinates',
-            label: t('map_coordinates')
-          }
-        ] as IField[])
-      : []),
+    {
+      name: 'mapSwitch',
+      type: 'checkbox',
+      label: t('put_location_in_map'),
+      relatedFields: [
+        { field: 'mapTitle', value: false, hide: true },
+        { field: 'coordinates', value: false, hide: true }
+      ]
+    },
+    {
+      name: 'mapTitle',
+      type: 'titleGroupField',
+      label: t('map_coordinates')
+    },
+    {
+      name: 'coordinates',
+      type: 'coordinates',
+      label: t('map_coordinates')
+    },
     {
       name: 'image',
       type: 'file',
