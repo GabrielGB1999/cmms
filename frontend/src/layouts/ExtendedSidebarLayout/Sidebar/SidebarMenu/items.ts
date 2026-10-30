@@ -566,10 +566,6 @@ const templateItems = [
               }
             ]
           },
-          {
-            name: 'Recover Password',
-            link: '/account/recover-password'
-          }
         ]
       },
       {

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -51,23 +50,15 @@ public class WebSecurityConfig {
                 .requestMatchers("/auth/signin").permitAll()
                 .requestMatchers("/auth/signup").permitAll()
                 .requestMatchers("/auth/sso/**").permitAll()
-                .requestMatchers("/auth/sendMail").permitAll()
-                .requestMatchers("/auth/resetpwd/**").permitAll()
                 .requestMatchers("/license/state").permitAll()
                 .requestMatchers("/oauth2/**").permitAll()
                 .requestMatchers("/login/oauth2/**").permitAll()
                 .requestMatchers("/health-check").permitAll()
-                .requestMatchers("/mail/send").permitAll()
                 .requestMatchers("/subscription-plans").permitAll()
-                .requestMatchers("/files/download/tos", "/files/download/privacy-policy").permitAll()
                 .requestMatchers("/ws/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/newsLetters").permitAll()
                 .requestMatchers("/auth/activate-account**").permitAll()
-                .requestMatchers("/demo/generate-account").permitAll()
                 .requestMatchers("/webhooks/**").permitAll()
                 .requestMatchers("/paddle/create-checkout-session").permitAll()
-                .requestMatchers("/auth/reset-pwd-confirm**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/swagger-ui.html").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
@@ -103,8 +94,6 @@ public class WebSecurityConfig {
                 .requestMatchers("/webjars/**")//
                 .requestMatchers("/public")
                 .requestMatchers("/images/**")
-                // Un-secure H2 Database (for testing purposes, H2 console shouldn\'t be unprotected in production)
-//                .requestMatchers("/h2-console/**")
                 ;
     }
 

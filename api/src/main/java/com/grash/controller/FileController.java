@@ -46,7 +46,6 @@ public class FileController {
 
     @PostMapping(value = "/upload", produces = "application/json")
     public List<FileShowDTO> handleFileUpload(@RequestParam("files") MultipartFile[] filesReq,
-                                              @RequestParam("folder") String folder,
                                               @RequestParam("hidden") String hidden, HttpServletRequest req,
                                               @RequestParam("type") FileType fileType,
                                               @RequestParam(value = "taskId", required = false) Integer taskId) {
@@ -54,6 +53,7 @@ public class FileController {
         if (user.getRole().getCreatePermissions().contains(PermissionEntity.FILES) &&
                 user.getCompany().getSubscription().getSubscriptionPlan().getFeatures().contains(PlanFeatures.FILE)) {
             Collection<File> result = new ArrayList<>();
+            String folder = "company " + user.getCompany().getId(); // never trust a client-supplied path
             Arrays.asList(filesReq).forEach(fileReq -> {
                 String filePath = storageServiceFactory.getStorageService().upload(fileReq, folder);
                 Task task = null;
@@ -143,17 +143,6 @@ public class FileController {
             } else throw new CustomException("Forbidden", HttpStatus.FORBIDDEN);
         } else throw new CustomException("File not found", HttpStatus.NOT_FOUND);
     }
-
-//    @GetMapping("/download/tos")
-//    public byte[] downloadTOS() {
-//        return storageServiceFactory.getStorageService().download("terms and privacy/Atlas CMMS Terms of service
-//        .pdf");
-//    }
-//
-//    @GetMapping("/download/privacy-policy")
-//    public byte[] downloadPrivacyPolicy() {
-//        return storageServiceFactory.getStorageService().download("terms and privacy/Atlas CMMS privacy policy.pdf");
-//    }
 }
 
 

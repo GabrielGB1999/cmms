@@ -3,7 +3,6 @@ package com.grash.controller;
 import com.grash.dto.*;
 import com.grash.exception.CustomException;
 import com.grash.mapper.UserMapper;
-import com.grash.factory.MailServiceFactory;
 import com.grash.model.Company;
 import com.grash.model.OwnUser;
 import com.grash.model.SuperAccountRelation;
@@ -44,7 +43,6 @@ public class AuthController {
     private final UserMapper userMapper;
     private final SuperAccountRelationRepository superAccountRelationRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final MailServiceFactory mailServiceFactory;
     private final CompanyService companyService;
     private final UserRepository userRepository;
     @Value("${frontend.url}")
@@ -74,27 +72,6 @@ public class AuthController {
                 userMapper.toResponseDto(response.getUser()));
     }
 
-//    @PostMapping(
-//            path = "/sendMail",
-//            produces = "text/html;charset=UTF-8"
-//    )
-//    @ApiOperation(value = "${AuthController.signup}")
-//    @ApiResponses(value = {//
-//            @ApiResponse(code = 400, message = "Something went wrong"), //
-//            @ApiResponse(code = 403, message = "Access denied"), //
-//            @ApiResponse(code = 422, message = "Username is already in use")})
-//    public void sendMail( @Valid @RequestBody UserSignupRequest user) {
-//        String email = "ibracool99@gmail.com";
-//        String subject = "GG";
-//        Map<String, Object> variables = new HashMap<String, Object>() {{
-//            put("verifyTokenLink", "gg");
-//            put("featuresLink", "s");
-//        }};
-//        mailServiceFactory.getMailService().sendMessageUsingThymeleafTemplate(new String[]{email}, subject,
-//        variables, "new-work-order"
-//        + ".html", Locale.FRENCH, null);
-//    }
-
     @GetMapping("/activate-account")
     public void activateAcount(
             @RequestParam String token, HttpServletResponse httpServletResponse
@@ -103,20 +80,6 @@ public class AuthController {
             String email = verificationTokenService.confirmMail(token);
             httpServletResponse.setHeader("Location",
                     frontendUrl + "/account/login?email=" + email);
-        } catch (Exception ex) {
-            httpServletResponse.setHeader("Location", frontendUrl + "/account/register");
-        }
-        httpServletResponse.setStatus(302);
-    }
-
-    @GetMapping("/reset-pwd-confirm")
-    public void resetPasswordConfirm(
-            @RequestParam String token,
-            HttpServletResponse httpServletResponse
-    ) {
-        try {
-            OwnUser user = verificationTokenService.confirmResetPassword(token);
-            httpServletResponse.setHeader("Location", frontendUrl + "/account/login?email=" + user.getEmail());
         } catch (Exception ex) {
             httpServletResponse.setHeader("Location", frontendUrl + "/account/register");
         }
@@ -146,12 +109,6 @@ public class AuthController {
     @PreAuthorize("permitAll()")
     public AuthResponse refresh(HttpServletRequest req) {
         return new AuthResponse(userService.refresh(req.getRemoteUser()));
-    }
-
-    @PreAuthorize("permitAll()")
-    @GetMapping(value = "/resetpwd", produces = "application/json")
-    public SuccessResponse resetPassword(@RequestParam String email) {
-        return userService.resetPasswordRequest(email);
     }
 
     @PreAuthorize("permitAll()")

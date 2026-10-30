@@ -24,7 +24,6 @@ import { getCurrencies } from '../../../../slices/currency';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { GeneralPreferences } from '../../../../models/owns/generalPreferences';
 import { CustomSnackBarContext } from '../../../../contexts/CustomSnackBarContext';
-import ConfirmDialog from '../../components/ConfirmDialog';
 import api from '../../../../utils/api';
 import { apiUrl, isCloudVersion } from '../../../../config';
 import { useLicenseEntitlement } from '../../../../hooks/useLicenseEntitlement';
@@ -40,7 +39,6 @@ const onOpenApiDocs = async () => {
 };
 function GeneralSettings() {
   const { t }: { t: any } = useTranslation();
-  const [openDeleteDemo, setOpenDeleteDemo] = useState<boolean>(false);
   const switchLanguage = async ({ lng }: { lng: any }) => {
     await loadLanguage(lng);
     internationalization.changeLanguage(lng);
@@ -72,16 +70,6 @@ function GeneralSettings() {
     () => debounce(onCsvSeparatorChange, 1300),
     []
   );
-  const onDeleteDemoData = async () => {
-    const { success, message } = await api.deletes<{
-      success: boolean;
-      message: string;
-    }>('demo/demo-data');
-    if (success) {
-      showSnackBar('Demo data deleted successfully', 'success');
-      setOpenDeleteDemo(false);
-    }
-  };
   const switches: {
     title: string;
     description: string;
@@ -340,13 +328,6 @@ function GeneralSettings() {
                   <Divider sx={{ my: 3 }} />
                   <Stack direction={'row'} spacing={2}>
                     <Button
-                      onClick={() => setOpenDeleteDemo(true)}
-                      variant={'outlined'}
-                      color={'error'}
-                    >
-                      {t('delete_demo_data')}
-                    </Button>
-                    <Button
                       disabled={
                         !(hasFeature(PlanFeature.API_ACCESS) && hasApiAccess)
                       }
@@ -356,13 +337,6 @@ function GeneralSettings() {
                       {t('open_api_docs')}
                     </Button>
                   </Stack>
-                  <ConfirmDialog
-                    open={openDeleteDemo}
-                    onCancel={() => setOpenDeleteDemo(false)}
-                    onConfirm={onDeleteDemoData}
-                    confirmText={'Delete'}
-                    question={'Are you sure you want to delete demo data?'}
-                  />
                 </Grid>
               </Grid>
             </form>

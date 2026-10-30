@@ -1,5 +1,6 @@
 package com.grash.service;
 
+import org.springframework.util.StringUtils;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
@@ -63,7 +64,7 @@ public class GCPService implements StorageService {
         checkIfConfigured();
         Helper helper = new Helper();
         try {
-            String filePath = folder + "/" + helper.generateString() + " " + file.getOriginalFilename();
+            String filePath = folder + "/" + helper.generateString() + " " + StringUtils.getFilename(file.getOriginalFilename());
             BlobInfo blobInfo = storage.create(
                     BlobInfo.newBuilder(gcpBucketName, filePath
                     ).build(), //get

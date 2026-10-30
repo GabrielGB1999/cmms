@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import type { FC } from 'react';
 import { useContext, useState } from 'react';
 import { Formik } from 'formik';
-import { Link as RouterLink, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import {
   Box,
@@ -11,7 +11,6 @@ import {
   Divider,
   IconButton,
   InputAdornment,
-  Link,
   TextField
 } from '@mui/material';
 import useAuth from 'src/hooks/useAuth';
@@ -106,16 +105,6 @@ const LoginJWT: FC = () => {
               )
             }}
           />
-          <Box
-            alignItems="center"
-            display={{ xs: 'block', md: 'flex' }}
-            justifyContent="space-between"
-          >
-            <Link component={RouterLink} to="/account/recover-password">
-              <b>{t('lost_password')}</b>
-            </Link>
-          </Box>
-
           <Button
             sx={{
               mt: 3

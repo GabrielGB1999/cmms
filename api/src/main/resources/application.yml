@@ -73,6 +73,10 @@ spring:
     type: caffeine
 server:
   port: 8080 # This is the default port anyway, but you can change it here
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/json
 
 security:
   jwt:

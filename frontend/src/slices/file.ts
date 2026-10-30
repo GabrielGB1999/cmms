@@ -117,11 +117,9 @@ export const addFiles =
   ): AppThunk =>
   async (dispatch) => {
     let formData = new FormData();
-    const companyId = localStorage.getItem('companyId');
     const headers = authHeader(false);
     delete headers['Content-Type'];
     files.forEach((file) => formData.append('files', file));
-    formData.append('folder', `company ${companyId}`);
     formData.append('type', fileType);
     formData.append('hidden', hidden);
     const baseRoute = `${basePath}/upload`;
