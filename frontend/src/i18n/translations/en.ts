@@ -1751,7 +1751,8 @@ const locale = {
   'free_cmms.features.join_thousands':
     "Join thousands of maintenance professionals using the world's most intuitive free CMMS.",
   'free_cmms.features.get_started_no_card':
-    'Get started for free - No credit card required'
+    'Get started for free - No credit card required',
+  skip_to_content: 'Skip to content'
 };
 
 export default locale;

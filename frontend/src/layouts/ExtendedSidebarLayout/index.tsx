@@ -1,6 +1,7 @@
 import { FC, ReactNode } from 'react';
 import { alpha, Box, lighten, useTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -11,6 +12,7 @@ interface ExtendedSidebarLayoutProps {
 
 const ExtendedSidebarLayout: FC<ExtendedSidebarLayoutProps> = () => {
   const theme = useTheme();
+  const { t }: { t: any } = useTranslation();
 
   return (
     <>
@@ -41,6 +43,28 @@ const ExtendedSidebarLayout: FC<ExtendedSidebarLayoutProps> = () => {
           }
         }}
       >
+        {/* First Tab stop: lets keyboard users jump past the header and sidebar */}
+        <Box
+          component="a"
+          href="#main-content"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById('main-content')?.focus();
+          }}
+          sx={{
+            position: 'fixed',
+            top: 8,
+            left: 8,
+            zIndex: theme.zIndex.tooltip,
+            p: 1,
+            borderRadius: 1,
+            bgcolor: 'background.paper',
+            transform: 'translateY(-200%)',
+            '&:focus': { transform: 'none' }
+          }}
+        >
+          {t('skip_to_content')}
+        </Box>
         <Header />
         <Sidebar />
         <Box
@@ -55,7 +79,12 @@ const ExtendedSidebarLayout: FC<ExtendedSidebarLayoutProps> = () => {
             }
           }}
         >
-          <Box display="block">
+          <Box
+            display="block"
+            id="main-content"
+            tabIndex={-1}
+            sx={{ '&:focus-visible': { outline: 'none' } }}
+          >
             <Outlet />
           </Box>
           {/*<ThemeSettings />*/}
