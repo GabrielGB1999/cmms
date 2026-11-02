@@ -51,7 +51,7 @@ public class PurchaseOrderCategoryController {
     public PurchaseOrderCategory getById(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
         if (user.getRole().getViewPermissions().contains(PermissionEntity.CATEGORIES)) {
-            Optional<PurchaseOrderCategory> optionalPurchaseOrderCategory = PurchaseOrderCategoryService.findById(id);
+            Optional<PurchaseOrderCategory> optionalPurchaseOrderCategory = PurchaseOrderCategoryService.findById(id).filter(c -> c.belongsTo(user));
             if (optionalPurchaseOrderCategory.isPresent()) {
                 PurchaseOrderCategory savedPurchaseOrderCategory = optionalPurchaseOrderCategory.get();
                 return savedPurchaseOrderCategory;
@@ -78,7 +78,7 @@ public class PurchaseOrderCategoryController {
                                        HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
         if (user.getRole().getCreatePermissions().contains(PermissionEntity.CATEGORIES)) {
-            Optional<PurchaseOrderCategory> optionalPurchaseOrderCategory = PurchaseOrderCategoryService.findById(id);
+            Optional<PurchaseOrderCategory> optionalPurchaseOrderCategory = PurchaseOrderCategoryService.findById(id).filter(c -> c.belongsTo(user));
             if (optionalPurchaseOrderCategory.isPresent()) {
                 PurchaseOrderCategory savedPurchaseOrderCategory = optionalPurchaseOrderCategory.get();
                 return PurchaseOrderCategoryService.update(id, categoryPatchDTO);
@@ -93,7 +93,7 @@ public class PurchaseOrderCategoryController {
     public ResponseEntity<SuccessResponse> delete(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
 
-        Optional<PurchaseOrderCategory> optionalPurchaseOrderCategory = PurchaseOrderCategoryService.findById(id);
+        Optional<PurchaseOrderCategory> optionalPurchaseOrderCategory = PurchaseOrderCategoryService.findById(id).filter(c -> c.belongsTo(user));
         if (optionalPurchaseOrderCategory.isPresent()) {
             PurchaseOrderCategory savedPurchaseOrderCategory = optionalPurchaseOrderCategory.get();
             if (savedPurchaseOrderCategory.getCreatedBy().equals(user.getId()) || user.getRole().getDeleteOtherPermissions().contains(PermissionEntity.CATEGORIES)) {

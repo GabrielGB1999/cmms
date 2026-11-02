@@ -105,7 +105,7 @@ public class ReadingController {
                          @PathVariable("id") Long id,
                          HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
-        Optional<Reading> optionalReading = readingService.findById(id);
+        Optional<Reading> optionalReading = readingService.findById(id).filter(r -> r.getMeter().getCompany().getId().equals(user.getCompany().getId()));
 
         if (optionalReading.isPresent()) {
             Reading savedReading = optionalReading.get();
@@ -119,7 +119,7 @@ public class ReadingController {
     public ResponseEntity<SuccessResponse> delete(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
 
-        Optional<Reading> optionalReading = readingService.findById(id);
+        Optional<Reading> optionalReading = readingService.findById(id).filter(r -> r.getMeter().getCompany().getId().equals(user.getCompany().getId()));
         if (optionalReading.isPresent()) {
             readingService.delete(id);
             return new ResponseEntity<>(new SuccessResponse(true, "Deleted successfully"),

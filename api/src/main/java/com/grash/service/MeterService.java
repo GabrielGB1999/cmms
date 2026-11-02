@@ -26,7 +26,6 @@ import jakarta.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.grash.utils.Consts.usageBasedLicenseLimits;
 
 @Service
 @RequiredArgsConstructor
@@ -47,15 +46,10 @@ public class MeterService {
 
     @Transactional
     public Meter create(Meter meter, OwnUser user) {
-        checkUsageBasedLimit(user.getCompany());
         Sanitizer.sanitizeMeter(meter);
         Meter savedMeter = meterRepository.saveAndFlush(meter);
         em.refresh(savedMeter);
         return savedMeter;
-    }
-
-    private void checkUsageBasedLimit(Company company) {
-        Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_METERS);
     }
 
     @Transactional
@@ -131,7 +125,6 @@ public class MeterService {
     }
 
     public void importMeter(Meter meter, MeterImportDTO dto, Company company) {
-        checkUsageBasedLimit(company);
         Long companyId = company.getId();
         Long companySettingsId = company.getCompanySettings().getId();
         meter.setName(dto.getName());

@@ -5,6 +5,7 @@ import com.grash.exception.CustomException;
 import com.grash.job.PreventiveMaintenanceNotificationJob;
 import com.grash.job.WorkOrderCreationJob;
 import com.grash.mapper.ScheduleMapper;
+import com.grash.utils.Helper;
 import com.grash.model.PreventiveMaintenance;
 import com.grash.model.Schedule;
 import com.grash.model.WorkOrder;
@@ -400,24 +401,23 @@ public class ScheduleService {
         scheduleRepository.deleteByPreventiveMaintenanceCompany_IdAndIsDemoTrue(companyId);
     }
 
-    public void checkIfWeeklyShouldRun(Schedule schedule) {
-        if (schedule.getRecurrenceType() == RecurrenceType.WEEKLY && schedule.getFrequency() > 1) {
-            String tzId = schedule.getPreventiveMaintenance()
-                    .getCompany().getCompanySettings()
-                    .getGeneralPreferences().getTimeZone();
-            ZoneId zoneId = ZoneId.of(tzId);
+    // Weekly triggers fire every week; for "every N weeks" only every Nth week since the start counts.
+    // daysAhead: the notification job fires before the work order is due, so it checks the due day's week.
+    public boolean checkIfWeeklyShouldRun(Schedule schedule, int daysAhead) {
+        if (schedule.getRecurrenceType() != RecurrenceType.WEEKLY || schedule.getFrequency() <= 1) return true;
+        String tzId = schedule.getPreventiveMaintenance()
+                .getCompany().getCompanySettings()
+                .getGeneralPreferences().getTimeZone();
+        return isOnWeekInterval(schedule.getStartsOn(), Helper.incrementDays(new Date(), daysAhead),
+                ZoneId.of(tzId), schedule.getFrequency());
+    }
 
-            long daysSinceStart = ChronoUnit.DAYS.between(
-                    schedule.getStartsOn().toInstant().atZone(zoneId).toLocalDate(),
-                    new Date().toInstant().atZone(zoneId).toLocalDate()
-            );
-            long weeksSinceStart = daysSinceStart / 7;
-
-            if (weeksSinceStart % schedule.getFrequency() != 0) {
-                log.info("Skipping execution - not on correct week interval for schedule {}", schedule.getId());
-                return;
-            }
-        }
+    static boolean isOnWeekInterval(Date startsOn, Date now, ZoneId zoneId, int frequency) {
+        long daysSinceStart = ChronoUnit.DAYS.between(
+                startsOn.toInstant().atZone(zoneId).toLocalDate(),
+                now.toInstant().atZone(zoneId).toLocalDate()
+        );
+        return (daysSinceStart / 7) % frequency == 0;
     }
 
     public Collection<Schedule> findActive() {

@@ -59,8 +59,9 @@ public class AuthController {
             }
     )
     public ResponseEntity<AuthResponse> login(
-            @Valid @RequestBody UserLoginRequest userLoginRequest) {
-        String bruteForceKey = userLoginRequest.getEmail().trim().toLowerCase();
+            @Valid @RequestBody UserLoginRequest userLoginRequest, HttpServletRequest req) {
+        // Per email and IP, so failed attempts from elsewhere can't lock the owner out
+        String bruteForceKey = userLoginRequest.getEmail().trim().toLowerCase() + "|" + req.getRemoteAddr();
         if (rateLimiterService.isBruteForceEnabled()) {
             if (!rateLimiterService.tryConsumeLoginAttempt(bruteForceKey)) {
                 throw new CustomException(TOO_MANY_ATTEMPTS_MESSAGE, HttpStatus.TOO_MANY_REQUESTS);

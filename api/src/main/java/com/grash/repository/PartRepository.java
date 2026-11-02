@@ -21,7 +21,4 @@ public interface PartRepository extends JpaRepository<Part, Long>, JpaSpecificat
 
     void deleteByCompany_IdAndIsDemoTrue(Long companyId);
 
-    @Query("SELECT CASE WHEN COUNT(p) > :threshold THEN true ELSE false END " +
-            "FROM Part p WHERE p.company.id = :companyId")
-    boolean hasMoreThan(@Param("companyId") Long companyId, @Param("threshold") Long threshold);
 }

@@ -18,7 +18,4 @@ public interface MeterRepository extends JpaRepository<Meter, Long>, JpaSpecific
 
     void deleteByCompany_IdAndIsDemoTrue(Long companyId);
 
-    @Query("SELECT CASE WHEN COUNT(m) > :threshold THEN true ELSE false END " +
-            "FROM Meter m WHERE m.company.id = :companyId")
-    boolean hasMoreThan(@Param("companyId") Long companyId, @Param("threshold") Long threshold);
 }

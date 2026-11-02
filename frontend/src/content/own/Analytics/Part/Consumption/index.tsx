@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useContext, useEffect, useState } from 'react';
 import { TitleContext } from '../../../../../contexts/TitleContext';
 import Overview from './Overview';
-import { Filter } from '../WOModal';
+import { Filter } from '../../WOModal';
 import PartConsumptionsByDate from './PartConsumptionsByDate';
 import CustomDateRangePicker from '../../CustomDateRangePicker';
 import PartConsumptionsPareto from './PartConsumptionsPareto';

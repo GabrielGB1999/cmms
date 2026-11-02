@@ -27,7 +27,6 @@ import jakarta.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.grash.utils.Consts.usageBasedLicenseLimits;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +47,6 @@ public class LocationService {
 
     @Transactional
     public Location create(Location location, Company company) {
-        checkUsageBasedLimit(company);
         location.setCustomId(getLocationNumber(company));
         Sanitizer.sanitizeLocation(location);
 
@@ -67,11 +65,6 @@ public class LocationService {
             em.refresh(patchedLocation);
             return patchedLocation;
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
-    }
-
-    private void checkUsageBasedLimit(Company company) {
-        Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_LOCATIONS);
-
     }
 
     public Collection<Location> getAll() {
@@ -139,7 +132,6 @@ public class LocationService {
     }
 
     public void importLocation(Location location, LocationImportDTO dto, Company company) {
-        checkUsageBasedLimit(company);
         Long companyId = company.getId();
         location.setName(dto.getName());
         location.setAddress(dto.getAddress());

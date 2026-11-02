@@ -49,7 +49,7 @@ import DateTimePicker from '@mui/lab/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
-import { Filter } from '../../Analytics/WorkOrder/WOModal';
+import { Filter } from '../../Analytics/WOModal';
 import Loading from '../../Analytics/Loading';
 
 interface PropsType {

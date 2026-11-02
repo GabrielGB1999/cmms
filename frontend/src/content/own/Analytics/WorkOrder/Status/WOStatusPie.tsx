@@ -9,7 +9,7 @@ import {
   Tooltip
 } from 'recharts';
 import AnalyticsCard from '../../AnalyticsCard';
-import { Filter } from '../WOModal';
+import { Filter } from '../../WOModal';
 import { useDispatch, useSelector } from '../../../../../store';
 import { useCallback, useEffect } from 'react';
 import { getIncompleteByStatus } from '../../../../../slices/analytics/workOrder';

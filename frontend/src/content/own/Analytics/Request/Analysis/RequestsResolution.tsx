@@ -13,7 +13,7 @@ import {
   YAxis
 } from 'recharts';
 import AnalyticsCard from '../../AnalyticsCard';
-import { Filter } from '../WOModal';
+import { Filter } from '../../WOModal';
 import { useDispatch, useSelector } from '../../../../../store';
 import { useEffect } from 'react';
 import { getIncompleteByAsset } from '../../../../../slices/analytics/workOrder';

@@ -21,7 +21,4 @@ public interface PreventiveMaintenanceRepository extends JpaRepository<Preventiv
 
     Optional<PreventiveMaintenance> findByIdAndCompany_Id(Long id, Long companyId);
 
-    @Query("SELECT CASE WHEN COUNT(p) > :threshold THEN true ELSE false END " +
-            "FROM PreventiveMaintenance p WHERE p.company.id = :companyId")
-    boolean hasMoreThan(@Param("companyId") Long companyId, @Param("threshold") Long threshold);
 }

@@ -41,7 +41,7 @@ public class AdditionalCostController {
     @PreAuthorize("permitAll()")
     public AdditionalCost getById(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
-        Optional<AdditionalCost> optionalAdditionalCost = additionalCostService.findById(id);
+        Optional<AdditionalCost> optionalAdditionalCost = additionalCostService.findById(id).filter(ac -> ac.getWorkOrder().getCompany().getId().equals(user.getCompany().getId()));
         if (optionalAdditionalCost.isPresent()) {
             AdditionalCost savedAdditionalCost = optionalAdditionalCost.get();
             return savedAdditionalCost;
@@ -79,7 +79,7 @@ public class AdditionalCostController {
     public AdditionalCost patch(@Valid @RequestBody AdditionalCostPatchDTO additionalCost, @PathVariable("id") Long id,
                                 HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
-        Optional<AdditionalCost> optionalAdditionalCost = additionalCostService.findById(id);
+        Optional<AdditionalCost> optionalAdditionalCost = additionalCostService.findById(id).filter(ac -> ac.getWorkOrder().getCompany().getId().equals(user.getCompany().getId()));
 
         if (optionalAdditionalCost.isPresent()) {
             AdditionalCost savedAdditionalCost = optionalAdditionalCost.get();
@@ -92,7 +92,7 @@ public class AdditionalCostController {
     public ResponseEntity delete(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
 
-        Optional<AdditionalCost> optionalAdditionalCost = additionalCostService.findById(id);
+        Optional<AdditionalCost> optionalAdditionalCost = additionalCostService.findById(id).filter(ac -> ac.getWorkOrder().getCompany().getId().equals(user.getCompany().getId()));
         if (optionalAdditionalCost.isPresent()) {
             AdditionalCost savedAdditionalCost = optionalAdditionalCost.get();
             additionalCostService.delete(id);

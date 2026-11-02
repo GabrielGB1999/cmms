@@ -51,7 +51,7 @@ public class ChecklistController {
 
     public Checklist getById(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
-        Optional<Checklist> optionalChecklist = checklistService.findById(id);
+        Optional<Checklist> optionalChecklist = checklistService.findById(id).filter(c -> c.getCompanySettings().getId().equals(user.getCompany().getCompanySettings().getId()));
         if (optionalChecklist.isPresent()) {
             Checklist savedChecklist = optionalChecklist.get();
             return savedChecklist;
@@ -75,7 +75,7 @@ public class ChecklistController {
                            @PathVariable("id") Long id,
                            HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
-        Optional<Checklist> optionalChecklist = checklistService.findById(id);
+        Optional<Checklist> optionalChecklist = checklistService.findById(id).filter(c -> c.getCompanySettings().getId().equals(user.getCompany().getCompanySettings().getId()));
 
         if (optionalChecklist.isPresent()) {
             Checklist savedChecklist = optionalChecklist.get();
@@ -91,7 +91,7 @@ public class ChecklistController {
     public ResponseEntity<SuccessResponse> delete(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
 
-        Optional<Checklist> optionalChecklist = checklistService.findById(id);
+        Optional<Checklist> optionalChecklist = checklistService.findById(id).filter(c -> c.getCompanySettings().getId().equals(user.getCompany().getCompanySettings().getId()));
         if (optionalChecklist.isPresent()) {
             Checklist savedChecklist = optionalChecklist.get();
             if (user.getRole().getViewPermissions().contains(PermissionEntity.SETTINGS)) {
