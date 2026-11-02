@@ -35,3 +35,12 @@ it('only counts boxes fully past the edge', () => {
   const sidebar = box(0, 120, 60, 30);
   expect(pickNext(cell, [filter, sidebar], 'ArrowLeft')).toBe(1);
 });
+
+it('takes the nearest lined-up box even if it sits off to the side', () => {
+  // Wide field, then a small checkbox at its left edge, then a wide box below
+  const field = box(0, 0, 900, 50);
+  const checkbox = box(0, 60, 40, 40);
+  const wide = box(0, 120, 900, 50);
+  expect(pickNext(field, [wide, checkbox], 'ArrowDown')).toBe(1);
+  expect(pickNext(checkbox, [field, wide], 'ArrowDown')).toBe(1);
+});
