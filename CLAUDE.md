@@ -283,7 +283,10 @@ fork's commits. Recovery: find the old SHA (reachable from any pushed branch) an
 `null` for every DTO field not sent, so a patch of one field wipes the rest — and trips
 `@NotNull`. `WorkOrderDiscrepancyMapper` guards this with
 `@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)`.
-**Most other patch mappers do not** and carry this latent bug.
+**The others deliberately do not:** the web app always PATCHes whole records and clears a field
+by sending `null`, which `IGNORE` would silently drop. So PATCH means "replace" here; the Swagger
+description (`SwaggerConfig.apiInfo`) tells API users. Don't add `IGNORE` broadly without
+first making clients distinguish "absent" from "null".
 
 **`frontend/.npmrc` sets `legacy-peer-deps=true`** and is load-bearing — i18next 25 wants
 TypeScript 5, the project pins 4.7. Anything installing without it (a Docker layer that copies
