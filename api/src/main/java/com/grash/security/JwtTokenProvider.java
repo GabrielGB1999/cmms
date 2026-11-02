@@ -44,6 +44,10 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
+        // This key was published in .env.example; anyone could forge tokens with it
+        if (secretKey == null || secretKey.isBlank()
+                || secretKey.equals("sD1HBM6ngcaDLMzDqgA9Pn9LEECNAp0C1EOHIR/D+q4="))
+            throw new IllegalStateException("Set JWT_SECRET_KEY to your own value: openssl rand -base64 32");
         byte[] keyBytes = Base64.getDecoder().decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
