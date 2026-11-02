@@ -14,9 +14,7 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 public class RateLimiterService {
 
-    private final ConcurrentMap<String, Bucket> cache = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Bucket> loginAttemptCache = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String, Bucket> resetPasswordAttemptCache = new ConcurrentHashMap<>();
 
     @Getter
     @Value("${security.rate-limit.brute-force.enabled:true}")
@@ -33,35 +31,6 @@ public class RateLimiterService {
 
     @Value("${security.rate-limit.brute-force.login.long-term-period-hours:24}")
     private int loginLongTermPeriodHours;
-
-    @Value("${security.rate-limit.brute-force.reset-password.max-attempts:3}")
-    private int resetPasswordMaxAttempts;
-
-    @Value("${security.rate-limit.brute-force.reset-password.period-minutes:10}")
-    private int resetPasswordPeriodMinutes;
-
-    @Value("${security.rate-limit.brute-force.reset-password.long-term-max-attempts:10}")
-    private int resetPasswordLongTermMaxAttempts;
-
-    @Value("${security.rate-limit.brute-force.reset-password.long-term-period-hours:24}")
-    private int resetPasswordLongTermPeriodHours;
-
-    public Bucket resolveBucket(String key) {
-        return cache.computeIfAbsent(key, this::newBucket);
-    }
-
-    private Bucket newBucket(String key) {
-        // 1 request per minute
-        Bandwidth onePerMinute = Bandwidth.classic(1, Refill.greedy(1, Duration.ofMinutes(1)));
-
-        // 2 requests per 5 hours
-        Bandwidth twoPer5Hours = Bandwidth.classic(2, Refill.greedy(2, Duration.ofHours(5)));
-
-        return Bucket.builder()
-                .addLimit(onePerMinute)
-                .addLimit(twoPer5Hours)
-                .build();
-    }
 
     /**
      * Consume one attempt for the given login identifier (email).
@@ -81,23 +50,6 @@ public class RateLimiterService {
         }
     }
 
-    /**
-     * Consume one password reset request for the given email.
-     */
-    public boolean tryConsumeResetPasswordAttempt(String key) {
-        return resetPasswordAttemptCache.computeIfAbsent(key, this::newResetPasswordAttemptBucket).tryConsume(1);
-    }
-
-    /**
-     * Reset the password reset attempts counter for a given email.
-     */
-    public void resetResetPasswordAttempts(String key) {
-        Bucket bucket = resetPasswordAttemptCache.get(key);
-        if (bucket != null) {
-            bucket.reset();
-        }
-    }
-
     private Bucket newLoginAttemptBucket(String key) {
         // Short-term limit, e.g. 5 attempts per 15 minutes per identifier
         Bandwidth shortTerm = Bandwidth.classic(
@@ -109,25 +61,6 @@ public class RateLimiterService {
         Bandwidth longTerm = Bandwidth.classic(
                 loginLongTermMaxAttempts,
                 Refill.greedy(loginLongTermMaxAttempts, Duration.ofHours(loginLongTermPeriodHours))
-        );
-
-        return Bucket.builder()
-                .addLimit(shortTerm)
-                .addLimit(longTerm)
-                .build();
-    }
-
-    private Bucket newResetPasswordAttemptBucket(String key) {
-        // Short-term limit, e.g. 3 requests per 10 minutes per email
-        Bandwidth shortTerm = Bandwidth.classic(
-                resetPasswordMaxAttempts,
-                Refill.greedy(resetPasswordMaxAttempts, Duration.ofMinutes(resetPasswordPeriodMinutes))
-        );
-
-        // Long-term limit, e.g. 10 requests per 24 hours per email
-        Bandwidth longTerm = Bandwidth.classic(
-                resetPasswordLongTermMaxAttempts,
-                Refill.greedy(resetPasswordLongTermMaxAttempts, Duration.ofHours(resetPasswordLongTermPeriodHours))
         );
 
         return Bucket.builder()

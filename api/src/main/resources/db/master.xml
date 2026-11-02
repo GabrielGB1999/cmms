@@ -190,6 +190,8 @@
              relativeToChangelogFile="true"/>
     <include file="changelog/2026_04_06_remove_license_restrictions.xml"
              relativeToChangelogFile="true"/>
+    <include file="changelog/2026_09_23_1790167037_risk_assessment.xml"
+             relativeToChangelogFile="true"/>
     <include file="changelog/2026_08_31_1788200359_part_optimistic_locking_version.xml"
              relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -264,6 +264,12 @@ practice since new companies get `BUSINESS`.
 **Work order discrepancies** (squawks) — `WorkOrderDiscrepancy`, with a "raise a derived work
 order" flow that links via a `SPLIT_FROM` relation.
 
+**Risk assessments** — `RiskAssessment`, a company-wide safety hazard register at
+`/app/risk-assessments` (its own sidebar entry), with columns from the HSE risk assessment
+template. A row's action can be raised as a work order through the regular work order form
+(`content/own/WorkOrders/workOrderForm.ts`, shared with the work orders screen); the "done" column
+is read live off that work order's `completedOn`, never stored. Web only for now, no mobile screen.
+
 ## Things that will bite you
 
 **Never press "Sync fork" on GitHub.** It force-replaces `main` with upstream and drops this

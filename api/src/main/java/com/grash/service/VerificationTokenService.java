@@ -4,11 +4,9 @@ import com.grash.dto.AuthResponse;
 import com.grash.factory.MailServiceFactory;
 import com.grash.model.OwnUser;
 import com.grash.model.VerificationToken;
-import com.grash.repository.UserRepository;
 import com.grash.repository.VerificationTokenRepository;
 import com.grash.security.JwtTokenProvider;
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,8 +20,6 @@ public class VerificationTokenService {
     private final UserService userService;
     private final VerificationTokenRepository verificationTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
     private final MailServiceFactory mailServiceFactory;
 
 
@@ -63,12 +59,5 @@ public class VerificationTokenService {
         userService.enableUser(user.getEmail());
         if (!user.getCompany().isDemo()) mailServiceFactory.getMailService().addToContactList(user);
         return user.getEmail();
-    }
-
-    public OwnUser confirmResetPassword(String token) throws Exception {
-        VerificationToken verificationToken = verifyToken(token);
-        OwnUser user = verificationToken.getUser();
-        user.setPassword(passwordEncoder.encode(verificationToken.getPayload()));
-        return userRepository.save(user);
     }
 }

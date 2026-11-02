@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!--
+        Risk assessments: the hazard register of the safety management system, one row per hazard,
+        following the columns of the HSE risk assessment template. A row may point at the work order
+        raised as its corrective action; the "done" column is read off that work order.
+    -->
+
+    <changeSet id="1790167037-1" author="Gabriel">
+        <createTable tableName="risk_assessment">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="risk_assessment_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="bigint"/>
+            <column name="updated_by" type="bigint"/>
+            <column name="company_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hazard" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="who_might_be_harmed" type="text"/>
+            <column name="current_controls" type="text"/>
+            <column name="further_action" type="text"/>
+            <column name="action_owner_id" type="bigint"/>
+            <column name="action_due_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="work_order_id" type="bigint"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1790167037-2" author="Gabriel">
+        <!-- Hibernate's AUTO id generation reads <table>_seq, allocating 50 at a time. -->
+        <createSequence sequenceName="risk_assessment_seq" dataType="bigint"
+                        startValue="1" incrementBy="50" cacheSize="1" cycle="false"
+                        maxValue="9223372036854775807" minValue="1"/>
+    </changeSet>
+
+    <changeSet id="1790167037-3" author="Gabriel">
+        <addForeignKeyConstraint baseTableName="risk_assessment" baseColumnNames="company_id"
+                                 constraintName="fk_risk_assessment_company"
+                                 referencedTableName="company" referencedColumnNames="id"/>
+        <!-- Losing the person or the work order just leaves the assessment without one. -->
+        <addForeignKeyConstraint baseTableName="risk_assessment" baseColumnNames="action_owner_id"
+                                 constraintName="fk_risk_assessment_action_owner"
+                                 referencedTableName="own_user" referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+        <addForeignKeyConstraint baseTableName="risk_assessment" baseColumnNames="work_order_id"
+                                 constraintName="fk_risk_assessment_work_order"
+                                 referencedTableName="work_order" referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+        <createIndex tableName="risk_assessment" indexName="idx_risk_assessment_company">
+            <column name="company_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

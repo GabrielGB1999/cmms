@@ -69,7 +69,6 @@ public class UserService {
     private final SubscriptionService subscriptionService;
     private final UserMapper userMapper;
     private final BrandingService brandingService;
-    private final DemoDataService demoDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final LicenseService licenseService;
     private final CacheService cacheService;
@@ -163,7 +162,6 @@ public class UserService {
                             .subscriptionPlan(subscriptionPlanService.findByCode("BUSINESS").get()).build();
             subscriptionService.create(subscription);
             Company company = new Company(userReq.getCompanyName(), userReq.getEmployeesCount(), subscription);
-            company.setDemo(Boolean.TRUE.equals(userReq.getDemo()));
             company.getCompanySettings().getGeneralPreferences().setCurrency(currencyService.findByCode("$").get());
             if (userReq.getLanguage() != null)
                 company.getCompanySettings().getGeneralPreferences().setLanguage(userReq.getLanguage());
@@ -218,16 +216,13 @@ public class UserService {
                     user = userRepository.save(user);
                     VerificationToken newUserToken = new VerificationToken(token, user, null);
                     verificationTokenRepository.save(newUserToken);
-                    if (!Boolean.TRUE.equals(userReq.getSkipMailSending()))
-                        mailServiceFactory.getMailService().sendMessageUsingThymeleafTemplate(new String[]{user.getEmail()},
-                                messageSource.getMessage("confirmation_email", null, Helper.getLocale(user)), variables,
-                                "signup.html", Helper.getLocale(user), null);
+                    mailServiceFactory.getMailService().sendMessageUsingThymeleafTemplate(new String[]{user.getEmail()},
+                            messageSource.getMessage("confirmation_email", null, Helper.getLocale(user)), variables,
+                            "signup.html", Helper.getLocale(user), null);
                 } else {
                     return enableAndReturnToken(user, true, userReq);
                 }
             }
-            if (Boolean.TRUE.equals(userReq.getDemo()))
-                return enableAndReturnToken(user, false, userReq);
             userRepository.save(user);
             cacheService.putUserInCache(user);
             onCompanyAndUserCreation(user);
@@ -312,27 +307,6 @@ public class UserService {
         cacheService.putUserInCache(user);
     }
 
-    public SuccessResponse resetPasswordRequest(String email) {
-        throwIfEmailNotificationsNotEnabled();
-        email = email.toLowerCase();
-        OwnUser user = findByEmail(email).get();
-        Helper helper = new Helper();
-        String password = helper.generateString().replace("-", "").substring(0, 8).toUpperCase();
-
-        String token = UUID.randomUUID().toString();
-        Map<String, Object> variables = new HashMap<String, Object>() {{
-            put("resetConfirmLink", PUBLIC_API_URL + "/auth/reset-pwd-confirm?token=" + token);
-            put("password", password);
-        }};
-        VerificationToken newUserToken = new VerificationToken(token, user, password);
-        verificationTokenRepository.save(newUserToken);
-        mailServiceFactory.getMailService().sendMessageUsingThymeleafTemplate(new String[]{email},
-                messageSource.getMessage("password_reset"
-                        , new String[]{brandingService.getBrandConfig().getName()}, Helper.getLocale(user)), variables,
-                "reset-password.html", Helper.getLocale(user), null);
-        return new SuccessResponse(true, "Password changed successfully");
-    }
-
     public Collection<OwnUser> findByCompany(Long id) {
         return userRepository.findByCompany_Id(id);
     }
@@ -377,9 +351,6 @@ public class UserService {
             if (userReq.getNewPassword() != null) {
                 if (userReq.getNewPassword().length() < 8)
                     throw new CustomException("Password must be at least 8 characters", HttpStatus.NOT_ACCEPTABLE);
-                if (enableInvitationViaEmail)
-                    throw new CustomException("Please tell the user to reset his password", HttpStatus.NOT_FOUND);
-
                 savedUser.setPassword(passwordEncoder.encode(userReq.getNewPassword()));
             }
             OwnUser updatedUser = userRepository.saveAndFlush(userMapper.updateUser(savedUser, userReq));
@@ -423,7 +394,6 @@ public class UserService {
     @Async
     void sendRegistrationMailToSuperAdmins(OwnUser user, UserSignupRequest userSignupRequest) {
         if (user.getEmail().equals("superadmin@test.com")) return;
-        if (user.getCompany() != null && user.getCompany().isDemo()) return;
         if (recipients == null || recipients.length == 0) {
             return;
 //            throw new CustomException("MAIL_RECIPIENTS env variable not set", HttpStatus.INTERNAL_SERVER_ERROR);
