@@ -15,9 +15,11 @@ import com.grash.model.abstracts.Cost;
 import com.grash.model.abstracts.WorkOrderBase;
 import com.grash.model.enums.*;
 import com.grash.model.enums.workflow.WFMainCondition;
+import com.grash.repository.RequestRepository;
 import com.grash.repository.WorkOrderHistoryRepository;
 import com.grash.repository.WorkOrderRepository;
 import com.grash.utils.Helper;
+import com.grash.utils.Sanitizer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,7 @@ import static com.grash.utils.Consts.usageBasedLicenseLimits;
 public class WorkOrderService {
     private final WorkOrderRepository workOrderRepository;
     private final WorkOrderHistoryRepository workOrderHistoryRepository;
+    private final RequestRepository requestRepository;
     private final LocationService locationService;
     private final CustomerService customerService;
     private final TeamService teamService;
@@ -86,6 +89,7 @@ public class WorkOrderService {
             }
         }
         workOrder.setCustomId(getWorkOrderNumber(company));
+        Sanitizer.sanitizeWorkOrder(workOrder);
 
         WorkOrder savedWorkOrder = workOrderRepository.saveAndFlush(workOrder);
         em.refresh(savedWorkOrder);
@@ -120,8 +124,9 @@ public class WorkOrderService {
         if (workOrderRepository.existsById(id)) {
             WorkOrder savedWorkOrder = workOrderRepository.findById(id).get();
             if (savedWorkOrder.getFirstTimeToReact() == null) savedWorkOrder.setFirstTimeToReact(new Date());
-            WorkOrder updatedWorkOrder =
-                    workOrderRepository.saveAndFlush(workOrderMapper.updateWorkOrder(savedWorkOrder, workOrder));
+            WorkOrder updatedWorkOrder = workOrderMapper.updateWorkOrder(savedWorkOrder, workOrder);
+            Sanitizer.sanitizeWorkOrder(updatedWorkOrder);
+            updatedWorkOrder = workOrderRepository.saveAndFlush(updatedWorkOrder);
             em.refresh(updatedWorkOrder);
             return updatedWorkOrder;
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
@@ -132,6 +137,14 @@ public class WorkOrderService {
     }
 
     public void delete(Long id) {
+        workOrderRepository.findById(id).ifPresent(workOrder -> {
+            Request parentRequest = workOrder.getParentRequest();
+            if (parentRequest != null && parentRequest.getWorkOrder() != null
+                    && parentRequest.getWorkOrder().getId().equals(id)) {
+                parentRequest.setWorkOrder(null);
+                requestRepository.save(parentRequest);
+            }
+        });
         workOrderRepository.deleteById(id);
     }
 
@@ -353,6 +366,7 @@ public class WorkOrderService {
             optionalCustomer.ifPresent(customers::add);
         });
         workOrder.setCustomers(customers);
+        Sanitizer.sanitizeWorkOrder(workOrder);
         workOrderRepository.save(workOrder);
     }
 

@@ -66,6 +66,11 @@ public class RoleController {
         roleReq.setPaid(true);
         if (user.getRole().getViewPermissions().contains(PermissionEntity.SETTINGS)
                 && user.getCompany().getSubscription().getSubscriptionPlan().getFeatures().contains(PlanFeatures.ROLE)) {
+            assertCanGrant(roleReq.getCreatePermissions(), user.getRole().getCreatePermissions());
+            assertCanGrant(roleReq.getViewPermissions(), user.getRole().getViewPermissions());
+            assertCanGrant(roleReq.getViewOtherPermissions(), user.getRole().getViewOtherPermissions());
+            assertCanGrant(roleReq.getEditOtherPermissions(), user.getRole().getEditOtherPermissions());
+            assertCanGrant(roleReq.getDeleteOtherPermissions(), user.getRole().getDeleteOtherPermissions());
             return roleService.create(roleReq);
         } else throw new CustomException("Access denied", HttpStatus.FORBIDDEN);
     }
@@ -82,6 +87,11 @@ public class RoleController {
         if (optionalRole.isPresent()) {
             Role savedRole = optionalRole.get();
             if (user.getRole().getViewPermissions().contains(PermissionEntity.SETTINGS)) {
+                assertCanGrant(role.getCreatePermissions(), user.getRole().getCreatePermissions());
+                assertCanGrant(role.getViewPermissions(), user.getRole().getViewPermissions());
+                assertCanGrant(role.getViewOtherPermissions(), user.getRole().getViewOtherPermissions());
+                assertCanGrant(role.getEditOtherPermissions(), user.getRole().getEditOtherPermissions());
+                assertCanGrant(role.getDeleteOtherPermissions(), user.getRole().getDeleteOtherPermissions());
                 return roleService.update(id, role);
             } else throw new CustomException("Forbidden", HttpStatus.FORBIDDEN);
         } else throw new CustomException("Role not found", HttpStatus.NOT_FOUND);
@@ -102,6 +112,14 @@ public class RoleController {
                         HttpStatus.OK);
             } else throw new CustomException("Forbidden", HttpStatus.FORBIDDEN);
         } else throw new CustomException("Role not found", HttpStatus.NOT_FOUND);
+    }
+
+    private void assertCanGrant(Collection<PermissionEntity> requested, Collection<PermissionEntity> owned) {
+        if (requested == null) return;
+        Collection<PermissionEntity> ownedOrEmpty = owned == null ? java.util.Collections.emptySet() : owned;
+        if (!ownedOrEmpty.containsAll(requested)) {
+            throw new CustomException("Cannot grant permissions you don't have", HttpStatus.FORBIDDEN);
+        }
     }
 
 }

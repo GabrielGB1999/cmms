@@ -17,6 +17,7 @@ import com.grash.model.enums.workflow.WFMainCondition;
 import com.grash.service.*;
 import com.grash.utils.Helper;
 import com.grash.utils.MultipartFileImpl;
+import com.grash.utils.Sanitizer;
 import com.grash.utils.Utils;
 import com.itextpdf.html2pdf.HtmlConverter;
 
@@ -266,7 +267,7 @@ public class WorkOrderController {
             throw new CustomException("A signature is required to close this work order",
                     HttpStatus.NOT_ACCEPTABLE);
         savedWorkOrder.setStatus(workOrder.getStatus());
-        savedWorkOrder.setFeedback(workOrder.getFeedback());
+        savedWorkOrder.setFeedback(Sanitizer.cleanText(workOrder.getFeedback()));
 
         if (workOrder.getStatus() != Status.COMPLETE) {
             savedWorkOrder.setCompletedOn(null);

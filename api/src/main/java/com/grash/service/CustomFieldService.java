@@ -7,6 +7,7 @@ import com.grash.model.CustomField;
 import com.grash.model.OwnUser;
 import com.grash.model.enums.RoleType;
 import com.grash.repository.CustomFieldRepository;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,16 @@ public class CustomFieldService {
     private final CustomFieldMapper customFieldMapper;
 
     public CustomField create(CustomField CustomField) {
+        Sanitizer.sanitizeCustomField(CustomField);
         return customFieldRepository.save(CustomField);
     }
 
     public CustomField update(Long id, CustomFieldPatchDTO customField) {
         if (customFieldRepository.existsById(id)) {
             CustomField savedCustomField = customFieldRepository.findById(id).get();
-            return customFieldRepository.save(customFieldMapper.updateCustomField(savedCustomField, customField));
+            CustomField updatedCustomField = customFieldMapper.updateCustomField(savedCustomField, customField);
+            Sanitizer.sanitizeCustomField(updatedCustomField);
+            return customFieldRepository.save(updatedCustomField);
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
     }
 

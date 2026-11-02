@@ -4,6 +4,7 @@ import org.springframework.util.StringUtils;
 import com.grash.exception.CustomException;
 import com.grash.model.File;
 import com.grash.utils.Helper;
+import com.grash.utils.Sanitizer;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.http.Method;
@@ -72,7 +73,7 @@ public class MinioService implements StorageService {
     public String upload(MultipartFile file, String folder) {
         checkIfConfigured();
         Helper helper = new Helper();
-        String filePath = folder + "/" + helper.generateString() + " " + StringUtils.getFilename(file.getOriginalFilename());
+        String filePath = folder + "/" + helper.generateString() + " " + Sanitizer.sanitizeFilename(file.getOriginalFilename());
         try {
             minioClient.putObject(
                     PutObjectArgs.builder()

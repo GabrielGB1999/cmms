@@ -7,6 +7,7 @@ import com.google.cloud.storage.*;
 import com.grash.exception.CustomException;
 import com.grash.model.File;
 import com.grash.utils.Helper;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,7 @@ public class GCPService implements StorageService {
         checkIfConfigured();
         Helper helper = new Helper();
         try {
-            String filePath = folder + "/" + helper.generateString() + " " + StringUtils.getFilename(file.getOriginalFilename());
+            String filePath = folder + "/" + helper.generateString() + " " + Sanitizer.sanitizeFilename(file.getOriginalFilename());
             BlobInfo blobInfo = storage.create(
                     BlobInfo.newBuilder(gcpBucketName, filePath
                     ).build(), //get

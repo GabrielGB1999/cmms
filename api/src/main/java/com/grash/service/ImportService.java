@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,16 @@ public class ImportService {
     }
 
     public ImportResponse importAssets(List<AssetImportDTO> toImport, Company company) {
+        // Check for duplicate non-null barcodes
+        Set<String> seenAssetBarcodes = new java.util.HashSet<>();
+        for (AssetImportDTO dto : toImport) {
+            if (dto.getBarCode() != null && !dto.getBarCode().isEmpty()) {
+                if (!seenAssetBarcodes.add(dto.getBarCode())) {
+                    throw new IllegalArgumentException("Duplicate barcode found: " + dto.getBarCode());
+                }
+            }
+        }
+
         final int[] created = {0};
         final int[] updated = {0};
         AssetService.orderAssets(toImport).forEach(assetImportDTO -> {
@@ -121,6 +132,16 @@ public class ImportService {
     }
 
     public ImportResponse importParts(List<PartImportDTO> toImport, Company company) {
+        // Check for duplicate non-null barcodes
+        Set<String> seenPartBarcodes = new java.util.HashSet<>();
+        for (PartImportDTO dto : toImport) {
+            if (dto.getBarcode() != null && !dto.getBarcode().isEmpty()) {
+                if (!seenPartBarcodes.add(dto.getBarcode())) {
+                    throw new IllegalArgumentException("Duplicate barcode found: " + dto.getBarcode());
+                }
+            }
+        }
+
         final int[] created = {0};
         final int[] updated = {0};
         toImport.forEach(partImportDTO -> {

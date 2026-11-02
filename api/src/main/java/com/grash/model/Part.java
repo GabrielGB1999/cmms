@@ -51,6 +51,9 @@ public class Part extends CompanyAudit {
 
     private double quantity;
 
+    @Version
+    private long version;
+
     private String area;
 
     private String additionalInfos;

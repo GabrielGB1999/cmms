@@ -13,6 +13,7 @@ import com.grash.model.*;
 import com.grash.model.enums.*;
 import com.grash.repository.PreventiveMaintenanceRepository;
 import com.grash.utils.Helper;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
@@ -62,6 +63,7 @@ public class PreventiveMaintenanceService {
         Company company = user.getCompany();
         Long nextSequence = customSequenceService.getNextPreventiveMaintenanceSequence(company);
         preventiveMaintenance.setCustomId("PM" + String.format("%06d", nextSequence));
+        Sanitizer.sanitizePreventiveMaintenance(preventiveMaintenance);
 
         PreventiveMaintenance savedPM = preventiveMaintenanceRepository.saveAndFlush(preventiveMaintenance);
         em.refresh(savedPM);
@@ -79,6 +81,7 @@ public class PreventiveMaintenanceService {
             PreventiveMaintenance pmToSave =
                     preventiveMaintenanceMapper.updatePreventiveMaintenance(savedPreventiveMaintenance,
                             preventiveMaintenance);
+            Sanitizer.sanitizePreventiveMaintenance(pmToSave);
             pmToSave.getSchedule().setDisabled(false);
             PreventiveMaintenance updatedPM =
                     preventiveMaintenanceRepository.saveAndFlush(pmToSave);

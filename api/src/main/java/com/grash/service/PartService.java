@@ -13,6 +13,7 @@ import com.grash.model.enums.NotificationType;
 import com.grash.repository.PartRepository;
 import com.grash.utils.AuditComparator;
 import com.grash.utils.Helper;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -50,6 +51,7 @@ public class PartService {
     @Transactional
     public Part create(Part Part, OwnUser user) {
         checkUsageBasedLimit(user.getCompany());
+        Sanitizer.sanitizePart(Part);
         Part savedPart = partRepository.saveAndFlush(Part);
         em.refresh(savedPart);
         return savedPart;
@@ -59,7 +61,9 @@ public class PartService {
     public Part update(Long id, PartPatchDTO part) {
         if (partRepository.existsById(id)) {
             Part savedPart = partRepository.findById(id).get();
-            Part patchedPart = partRepository.saveAndFlush(partMapper.updatePart(savedPart, part));
+            Part patchedPart = partMapper.updatePart(savedPart, part);
+            Sanitizer.sanitizePart(patchedPart);
+            patchedPart = partRepository.saveAndFlush(patchedPart);
             em.refresh(patchedPart);
             return patchedPart;
 
@@ -220,7 +224,7 @@ public class PartService {
     }
 
     public Optional<Part> findByBarcodeAndCompany(String barcode, Long companyId) {
-        return partRepository.findByBarcodeAndCompany_Id(barcode, companyId);
+        return partRepository.findByBarcodeAndCompany_Id(barcode, companyId).stream().findFirst();
     }
 }
 

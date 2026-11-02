@@ -10,6 +10,7 @@ import com.grash.model.Customer;
 import com.grash.model.OwnUser;
 import com.grash.model.enums.RoleType;
 import com.grash.repository.CustomerRepository;
+import com.grash.utils.Sanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -31,13 +32,16 @@ public class CustomerService {
 
 
     public Customer create(Customer Customer) {
+        Sanitizer.sanitizeCustomer(Customer);
         return customerRepository.save(Customer);
     }
 
     public Customer update(Long id, CustomerPatchDTO customer) {
         if (customerRepository.existsById(id)) {
             Customer savedCustomer = customerRepository.findById(id).get();
-            return customerRepository.save(customerMapper.updateCustomer(savedCustomer, customer));
+            Customer updatedCustomer = customerMapper.updateCustomer(savedCustomer, customer);
+            Sanitizer.sanitizeCustomer(updatedCustomer);
+            return customerRepository.save(updatedCustomer);
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
     }
 

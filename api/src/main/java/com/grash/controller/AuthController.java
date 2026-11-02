@@ -11,6 +11,7 @@ import com.grash.repository.UserRepository;
 import com.grash.security.CurrentUser;
 import com.grash.security.JwtTokenProvider;
 import com.grash.service.CompanyService;
+import com.grash.service.RateLimiterService;
 import com.grash.service.UserService;
 import com.grash.service.VerificationTokenService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,8 +46,11 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final CompanyService companyService;
     private final UserRepository userRepository;
+    private final RateLimiterService rateLimiterService;
     @Value("${frontend.url}")
     private String frontendUrl;
+
+    private static final String TOO_MANY_ATTEMPTS_MESSAGE = "Too many attempts. Please try again later.";
 
     @PostMapping(
             path = "/signin",
@@ -56,8 +60,17 @@ public class AuthController {
     )
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody UserLoginRequest userLoginRequest) {
+        String bruteForceKey = userLoginRequest.getEmail().trim().toLowerCase();
+        if (rateLimiterService.isBruteForceEnabled()) {
+            if (!rateLimiterService.tryConsumeLoginAttempt(bruteForceKey)) {
+                throw new CustomException(TOO_MANY_ATTEMPTS_MESSAGE, HttpStatus.TOO_MANY_REQUESTS);
+            }
+        }
         AuthResponse authResponse = new AuthResponse(userService.signin(userLoginRequest.getEmail().toLowerCase(),
                 userLoginRequest.getPassword(), userLoginRequest.getType()));
+        if (rateLimiterService.isBruteForceEnabled()) {
+            rateLimiterService.resetLoginAttempts(bruteForceKey);
+        }
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
 
