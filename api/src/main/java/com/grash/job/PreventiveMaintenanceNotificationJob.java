@@ -47,7 +47,9 @@ public class PreventiveMaintenanceNotificationJob extends QuartzJobBean {
         if (schedule == null || schedule.isDisabled()) {
             return;
         }
-        scheduleService.checkIfWeeklyShouldRun(schedule);
+        int daysBefore = schedule.getPreventiveMaintenance().getCompany().getCompanySettings()
+                .getGeneralPreferences().getDaysBeforePrevMaintNotification();
+        if (!scheduleService.checkIfWeeklyShouldRun(schedule, daysBefore)) return;
 
         PreventiveMaintenance preventiveMaintenance = schedule.getPreventiveMaintenance();
         Locale locale = Helper.getLocale(preventiveMaintenance.getCompany());
