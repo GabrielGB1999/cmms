@@ -3,10 +3,10 @@ import { useEffect } from 'react';
 export type ArrowKey = 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight';
 type Box = Pick<DOMRect, 'left' | 'top' | 'right' | 'bottom'>;
 
-// Grid cells and headers sit outside the Tab order (tabindex -1) but are how
-// you enter a data grid with the arrows.
+// Grid cells/headers and menu items sit outside the Tab order (tabindex -1)
+// but are how you enter a data grid or a menu with the arrows.
 const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]), .MuiDataGrid-cell, .MuiDataGrid-columnHeader';
+  'a[href], button:not([disabled]), input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]), .MuiDataGrid-cell, .MuiDataGrid-columnHeader, [role=menuitem]:not([aria-disabled=true])';
 
 // Native controls that use the arrow keys without calling preventDefault.
 // MUI widgets (tabs, menus, selects, autocomplete) call it, so the
@@ -130,7 +130,9 @@ const moveFocus = (
 };
 
 // Widgets that would swallow this key instead of letting focus go on:
-// - a tab strip or radio group wraps around at its ends (disabled ones skipped);
+// - a tab strip, menu or radio group wraps around at its ends (disabled ones
+//   skipped), so a control next to it (the profile menu's "Sign out") was
+//   unreachable. A plain dropdown menu has nothing next to it and still wraps;
 // - a closed dropdown or autocomplete opens on Up/Down (Enter, Space or
 //   Alt+Down still open them), and so does the icon button inside an autocomplete;
 // - an empty data grid's header handles Down by crashing (MUI X reads row 0).
@@ -147,6 +149,15 @@ const trappingWidget = (active: HTMLElement, key: ArrowKey): Element | null => {
     const index = radios.indexOf(active);
     const atEnd = forward ? index === radios.length - 1 : index === 0;
     return atEnd ? group ?? active : null;
+  }
+  const menu = active.closest('[role=menu]');
+  if (menu && vertical) {
+    const items = Array.from(
+      menu.querySelectorAll('[role=menuitem]:not([aria-disabled=true])')
+    );
+    const index = items.indexOf(active);
+    const atEnd = forward ? index === items.length - 1 : index === 0;
+    return atEnd ? menu : null;
   }
   const gridBody = active.closest('.MuiDataGrid-main');
   if (
