@@ -70,8 +70,4 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
 
     void deleteByCompany_IdAndIsDemoTrue(Long companyId);
 
-    @Query("SELECT CASE WHEN COUNT(wo) > :threshold THEN true ELSE false END " +
-            "FROM WorkOrder wo WHERE wo.company.id = :companyId AND wo.status!=com.grash.model.enums.Status" +
-            ".COMPLETE")
-    boolean hasMoreActiveThan(@Param("companyId") Long companyId, @Param("threshold") Long threshold);
 }

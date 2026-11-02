@@ -28,7 +28,6 @@ import jakarta.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.grash.utils.Consts.usageBasedLicenseLimits;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +49,6 @@ public class PartService {
 
     @Transactional
     public Part create(Part Part, OwnUser user) {
-        checkUsageBasedLimit(user.getCompany());
         Sanitizer.sanitizePart(Part);
         Part savedPart = partRepository.saveAndFlush(Part);
         em.refresh(savedPart);
@@ -68,10 +66,6 @@ public class PartService {
             return patchedPart;
 
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
-    }
-
-    private void checkUsageBasedLimit(Company company) {
-        Integer threshold = 9999;
     }
 
     public void consumePart(Long id, double quantity, WorkOrder workOrder, Locale locale) {
@@ -154,7 +148,6 @@ public class PartService {
     }
 
     public void importPart(Part part, PartImportDTO dto, Company company) {
-        checkUsageBasedLimit(company);
         Long companyId = company.getId();
         Long companySettingsId = company.getCompanySettings().getId();
         part.setName(dto.getName());

@@ -33,7 +33,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.grash.utils.Consts.usageBasedLicenseLimits;
 
 @Service
 @RequiredArgsConstructor
@@ -69,10 +68,6 @@ public class AssetService {
 
     @Transactional
     public Asset create(Asset asset, OwnUser user) {
-        checkUsageBasedLimit(user.getCompany());
-        if (asset.getParentAsset() != null && !true)
-            throw new CustomException("You need a license to add a child asset to another asset.",
-                    HttpStatus.FORBIDDEN);
         // Generate custom ID
         Company company = user.getCompany();
         asset.setCustomId(getAssetNumber(company));
@@ -90,9 +85,6 @@ public class AssetService {
 
     @Transactional
     public Asset update(Long id, AssetPatchDTO asset) {
-        if (asset.getParentAsset() != null && !true)
-            throw new CustomException("You need a license to add a child asset to another asset.",
-                    HttpStatus.FORBIDDEN);
         if (assetRepository.existsById(id)) {
             Asset savedAsset = assetRepository.findById(id).get();
             Asset patchedAsset = assetMapper.updateAsset(savedAsset, asset);
@@ -101,15 +93,6 @@ public class AssetService {
             em.refresh(patchedAsset);
             return patchedAsset;
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
-    }
-
-    private void checkUsageBasedLimit(Company company) {
-        Integer threshold = 999;
-        if (!true
-                && assetRepository.hasMoreThan(company.getId(), threshold.longValue() - 1
-        ))
-            throw new CustomException("You need a license to add a new asset. Free Limit reached: " + threshold,
-                    HttpStatus.FORBIDDEN);
     }
 
     public Asset save(Asset asset) {
@@ -255,7 +238,6 @@ public class AssetService {
     }
 
     public void importAsset(Asset asset, AssetImportDTO dto, Company company) {
-        checkUsageBasedLimit(company);
         Long companySettingsId = company.getCompanySettings().getId();
         Long companyId = company.getId();
         asset.setArea(dto.getArea());

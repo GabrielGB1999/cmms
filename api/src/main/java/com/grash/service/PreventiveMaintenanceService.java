@@ -33,7 +33,6 @@ import jakarta.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.grash.utils.Consts.usageBasedLicenseLimits;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +58,6 @@ public class PreventiveMaintenanceService {
             throw new CustomException("Preventive maintenance feature is not enabled for this subscription plan.",
                     HttpStatus.FORBIDDEN);
         }
-        checkUsageBasedLimit(user.getCompany());
         Company company = user.getCompany();
         Long nextSequence = customSequenceService.getNextPreventiveMaintenanceSequence(company);
         preventiveMaintenance.setCustomId("PM" + String.format("%06d", nextSequence));
@@ -104,11 +102,6 @@ public class PreventiveMaintenanceService {
 
     public Collection<PreventiveMaintenance> findByCompany(Long id) {
         return preventiveMaintenanceRepository.findByCompany_Id(id);
-    }
-
-    private void checkUsageBasedLimit(Company company) {
-        Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_PM_SCHEDULES);
-
     }
 
     public Page<PreventiveMaintenanceShowDTO> findBySearchCriteria(SearchCriteria searchCriteria) {
@@ -196,7 +189,6 @@ public class PreventiveMaintenanceService {
 
     public void importPreventiveMaintenance(PreventiveMaintenance preventiveMaintenance,
                                             PreventiveMaintenanceImportDTO pmImportDTO, Company company) {
-        checkUsageBasedLimit(company);
         Helper.populateWorkOrderBaseFromImportDTO(preventiveMaintenance, pmImportDTO, company, locationService,
                 teamService, userService, assetService, workOrderCategoryService);
 

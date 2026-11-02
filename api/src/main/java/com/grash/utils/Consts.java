@@ -41,18 +41,4 @@ public class Consts {
                     .name("Business Atlas CMMS license")
                     .build()
     );
-
-    public static final Map<LicenseEntitlement, Integer> usageBasedLicenseLimits =
-            new HashMap<>() {
-                {
-                    put(LicenseEntitlement.UNLIMITED_CHECKLISTS, 10);
-                    put(LicenseEntitlement.UNLIMITED_ASSETS, 50);
-                    put(LicenseEntitlement.UNLIMITED_PARTS, 100);
-                    put(LicenseEntitlement.UNLIMITED_LOCATIONS, 10);
-                    put(LicenseEntitlement.UNLIMITED_PM_SCHEDULES, 10);
-                    put(LicenseEntitlement.UNLIMITED_ACTIVE_WORK_ORDERS, 30);
-                    put(LicenseEntitlement.UNLIMITED_METERS, 10);
-                    put(LicenseEntitlement.UNLIMITED_USERS, 5);
-                }
-            };
 }

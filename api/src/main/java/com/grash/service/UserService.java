@@ -44,7 +44,6 @@ import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
 
-import static com.grash.utils.Consts.usageBasedLicenseLimits;
 
 
 @Service
@@ -124,22 +123,6 @@ public class UserService {
                 Collections.singletonList(user.getRole().getRoleType())), user);
     }
 
-    public void checkUsageBasedLimit(int newUsersCount) {
-        //LicensingState licensingState = licenseService.getLicensingState();
-       // if (licensingState.isHasLicense()) {
-           // if (userRepository.hasMorePaidUsersThan(licensingState.getUsersCount() - newUsersCount))
-               // throw new RuntimeException("Cannot create more users than the license allows: " + licensingState.getUsersCount() + ". Refer to https://github.com/Grashjs/cmms/blob/main/dev-docs/Disable%20users.md");
-       // }
-       // Integer threshold = usageBasedLicenseLimits.get(LicenseEntitlement.UNLIMITED_USERS);
-       // if (!licenseService.hasEntitlement(LicenseEntitlement.UNLIMITED_USERS)
-              //  && userRepository.hasMorePaidUsersThan(threshold - newUsersCount
-       // ))
-        //    throw new RuntimeException("Cannot create more users than the free license allows: " + threshold + ". " +
-       //             "Refer to" +
-      //              " https://github.com/Grashjs/cmms/blob/main/dev-docs/Disable%20users.md");
-        Integer threshold = 999;
-    }
-
     public SignupSuccessResponse<OwnUser> signup(UserSignupRequest userReq) {
         OwnUser user = userMapper.toModel(userReq);
         user.setEmail(user.getEmail().toLowerCase());
@@ -172,13 +155,9 @@ public class UserService {
             user.setCompany(company);
             user.setRole(company.getCompanySettings().getRoleList().stream().filter(role -> role.getName().equals(
                     "Administrator")).findFirst().get());
-            checkUsageBasedLimit(1);
         } else {
             Role role = roleService.findById(user.getRole().getId()).orElseThrow(() -> new CustomException("Role not " +
                     "found", HttpStatus.NOT_ACCEPTABLE));
-            if (role.isPaid()) {
-                checkUsageBasedLimit(1);
-            }
             List<UserInvitation> userInvitations =
                     userInvitationService.findByRoleAndEmail(role.getId(), user.getEmail());
             if (enableInvitationViaEmail && userInvitations.isEmpty()) {
@@ -296,7 +275,6 @@ public class UserService {
     public void enableUser(String email) {
         OwnUser user = userRepository.findByEmailIgnoreCase(email).get();
         if (user.getRole().isPaid()) {
-            checkUsageBasedLimit(1);
             int companyUsersCount =
                     (int) findByCompany(user.getCompany().getId()).stream().filter(user1 -> user1.isEnabled() && user1.isEnabledInSubscriptionAndPaid()).count();
             if (companyUsersCount + 1 > user.getCompany().getSubscription().getUsersCount())
@@ -327,7 +305,6 @@ public class UserService {
 
     public void invite(String email, Role role, OwnUser inviter, Boolean disableSendingMails) {
         if (!userRepository.existsByEmailIgnoreCase(email) && Helper.isValidEmailAddress(email)) {
-            if (role.isPaid()) checkUsageBasedLimit(1);
             userInvitationService.create(new UserInvitation(email, role));
             if (!enableInvitationViaEmail || !enableMails) return;
             Map<String, Object> variables = new HashMap<String, Object>() {{

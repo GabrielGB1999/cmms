@@ -50,7 +50,6 @@ public class ApiApplication implements SmartInitializingSingleton {
             log.info("Updating default roles...");
             roleService.updateDefaultRoles();
 
-            userService.checkUsageBasedLimit(0);
 
             generalPreferencesRepository.updateTemporaryTimeZones(ZoneId.systemDefault().getId());
             log.info("Application initialization completed successfully");

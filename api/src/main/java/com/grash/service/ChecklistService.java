@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.grash.utils.Consts.usageBasedLicenseLimits;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +32,6 @@ public class ChecklistService {
 
     @Transactional
     public Checklist createPost(ChecklistPostDTO checklistReq, Company company) {
-        checkUsageBasedLimit(company);
         List<TaskBase> taskBases = checklistReq.getTaskBases().stream()
                 .map(taskBaseDto -> taskBaseService.createFromTaskBaseDTO(taskBaseDto, company)).collect(Collectors.toList());
         Checklist checklist = Checklist.builder()
@@ -65,9 +63,6 @@ public class ChecklistService {
             em.refresh(updatedChecklist);
             return updatedChecklist;
         } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
-    }
-
-    private void checkUsageBasedLimit(Company company) {
     }
 
     public Collection<Checklist> getAll() {
