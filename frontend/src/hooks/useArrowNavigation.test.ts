@@ -26,3 +26,21 @@ it('returns -1 when nothing lies that way', () => {
   expect(pickNext(a, [a, b, c, d], 'ArrowLeft')).toBe(-1);
   expect(pickNext(a, [a, b, c, d], 'ArrowUp')).toBe(-1);
 });
+
+it('only counts boxes fully past the edge', () => {
+  // A wide grid cell, a filter button above it that starts slightly further
+  // left, and a sidebar link to the left: Left must reach the sidebar.
+  const cell = box(100, 100, 100, 30);
+  const filter = box(90, 50, 60, 30);
+  const sidebar = box(0, 120, 60, 30);
+  expect(pickNext(cell, [filter, sidebar], 'ArrowLeft')).toBe(1);
+});
+
+it('takes the nearest lined-up box even if it sits off to the side', () => {
+  // Wide field, then a small checkbox at its left edge, then a wide box below
+  const field = box(0, 0, 900, 50);
+  const checkbox = box(0, 60, 40, 40);
+  const wide = box(0, 120, 900, 50);
+  expect(pickNext(field, [wide, checkbox], 'ArrowDown')).toBe(1);
+  expect(pickNext(checkbox, [field, wide], 'ArrowDown')).toBe(1);
+});

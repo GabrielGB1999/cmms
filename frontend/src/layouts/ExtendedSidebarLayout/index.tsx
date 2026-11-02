@@ -83,6 +83,7 @@ const ExtendedSidebarLayout: FC<ExtendedSidebarLayoutProps> = () => {
           <Box
             display="block"
             id="main-content"
+            data-arrow-region="main"
             tabIndex={-1}
             sx={{ '&:focus-visible': { outline: 'none' } }}
           >

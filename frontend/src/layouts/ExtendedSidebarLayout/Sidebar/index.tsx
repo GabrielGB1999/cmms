@@ -44,6 +44,7 @@ function Sidebar() {
   return (
     <>
       <SidebarWrapper
+        data-arrow-region="sidebar"
         sx={{
           display: {
             xs: 'none',
@@ -112,6 +113,7 @@ function Sidebar() {
         elevation={9}
       >
         <SidebarWrapper
+        data-arrow-region="sidebar"
           sx={{
             background:
               theme.palette.mode === 'dark'
