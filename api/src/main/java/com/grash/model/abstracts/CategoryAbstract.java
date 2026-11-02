@@ -42,6 +42,11 @@ public abstract class CategoryAbstract extends Audit {
         this.setCompanySettings(companySettings);
     }
 
+    // Categories have no company column; they belong to one through its settings
+    public boolean belongsTo(OwnUser user) {
+        return companySettings.getId().equals(user.getCompany().getCompanySettings().getId());
+    }
+
     public CategoryAbstract(String name, CompanySettings companySettings) {
         this.name = name;
         this.companySettings = companySettings;

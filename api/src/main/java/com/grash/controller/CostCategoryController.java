@@ -55,10 +55,10 @@ public class CostCategoryController {
     public CostCategory getById(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
         if (user.getRole().getViewPermissions().contains(PermissionEntity.CATEGORIES)) {
-            Optional<CostCategory> costCategoryOptional = costCategoryService.findById(id);
+            Optional<CostCategory> costCategoryOptional = costCategoryService.findById(id).filter(c -> c.belongsTo(user));
             if (costCategoryOptional.isPresent()) {
                 CostCategory costCategory = costCategoryOptional.get();
-                return costCategoryService.findById(id).get();
+                return costCategoryService.findById(id).filter(c -> c.belongsTo(user)).get();
             } else throw new CustomException("Not found", HttpStatus.NOT_FOUND);
         } else throw new CustomException("Access Denied", HttpStatus.FORBIDDEN);
 
@@ -81,8 +81,8 @@ public class CostCategoryController {
                               HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
         if (user.getRole().getCreatePermissions().contains(PermissionEntity.CATEGORIES)) {
-            if (costCategoryService.findById(id).isPresent()) {
-                CostCategory savedCostCategory = costCategoryService.findById(id).get();
+            if (costCategoryService.findById(id).filter(c -> c.belongsTo(user)).isPresent()) {
+                CostCategory savedCostCategory = costCategoryService.findById(id).filter(c -> c.belongsTo(user)).get();
                 if (user.getRole().getCreatePermissions().contains(PermissionEntity.CATEGORIES) &&
                         user.getRole().belongsOnlyToCompany(savedCostCategory.getCompanySettings().getCompany())) {
                     return costCategoryService.update(id, costCategory);
@@ -98,7 +98,7 @@ public class CostCategoryController {
     public ResponseEntity<SuccessResponse> delete(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
 
-        Optional<CostCategory> optionalCostCategory = costCategoryService.findById(id);
+        Optional<CostCategory> optionalCostCategory = costCategoryService.findById(id).filter(c -> c.belongsTo(user));
         if (optionalCostCategory.isPresent()) {
             if (user.getCompany().getCompanySettings().getId().equals(optionalCostCategory.get().getCompanySettings().getId())
                     &&

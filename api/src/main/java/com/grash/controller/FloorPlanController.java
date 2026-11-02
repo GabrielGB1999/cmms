@@ -42,7 +42,7 @@ public class FloorPlanController {
 
     public FloorPlanShowDTO getById(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
-        Optional<FloorPlan> optionalFloorPlan = floorPlanService.findById(id);
+        Optional<FloorPlan> optionalFloorPlan = floorPlanService.findById(id).filter(fp -> fp.getLocation().getCompany().getId().equals(user.getCompany().getId()));
         if (optionalFloorPlan.isPresent()) {
             FloorPlan savedFloorPlan = optionalFloorPlan.get();
             return floorPlanMapper.toShowDto(savedFloorPlan);
@@ -66,6 +66,9 @@ public class FloorPlanController {
     FloorPlanShowDTO create(@Valid @RequestBody FloorPlan floorPlanReq,
                             HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
+        // Loading the location runs the company guard, so a foreign id is refused
+        if (floorPlanReq.getLocation() == null || locationService.findById(floorPlanReq.getLocation().getId()).isEmpty())
+            throw new CustomException("Location not found", HttpStatus.NOT_FOUND);
         return floorPlanMapper.toShowDto(floorPlanService.create(floorPlanReq));
     }
 
@@ -75,7 +78,7 @@ public class FloorPlanController {
     public FloorPlanShowDTO patch(@Valid @RequestBody FloorPlanPatchDTO floorPlan, @PathVariable("id") Long id,
                                   HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
-        Optional<FloorPlan> optionalFloorPlan = floorPlanService.findById(id);
+        Optional<FloorPlan> optionalFloorPlan = floorPlanService.findById(id).filter(fp -> fp.getLocation().getCompany().getId().equals(user.getCompany().getId()));
 
         if (optionalFloorPlan.isPresent()) {
             FloorPlan savedFloorPlan = optionalFloorPlan.get();
@@ -89,7 +92,7 @@ public class FloorPlanController {
     public ResponseEntity delete(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
 
-        Optional<FloorPlan> optionalFloorPlan = floorPlanService.findById(id);
+        Optional<FloorPlan> optionalFloorPlan = floorPlanService.findById(id).filter(fp -> fp.getLocation().getCompany().getId().equals(user.getCompany().getId()));
         if (optionalFloorPlan.isPresent()) {
             floorPlanService.delete(id);
             return new ResponseEntity(new SuccessResponse(true, "Deleted successfully"),

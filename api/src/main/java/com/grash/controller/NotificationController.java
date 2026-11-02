@@ -78,7 +78,7 @@ public class NotificationController {
 
     public Notification getById(@PathVariable("id") Long id, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
-        Optional<Notification> optionalNotification = notificationService.findById(id);
+        Optional<Notification> optionalNotification = notificationService.findById(id).filter(n -> n.getUser().getId().equals(user.getId()));
         if (optionalNotification.isPresent()) {
             Notification savedNotification = optionalNotification.get();
             return savedNotification;
@@ -92,7 +92,7 @@ public class NotificationController {
                               @PathVariable("id") Long id,
                               HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
-        Optional<Notification> optionalNotification = notificationService.findById(id);
+        Optional<Notification> optionalNotification = notificationService.findById(id).filter(n -> n.getUser().getId().equals(user.getId()));
 
         if (optionalNotification.isPresent()) {
             Notification savedNotification = optionalNotification.get();
