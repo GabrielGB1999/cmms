@@ -52,6 +52,7 @@ function Header() {
 
   return (
     <HeaderWrapper
+      data-arrow-region="header"
       display="flex"
       alignItems="center"
       sx={{
