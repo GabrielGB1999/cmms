@@ -47,6 +47,7 @@ const ExtendedSidebarLayout: FC<ExtendedSidebarLayoutProps> = () => {
         <Box
           component="a"
           href="#main-content"
+          data-no-arrow-nav
           onClick={(e) => {
             e.preventDefault();
             document.getElementById('main-content')?.focus();
