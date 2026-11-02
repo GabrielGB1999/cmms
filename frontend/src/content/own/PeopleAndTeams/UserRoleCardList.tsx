@@ -21,6 +21,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from '../../../store';
 import { getRoles } from '../../../slices/role';
 import { Role, RoleCode } from '../../../models/owns/role';
+import { clickable } from '../../../utils/a11y';
 
 const AvatarWrapperSuccess = styled(Avatar)(
   ({ theme }) => `
@@ -108,7 +109,7 @@ function UserRoleCardList({ onChange }: Props) {
             <Box
               key={role.id}
               style={{ cursor: 'pointer' }}
-              onClick={() => handleChange(role.id)}
+              {...clickable(() => handleChange(role.id))}
             >
               <ListItem
                 sx={[

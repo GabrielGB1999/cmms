@@ -104,6 +104,7 @@ import AddFileModal from './AddFileModal';
 import { useBrand } from '../../../../hooks/useBrand';
 import { useLicenseEntitlement } from '../../../../hooks/useLicenseEntitlement';
 import { getErrorMessage } from '../../../../utils/api';
+import { clickable } from '../../../../utils/a11y';
 
 const LabelWrapper = styled(Box)(
   ({ theme }) => `
@@ -712,9 +713,9 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
                       maxWidth: '100%',
                       cursor: 'pointer'
                     }}
-                    onClick={() => {
+                    {...clickable(() => {
                       setImageState([workOrder.image.url], workOrder.image.url);
-                    }}
+                    })}
                   />
                 </Grid>
               )}
@@ -832,9 +833,9 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
                           maxWidth: '100%',
                           cursor: 'pointer'
                         }}
-                        onClick={() => {
+                        {...clickable(() => {
                           setImageState([signatureUrl], signatureUrl);
-                        }}
+                        })}
                       />
                     </Grid>
                   )}
@@ -900,7 +901,7 @@ export default function WorkOrderDetails(props: WorkOrderDetailsProps) {
                     <Typography
                       variant="h6"
                       style={{ cursor: 'pointer' }}
-                      onClick={() => setOpenEditPrimaryTime(true)}
+                      {...clickable(() => setOpenEditPrimaryTime(true))}
                       color="primary"
                     >
                       {durationToHours(primaryTime?.duration)}

@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import Loading from '../../Loading';
 import { getRandomColor } from '../../../../../utils/overall';
 import { getWOTimeCostByAsset } from '../../../../../slices/analytics/asset';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusIncompleteProps {
   handleOpenModal: (
@@ -85,9 +86,9 @@ function TimeCostByAsset({ handleOpenModal, start, end }: WOStatusIncompleteProp
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>

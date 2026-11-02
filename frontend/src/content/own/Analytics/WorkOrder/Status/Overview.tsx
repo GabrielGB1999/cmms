@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from '../../../../../store';
 import { useEffect } from 'react';
 import { getOverviewStats } from '../../../../../slices/analytics/workOrder';
 import Loading from '../../Loading';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusNumbersProps {
   handleOpenModal: (
@@ -84,13 +85,12 @@ function Overview({ handleOpenModal, start, end }: WOStatusNumbersProps) {
                   variant="h2"
                   fontWeight="bold"
                   style={{ cursor: data.config ? 'pointer' : 'auto' }}
-                  onClick={() =>
+                  {...(data.config ? clickable(() =>
                     handleOpenModal(
                       data.config.columns,
                       data.config.filters,
                       t('the_numbers')
-                    )
-                  }
+                    )) : {})}
                 >
                   {data.value}
                 </Typography>

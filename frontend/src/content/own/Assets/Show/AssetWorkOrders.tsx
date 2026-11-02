@@ -7,6 +7,7 @@ import { getAssetWorkOrders } from '../../../../slices/asset';
 import { useNavigate } from 'react-router-dom';
 import { CompanySettingsContext } from '../../../../contexts/CompanySettingsContext';
 import Loading from '../../Analytics/Loading';
+import { clickable } from '../../../../utils/a11y';
 
 interface PropsType {
   asset: Asset;
@@ -45,7 +46,7 @@ const AssetWorkOrders = ({ asset }: PropsType) => {
             <Grid key={workOrder.id} item xs={12}>
               <Card
                 sx={{ cursor: 'pointer' }}
-                onClick={() => navigate(`/app/work-orders/${workOrder.id}`)}
+                {...clickable(() => navigate(`/app/work-orders/${workOrder.id}`))}
               >
                 <Box
                   sx={{

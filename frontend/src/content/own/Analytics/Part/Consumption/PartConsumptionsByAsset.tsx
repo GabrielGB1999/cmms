@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import Loading from '../../Loading';
 import { getRandomColor } from '../../../../../utils/overall';
 import { getPartConsumptionsByAsset } from '../../../../../slices/analytics/part';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusIncompleteProps {
   handleOpenModal: (
@@ -74,9 +75,9 @@ function PartConsumptionsByAsset({ handleOpenModal, start, end }: WOStatusIncomp
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>

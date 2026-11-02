@@ -33,6 +33,7 @@ import { getCurrencies } from '../../../../slices/currency';
 import ClearTwoToneIcon from '@mui/icons-material/ClearTwoTone';
 import { useTranslation } from 'react-i18next';
 import SelectLocationModal from './SelectLocationModal';
+import { clickable } from '../../../../utils/a11y';
 
 export const CustomSelect = ({
   field,
@@ -407,7 +408,7 @@ export const CustomSelect = ({
               return Promise.resolve();
             }}
           />
-          <Card onClick={() => setOpenTask(true)} sx={{ cursor: 'pointer' }}>
+          <Card {...clickable(() => setOpenTask(true))} sx={{ cursor: 'pointer' }}>
             <Box
               sx={{
                 p: 2,

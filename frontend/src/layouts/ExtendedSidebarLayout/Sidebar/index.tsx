@@ -22,6 +22,7 @@ import Logo from 'src/components/LogoSign';
 import { isCloudVersion, isWhiteLabeled } from '../../../config';
 import useAuth from '../../../hooks/useAuth';
 import dayjs from 'dayjs';
+import { clickable } from '../../../utils/a11y';
 
 const SidebarWrapper = styled(Box)(
   ({ theme }) => `
@@ -74,9 +75,9 @@ function Sidebar() {
                   <Typography
                     style={{ cursor: 'pointer', color: 'white' }}
                     fontSize={13}
-                    onClick={() => {
+                    {...clickable(() => {
                       window.open('https://www.intel-loop.com/', '_blank');
-                    }}
+                    })}
                   >
                     Powered by Intelloop
                   </Typography>
@@ -133,9 +134,9 @@ function Sidebar() {
                     <Typography
                       style={{ cursor: 'pointer', color: 'white' }}
                       fontSize={13}
-                      onClick={() => {
+                      {...clickable(() => {
                         window.open('https://www.intel-loop.com/', '_blank');
-                      }}
+                      })}
                     >
                       Powered by Intelloop
                     </Typography>

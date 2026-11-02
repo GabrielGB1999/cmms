@@ -348,6 +348,12 @@ export const PurpleFlowTheme = createTheme({
     },
     MuiCssBaseline: {
       styleOverrides: {
+        // Buttons disable the ripple, so keyboard focus needs its own visible ring
+        // 'body' prefix out-ranks the outline: 0 that MUI puts on ButtonBase
+        'body :focus-visible': {
+          outline: `2px solid ${colors.primary.main}`,
+          outlineOffset: 2
+        },
         'html, body': {
           width: '100%',
           height: '100%'

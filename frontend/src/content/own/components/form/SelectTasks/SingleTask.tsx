@@ -27,6 +27,7 @@ import { getAssetUrl, getUserUrl } from '../../../../../utils/urlPaths';
 import useAuth from '../../../../../hooks/useAuth';
 import { PermissionEntity } from '../../../../../models/owns/role';
 import { PlanFeature } from '../../../../../models/owns/subscriptionPlan';
+import { clickable } from '../../../../../utils/a11y';
 
 interface SingleTaskProps {
   task: Task;
@@ -275,12 +276,11 @@ export default function SingleTask({
               <img
                 src={image.url}
                 alt={'task'}
-                onClick={() =>
+                {...clickable(() =>
                   handleZoomImage(
                     task.images.map((img) => img.url),
                     image.url
-                  )
-                }
+                  ))}
                 style={{ borderRadius: 5, height: 150, cursor: 'pointer' }}
               />
             </Grid>

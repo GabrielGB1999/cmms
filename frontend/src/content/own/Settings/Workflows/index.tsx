@@ -66,6 +66,7 @@ import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import { useBrand } from '../../../../hooks/useBrand';
 import { getErrorMessage } from '../../../../utils/api';
+import { clickable } from '../../../../utils/a11y';
 
 interface UICondition {
   type: WorkflowConditionType;
@@ -923,9 +924,9 @@ function Workflows() {
                       cursor: workflow.enabled ? 'pointer' : 'not-allowed'
                     }}
                     key={workflow.id}
-                    onClick={() => {
+                    {...clickable(() => {
                       if (workflow.enabled) onEdit(workflow);
-                    }}
+                    })}
                   >
                     <Stack direction="row" justifyContent="space-between">
                       <Typography variant="h4">{workflow.title}</Typography>

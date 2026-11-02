@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import Loading from '../../Loading';
 import { getRepairTimeByAsset } from '../../../../../slices/analytics/asset';
 import { getRandomColor } from '../../../../../utils/overall';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusPieProps {
   handleOpenModal: (
@@ -78,9 +79,9 @@ function RepairTimeByAsset({ handleOpenModal, start, end, assetColors }: WOStatu
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>

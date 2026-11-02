@@ -51,6 +51,7 @@ import { useGridApiRef } from '@mui/x-data-grid-pro';
 import useGridStatePersist from '../../../hooks/useGridStatePersist';
 import { useBrand } from '../../../hooks/useBrand';
 import { getErrorMessage } from '../../../utils/api';
+import { clickable } from '../../../utils/a11y';
 
 interface PropsType {
   values?: any;
@@ -477,7 +478,7 @@ const Vendors = ({ openModal, handleCloseModal }: PropsType) => {
               currentVendor
             ) && (
               <Typography
-                onClick={() => setViewOrUpdate('update')}
+                {...clickable(() => setViewOrUpdate('update'))}
                 style={{ cursor: 'pointer' }}
                 variant="subtitle1"
                 mr={2}
@@ -487,7 +488,7 @@ const Vendors = ({ openModal, handleCloseModal }: PropsType) => {
             )
           ) : (
             <Typography
-              onClick={() => setViewOrUpdate('view')}
+              {...clickable(() => setViewOrUpdate('view'))}
               style={{ cursor: 'pointer' }}
               variant="subtitle1"
               mr={2}
@@ -500,10 +501,10 @@ const Vendors = ({ openModal, handleCloseModal }: PropsType) => {
             currentVendor
           ) && (
             <Typography
-              onClick={() => {
+              {...clickable(() => {
                 setIsVendorDetailsOpen(false);
                 setOpenDelete(true);
-              }}
+              })}
               variant="subtitle1"
               style={{ cursor: 'pointer' }}
             >

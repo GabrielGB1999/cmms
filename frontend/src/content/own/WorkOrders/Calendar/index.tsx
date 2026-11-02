@@ -291,6 +291,17 @@ function ApplicationsCalendar({
               arg.event.extendedProps.type
             )
           }
+          eventDidMount={({ el }) => {
+            // Events render as plain divs; let Tab reach them and Enter/Space open them
+            el.tabIndex = 0;
+            el.setAttribute('role', 'button');
+            el.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                el.click(); // goes through eventClick, so it uses the current handler
+              }
+            });
+          }}
           dateClick={(event) => handleAddWorkOrder(event.date)}
           dayMaxEventRows={4}
           events={calendar.events.map((eventPayload) =>

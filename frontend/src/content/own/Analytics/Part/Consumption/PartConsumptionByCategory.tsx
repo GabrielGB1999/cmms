@@ -16,6 +16,7 @@ import { getCompleteByCategory } from '../../../../../slices/analytics/workOrder
 import { getRandomColor } from '../../../../../utils/overall';
 import Loading from '../../Loading';
 import { getPartConsumptionsByPartCategory } from '../../../../../slices/analytics/part';
+import { clickable } from '../../../../../utils/a11y';
 
 interface PartConsumptionByCategoryProps {
   handleOpenModal: (
@@ -71,9 +72,9 @@ function PartConsumptionByCategory({ handleOpenModal, start, end }: PartConsumpt
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, title);
-                }}
+                })}
               />
             ))}
           </Pie>

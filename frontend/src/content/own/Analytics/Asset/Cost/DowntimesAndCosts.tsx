@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import { getRandomColor } from '../../../../../utils/overall';
 import Loading from '../../Loading';
 import { getDowntimesAndCostsByAsset } from '../../../../../slices/analytics/asset';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOByPrimaryUserProps {
   handleOpenModal: (
@@ -84,9 +85,9 @@ function DowntimesAndCosts({ handleOpenModal, start, end }: WOByPrimaryUserProps
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>

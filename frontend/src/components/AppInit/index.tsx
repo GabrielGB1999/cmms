@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material';
 
 import Logo from 'src/components/LogoSign';
 import { isWhiteLabeled } from '../../config';
+import { clickable } from '../../utils/a11y';
 
 function AppInit() {
   return (
@@ -25,9 +26,9 @@ function AppInit() {
           <Typography
             style={{ cursor: 'pointer' }}
             fontSize={13}
-            onClick={() => {
+            {...clickable(() => {
               window.open('https://www.intel-loop.com/', '_blank');
-            }}
+            })}
           >
             Powered by Intelloop
           </Typography>

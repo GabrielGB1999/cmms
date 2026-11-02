@@ -68,6 +68,7 @@ import { useGridApiRef } from '@mui/x-data-grid-pro';
 import useGridStatePersist from '../../../hooks/useGridStatePersist';
 import { CategoryMiniDTO } from '../../../models/owns/category';
 import { getErrorMessage } from '../../../utils/api';
+import { clickable } from '../../../utils/a11y';
 
 interface PropsType {
   setAction: (p: () => () => void) => void;
@@ -775,7 +776,7 @@ const Parts = ({ setAction }: PropsType) => {
               <Grid item xs={12} lg={3} key={part.id}>
                 <Card
                   style={{ cursor: 'pointer' }}
-                  onClick={() => handleOpenDetails(part.id)}
+                  {...clickable(() => handleOpenDetails(part.id))}
                 >
                   <CardMedia
                     component="img"

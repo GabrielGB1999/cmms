@@ -21,6 +21,7 @@ import Loading from '../../Loading';
 import { getRandomColor } from '../../../../../utils/overall';
 import { getRequestsResolvedByDate } from '../../../../../slices/analytics/request';
 import { getDayAndMonth } from '../../../../../utils/dates';
+import { clickable } from '../../../../../utils/a11y';
 
 interface OwnProps {
   handleOpenModal: (
@@ -81,9 +82,9 @@ function RequestsResolution({ handleOpenModal, start, end }: OwnProps) {
               <Cell
                 key={index}
                 fill={'red'}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>
@@ -92,9 +93,9 @@ function RequestsResolution({ handleOpenModal, start, end }: OwnProps) {
               <Cell
                 key={index}
                 fill={'blue'}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>

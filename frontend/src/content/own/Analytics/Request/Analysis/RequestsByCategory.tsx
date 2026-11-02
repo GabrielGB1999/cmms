@@ -16,6 +16,7 @@ import { getCompleteByCategory } from '../../../../../slices/analytics/workOrder
 import { getRandomColor } from '../../../../../utils/overall';
 import Loading from '../../Loading';
 import { getRequestsByCategory } from '../../../../../slices/analytics/request';
+import { clickable } from '../../../../../utils/a11y';
 
 interface RequestByCategoryProps {
   handleOpenModal: (
@@ -71,9 +72,9 @@ function RequestByCategory({ handleOpenModal, start, end }: RequestByCategoryPro
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, title);
-                }}
+                })}
               />
             ))}
           </Pie>

@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import { getIncompleteByAsset } from '../../../../../slices/analytics/workOrder';
 import Loading from '../../Loading';
 import { getRandomColor } from '../../../../../utils/overall';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusIncompleteProps {
   handleOpenModal: (
@@ -78,9 +79,9 @@ function IncompleteWOByAsset({ handleOpenModal, start, end }: WOStatusIncomplete
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>

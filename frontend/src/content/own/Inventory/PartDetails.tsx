@@ -39,6 +39,7 @@ import { useNavigate } from 'react-router-dom';
 import { getWorkOrdersByPart } from '../../../slices/workOrder';
 import { getFormattedQuantityWithUnit } from './Parts';
 import { getFormattedCostPerUnit } from '../../../utils/formatters';
+import { clickable } from '../../../utils/a11y';
 
 interface PartDetailsProps {
   part: Part;
@@ -199,7 +200,7 @@ export default function PartDetails(props: PartDetailsProps) {
                   <img
                     src={part.image.url}
                     style={{ borderRadius: 5, height: 250, cursor: 'pointer' }}
-                    onClick={() => setIsImageViewerOpen(true)}
+                    {...clickable(() => setIsImageViewerOpen(true))}
                   />
                 </Grid>
               )}

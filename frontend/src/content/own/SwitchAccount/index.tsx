@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from '../../../store';
 import { CustomSnackBarContext } from '../../../contexts/CustomSnackBarContext';
 import { useNavigate } from 'react-router-dom';
 import PermissionErrorMessage from '../components/PermissionErrorMessage';
+import { clickable } from '../../../utils/a11y';
 
 const MainContent = styled(Box)(
   () => `
@@ -93,13 +94,13 @@ function SwitchAccount() {
                     {user.superAccountRelations.map(superAccountRelation => <Grid item
                                                                                   key={superAccountRelation.childUserId}
                                                                                   xs={4}> <Card
-                      onClick={() => {
+                      {...clickable(() => {
                         if (!switching) {
                           setSwitching(true);
                           setSelectedUserId(superAccountRelation.childUserId);
                           switchAccount(superAccountRelation.childUserId).then(() => navigate('/app/work-orders')).finally(() => setSwitching(false));
                         }
-                      }} sx={{ cursor: switching ? 'auto' : 'pointer' }}>
+                      })} sx={{ cursor: switching ? 'auto' : 'pointer' }}>
                       <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <Avatar variant="rounded" src={superAccountRelation.childCompanyLogo?.url}
                                 alt={superAccountRelation.childCompanyName} />

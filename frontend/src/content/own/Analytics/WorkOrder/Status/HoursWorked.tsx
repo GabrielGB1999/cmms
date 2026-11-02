@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from '../../../../../store';
 import { useEffect } from 'react';
 import { getWOHours } from '../../../../../slices/analytics/workOrder';
 import Loading from '../../Loading';
+import { clickable } from '../../../../../utils/a11y';
 
 interface HoursWorkedProps {
   handleOpenModal: (
@@ -58,7 +59,7 @@ function HoursWorked({ handleOpenModal, start, end }: HoursWorkedProps) {
                   variant="h2"
                   fontWeight="bold"
                   style={{ cursor: 'pointer' }}
-                  onClick={() => handleOpenModal(columns, data.filters, title)}
+                  {...clickable(() => handleOpenModal(columns, data.filters, title))}
                 >
                   {data.value}
                 </Typography>

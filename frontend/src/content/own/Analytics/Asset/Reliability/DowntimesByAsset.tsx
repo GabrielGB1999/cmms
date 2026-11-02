@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import Loading from '../../Loading';
 import { getDowntimesByAsset } from '../../../../../slices/analytics/asset';
 import { getRandomColor } from '../../../../../utils/overall';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusIncompleteProps {
   handleOpenModal: (
@@ -81,9 +82,9 @@ function DowntimesByAsset({ handleOpenModal, start, end, assetColors }: WOStatus
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>
