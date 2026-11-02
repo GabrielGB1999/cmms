@@ -66,7 +66,10 @@ seven files:
 
 - `model/abstracts/CompanyAudit` — gives `id` (sequence-generated), `company`, and a
   `@PrePersist` that fills `company` from the SecurityContext. Also a `@PostLoad` that
-  **throws** if a user loads another company's row. Multi-tenancy is enforced here.
+  **throws** if a user loads another company's row. Multi-tenancy is enforced here — **but only
+  for entities that extend it.** Floor plans, readings, custom fields, additional costs,
+  checklists, notifications and categories don't, and their parent is lazy, so their controllers
+  check the owning company themselves (`findById(id).filter(...)`). Copy that for new ones.
 - `model/abstracts/Audit` — `createdAt/updatedAt/createdBy/updatedBy`.
 - `dto/AuditShowDTO` — the DTO counterpart.
 
@@ -224,17 +227,18 @@ curl -X POST localhost:8080/auth/signin -H 'Content-Type: application/json' \
 
 ```bash
 cd api      && mvn -B -DskipTests compile     # catches MapStruct regeneration breaks
-cd api      && mvn -B test                    # only FileServiceSignatureTest exists
-cd frontend && npx tsc --noEmit -p tsconfig.json
+cd api      && mvn -B test -Dtest='*Test'     # unit tests (ApiApplicationTests needs a DB)
+cd frontend && node scripts/typecheck-src.js  # NOT plain tsc, see below
 cd frontend && npx react-app-rewired build    # slow (~5 min) but the real deploy path
 cd mobile   && npx tsc --noEmit -p tsconfig.json
 ```
 
-`tsc` on `frontend` prints many errors from `node_modules/i18next` — TypeScript 4.7 vs
-i18next 25 typings. Pre-existing and harmless. **Filter with `grep -v "^node_modules/"`;**
-zero remaining lines means clean.
+**Plain `tsc` on `frontend` is useless:** it stops at parse errors in `node_modules/i18next`
+(TypeScript 4.7 vs i18next 25 typings) and never type-checks `src/`, so filtering its output
+shows zero errors even when `src` is broken. `scripts/typecheck-src.js` asks the compiler for
+`src/` diagnostics only; "0 errors in src" means clean. The dev server's checker also works.
 
-Test coverage is effectively nil (one unit test). Verify by running things, not by trusting
+Test coverage is thin (a few unit tests). Verify by running things, not by trusting
 a green build.
 
 ## Fork-specific changes
@@ -246,13 +250,12 @@ controllers, so every feature works without a key: time tracking, cost tracking,
 linking, file/image uploads, signature capture, asset hierarchy, downtime, custom roles,
 customers/vendors, NFC/barcode, field configuration, workflows, voice notes, meter-triggered PM,
 PM calendar, work order history, branding. Free-tier caps (`UNLIMITED_*` on work orders,
-locations, parts, meters, checklists, PM schedules) are gone too — `checkUsageBasedLimit` is a
-no-op in each service.
+locations, parts, meters, checklists, PM schedules) are gone too — the `checkUsageBasedLimit`
+methods and their count queries were deleted.
 
 The `LicenseEntitlement` enum still exists (the clients mirror it). Only `API_ACCESS` is still
 enforced, in `SwaggerAccessController` and `SwaggerSecurityConfig`, because it governs whether
-API docs are publicly exposed. `AssetService` uses `!true` for its removed checks — an earlier
-edit, left as-is.
+API docs are publicly exposed.
 
 The **plan-feature** layer (`PlanFeatures`) is separate and still present. It doesn't block in
 practice since new companies get `BUSINESS`.
