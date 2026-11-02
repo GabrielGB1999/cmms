@@ -1,5 +1,9 @@
 package com.grash.service;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import jakarta.annotation.PostConstruct;
+
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
@@ -8,13 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class RateLimiterService {
 
-    private final ConcurrentMap<String, Bucket> loginAttemptCache = new ConcurrentHashMap<>();
+    // Expiring and capped, so a flood of made-up emails can't grow memory forever
+    private Cache<String, Bucket> loginAttemptCache;
 
     @Getter
     @Value("${security.rate-limit.brute-force.enabled:true}")
@@ -37,17 +40,25 @@ public class RateLimiterService {
      * Returns true if the attempt is allowed, false once the limit is reached.
      */
     public boolean tryConsumeLoginAttempt(String key) {
-        return loginAttemptCache.computeIfAbsent(key, this::newLoginAttemptBucket).tryConsume(1);
+        return loginAttemptCache.get(key, this::newLoginAttemptBucket).tryConsume(1);
     }
 
     /**
      * Reset the failed-login attempts counter for a given identifier after a successful login.
      */
     public void resetLoginAttempts(String key) {
-        Bucket bucket = loginAttemptCache.get(key);
+        Bucket bucket = loginAttemptCache.getIfPresent(key);
         if (bucket != null) {
             bucket.reset();
         }
+    }
+
+    @PostConstruct
+    void init() {
+        loginAttemptCache = Caffeine.newBuilder()
+                .expireAfterAccess(Duration.ofHours(loginLongTermPeriodHours))
+                .maximumSize(100_000)
+                .build();
     }
 
     private Bucket newLoginAttemptBucket(String key) {

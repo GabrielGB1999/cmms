@@ -23,6 +23,11 @@ public class SearchCriteria implements Cloneable {
     private int pageSize = 10;
     private String sortField = "id";
 
+    // Clients choose the page size; cap it so one request can't load a whole table into memory
+    public void setPageSize(int pageSize) {
+        this.pageSize = Math.min(pageSize, 500);
+    }
+
     public void filterCompany(OwnUser user) {
         this.filterFields.add(FilterField.builder()
                 .field("company")
