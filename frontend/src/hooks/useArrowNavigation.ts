@@ -16,7 +16,7 @@ const OWNS_ARROWS =
 
 // Index of the nearest box in the arrow's direction, or -1. A box counts only
 // when it lies past the current one's edge; boxes lined up with it (same row /
-// column) win; off-axis distance counts double.
+// column) win over the rest.
 export const pickNext = (from: Box, boxes: Box[], key: ArrowKey): number => {
   const fx = (from.left + from.right) / 2;
   const fy = (from.top + from.bottom) / 2;
@@ -45,7 +45,9 @@ export const pickNext = (from: Box, boxes: Box[], key: ArrowKey): number => {
       cross = Math.abs(bx - fx);
       inLine = b.left < from.right && b.right > from.left;
     }
-    const score = (inLine ? 0 : 1e6) + main + 2 * cross;
+    // Lined-up boxes: the nearest wins and sideways offset only breaks ties, so a
+    // small checkbox at a form's left edge isn't skipped for a wide box further down.
+    const score = inLine ? main + 0.1 * cross : 1e6 + main + 2 * cross;
     if (score < bestScore) {
       bestScore = score;
       best = i;
@@ -61,6 +63,20 @@ const isPlainArrow = (event: KeyboardEvent) =>
   !event.ctrlKey &&
   !event.metaKey &&
   !event.shiftKey;
+
+// Grid cells and headers count only while shown: columns scrolled out of a
+// wide grid still have a box, off to the side, that would pull focus there.
+const visibleInGrid = (el: HTMLElement) => {
+  const body = el.matches('.MuiDataGrid-cell, .MuiDataGrid-columnHeader')
+    ? el.closest('.MuiDataGrid-main')
+    : null;
+  if (!body) return true;
+  const r = el.getBoundingClientRect();
+  const b = body.getBoundingClientRect();
+  const x = (r.left + r.right) / 2;
+  const y = (r.top + r.bottom) / 2;
+  return x > b.left && x < b.right && y > b.top && y < b.bottom;
+};
 
 // Focus the nearest control from `active` in the arrow's direction, inside the
 // topmost open dialog/drawer if there is one. `leaving` is a widget being exited,
@@ -83,6 +99,7 @@ const moveFocus = (
       // zero-size: hidden elements, and dialog focus-trap sentinels that bounce focus to the top
       el.offsetWidth > 0 &&
       el.offsetHeight > 0 &&
+      visibleInGrid(el) &&
       // collapsed submenus keep their box but can't take focus
       getComputedStyle(el).visibility === 'visible'
   );
@@ -112,11 +129,36 @@ const moveFocus = (
   return true;
 };
 
-// Widgets that would swallow this key instead of letting focus go on: a tab
-// strip wraps around at its ends (disabled tabs are skipped), and a closed
-// dropdown or autocomplete opens on Up/Down. Enter, Space or Alt+Down still open them.
+// Widgets that would swallow this key instead of letting focus go on:
+// - a tab strip or radio group wraps around at its ends (disabled ones skipped);
+// - a closed dropdown or autocomplete opens on Up/Down (Enter, Space or
+//   Alt+Down still open them), and so does the icon button inside an autocomplete;
+// - an empty data grid's header handles Down by crashing (MUI X reads row 0).
 const trappingWidget = (active: HTMLElement, key: ArrowKey): Element | null => {
   const vertical = key === 'ArrowUp' || key === 'ArrowDown';
+  const forward = key === 'ArrowDown' || key === 'ArrowRight';
+  if (active instanceof HTMLInputElement && active.type === 'radio') {
+    const group = active.closest('[role=radiogroup]');
+    const radios = Array.from(
+      (group ?? active.form ?? document).querySelectorAll(
+        `input[type=radio][name="${CSS.escape(active.name)}"]:not([disabled])`
+      )
+    );
+    const index = radios.indexOf(active);
+    const atEnd = forward ? index === radios.length - 1 : index === 0;
+    return atEnd ? group ?? active : null;
+  }
+  const gridBody = active.closest('.MuiDataGrid-main');
+  if (
+    key === 'ArrowDown' &&
+    gridBody &&
+    active.matches('.MuiDataGrid-columnHeader') &&
+    !gridBody.querySelector('.MuiDataGrid-row')
+  )
+    return gridBody;
+  const autocomplete = active.closest('.MuiAutocomplete-root');
+  if (vertical && autocomplete && !(active instanceof HTMLInputElement))
+    return autocomplete;
   const tab = active.closest('[role=tab]');
   const tablist = tab?.closest('[role=tablist]');
   if (tab && tablist && !vertical) {
