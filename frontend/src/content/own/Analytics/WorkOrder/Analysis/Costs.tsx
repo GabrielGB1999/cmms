@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from '../../../../../store';
 import { useContext, useEffect } from 'react';
 import { getCompleteCosts } from '../../../../../slices/analytics/workOrder';
 import { CompanySettingsContext } from '../../../../../contexts/CompanySettingsContext';
+import { clickable } from '../../../../../utils/a11y';
 
 interface HoursWorkedProps {
   handleOpenModal: (
@@ -54,7 +55,7 @@ function Costs({ handleOpenModal, start, end }: HoursWorkedProps) {
                 variant="h2"
                 fontWeight="bold"
                 style={{ cursor: 'pointer' }}
-                onClick={() => handleOpenModal(columns, data.filters, title)}
+                {...clickable(() => handleOpenModal(columns, data.filters, title))}
               >
                 {data.value}
               </Typography>

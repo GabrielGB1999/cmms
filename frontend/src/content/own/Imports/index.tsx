@@ -47,6 +47,7 @@ import FeatureErrorMessage from '../components/FeatureErrorMessage';
 import api from '../../../utils/api';
 import i18n from 'i18next';
 import downloadFile from 'downloadjs';
+import { clickable } from '../../../utils/a11y';
 
 interface OwnProps {}
 
@@ -574,7 +575,7 @@ const Import = ({}: OwnProps) => {
                     <Stack
                       direction={'row'}
                       sx={{ mt: 2 }}
-                      onClick={downloadTemplate}
+                      {...clickable(downloadTemplate)}
                     >
                       <DownloadTwoToneIcon color={'primary'} />
                       <Typography

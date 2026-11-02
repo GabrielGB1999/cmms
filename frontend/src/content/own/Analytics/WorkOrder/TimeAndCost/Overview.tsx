@@ -7,6 +7,7 @@ import { useContext, useEffect } from 'react';
 import { getCompleteCosts } from '../../../../../slices/analytics/workOrder';
 import Loading from '../../Loading';
 import { CompanySettingsContext } from '../../../../../contexts/CompanySettingsContext';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusNumbersProps {
   handleOpenModal: (
@@ -94,13 +95,12 @@ function Overview({ handleOpenModal, start, end }: WOStatusNumbersProps) {
                   variant="h2"
                   fontWeight="bold"
                   style={{ cursor: data.config ? 'pointer' : 'auto' }}
-                  onClick={() =>
+                  {...(data.config ? clickable(() =>
                     handleOpenModal(
                       data.config.columns,
                       data.config.filters,
                       t('incomplete_wo')
-                    )
-                  }
+                    )) : {})}
                 >
                   {data.value}
                 </Typography>

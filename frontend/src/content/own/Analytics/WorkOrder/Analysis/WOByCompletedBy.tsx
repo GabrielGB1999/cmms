@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import { getCompleteByCompletedBy } from '../../../../../slices/analytics/workOrder';
 import { getRandomColor } from '../../../../../utils/overall';
 import Loading from '../../Loading';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOByPrimaryUserProps {
   handleOpenModal: (
@@ -70,9 +71,9 @@ function WOByCompletedBy({ handleOpenModal, start, end }: WOByPrimaryUserProps) 
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, title);
-                }}
+                })}
               />
             ))}
           </Pie>

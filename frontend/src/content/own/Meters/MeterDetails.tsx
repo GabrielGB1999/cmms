@@ -36,6 +36,7 @@ import useAuth from '../../../hooks/useAuth';
 import { PermissionEntity } from '../../../models/owns/role';
 import ImageViewer from 'react-simple-image-viewer';
 import { canAddReading } from '../../../utils/overall';
+import { clickable } from '../../../utils/a11y';
 
 interface MeterDetailsProps {
   meter: Meter;
@@ -216,7 +217,7 @@ export default function MeterDetails(props: MeterDetailsProps) {
                 <img
                   src={meter.image.url}
                   style={{ borderRadius: 5, height: 250, cursor: 'pointer' }}
-                  onClick={() => setIsImageViewerOpen(true)}
+                  {...clickable(() => setIsImageViewerOpen(true))}
                 />
               </Grid>
             )}

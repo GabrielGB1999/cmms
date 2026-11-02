@@ -19,6 +19,7 @@ import {
   getPartConsumptionsByPartCategory,
   getPartConsumptionsByWOCategory
 } from '../../../../../slices/analytics/part';
+import { clickable } from '../../../../../utils/a11y';
 
 interface OwnProps {
   handleOpenModal: (
@@ -74,9 +75,9 @@ function PartConsumptionByWOCategory({ handleOpenModal, start, end }: OwnProps) 
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, title);
-                }}
+                })}
               />
             ))}
           </Pie>

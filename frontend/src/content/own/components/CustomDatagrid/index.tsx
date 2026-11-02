@@ -1,4 +1,8 @@
-import { DataGridPro, DataGridProProps } from '@mui/x-data-grid-pro';
+import {
+  DataGridPro,
+  DataGridProProps,
+  GridRowParams
+} from '@mui/x-data-grid-pro';
 import { DataGrid } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { Stack, Typography, useTheme } from '@mui/material';
@@ -81,6 +85,23 @@ function CustomDataGrid(props: CustomDatagridProps) {
         columns={props.columns.filter((col) =>
           col.uiConfigKey ? user.uiConfiguration[col.uiConfigKey] : true
         )}
+        onCellKeyDown={(params, event, details) => {
+          props.onCellKeyDown?.(params, event, details);
+          // Enter on a row does what a click does (open details, select…).
+          // Skip keys aimed at controls inside the cell and cells being edited.
+          if (
+            event.key !== 'Enter' ||
+            !props.onRowClick ||
+            params.cellMode === 'edit' ||
+            event.target !== event.currentTarget
+          )
+            return;
+          props.onRowClick(
+            params as unknown as GridRowParams,
+            event as any,
+            details
+          );
+        }}
         disableSelectionOnClick
         localeText={translatedGridLocaleText}
       />

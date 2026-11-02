@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from '../../../../../store';
 import { useEffect } from 'react';
 import Loading from '../../Loading';
 import { getRequestStatsByPriority } from '../../../../../slices/analytics/request';
+import { clickable } from '../../../../../utils/a11y';
 
 interface OwnProps {
   handleOpenModal: (
@@ -92,9 +93,9 @@ function RequestStatsByPriority({ handleOpenModal, start, end }: OwnProps) {
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, title);
-                }}
+                })}
               />
             ))}
           </Pie>

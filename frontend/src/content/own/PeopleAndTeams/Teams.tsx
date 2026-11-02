@@ -47,6 +47,7 @@ import { SearchCriteria, SortDirection } from '../../../models/owns/page';
 import { onSearchQueryChange } from '../../../utils/overall';
 import SearchInput from '../components/SearchInput';
 import { getUserUrl } from '../../../utils/urlPaths';
+import { clickable } from '../../../utils/a11y';
 
 interface PropsType {
   values?: any;
@@ -342,7 +343,7 @@ const Teams = ({ openModal, handleCloseModal }: PropsType) => {
               currentTeam
             ) && (
               <Typography
-                onClick={() => setViewOrUpdate('update')}
+                {...clickable(() => setViewOrUpdate('update'))}
                 style={{ cursor: 'pointer' }}
                 variant="subtitle1"
                 mr={2}
@@ -352,7 +353,7 @@ const Teams = ({ openModal, handleCloseModal }: PropsType) => {
             )
           ) : (
             <Typography
-              onClick={() => setViewOrUpdate('view')}
+              {...clickable(() => setViewOrUpdate('view'))}
               style={{ cursor: 'pointer' }}
               variant="subtitle1"
               mr={2}
@@ -367,10 +368,10 @@ const Teams = ({ openModal, handleCloseModal }: PropsType) => {
             <Typography
               variant="subtitle1"
               style={{ cursor: 'pointer' }}
-              onClick={() => {
+              {...clickable(() => {
                 setIsTeamDetailsOpen(false);
                 setOpenDelete(true);
-              }}
+              })}
             >
               {t('to_delete')}
             </Typography>

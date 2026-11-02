@@ -7,6 +7,7 @@ import axios from '../../../utils/axios';
 import api from '../../../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { WorkOrderMini } from '../../../models/owns/workOrder';
+import { clickable } from '../../../utils/a11y';
 
 const RecentWorkOrders = ({ pmId }: { pmId: number }) => {
   const { t }: { t: any } = useTranslation();
@@ -42,7 +43,7 @@ const RecentWorkOrders = ({ pmId }: { pmId: number }) => {
                 p: 1,
                 cursor: 'pointer'
               }}
-              onClick={() => navigate(getWorkOrderUrl(workOrder.id))}
+              {...clickable(() => navigate(getWorkOrderUrl(workOrder.id)))}
             >
               <Stack direction={'row'} justifyContent={'space-between'}>
                 <Box>

@@ -41,6 +41,7 @@ import FilesList from '../components/FilesList';
 import RequestCancellationModal from './RequestCancellationModal';
 import { editAsset } from '../../../slices/asset';
 import { AssetStatus, assetStatuses } from '../../../models/owns/asset';
+import { clickable } from '../../../utils/a11y';
 
 interface RequestDetailsProps {
   request: Request;
@@ -289,7 +290,7 @@ export default function RequestDetails({
                   <img
                     src={request.image.url}
                     style={{ borderRadius: 5, height: 250, cursor: 'pointer' }}
-                    onClick={() => setIsImageViewerOpen(true)}
+                    {...clickable(() => setIsImageViewerOpen(true))}
                   />
                 </Grid>
               )}

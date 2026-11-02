@@ -53,6 +53,7 @@ import SearchInput from '../components/SearchInput';
 import { useGridApiRef } from '@mui/x-data-grid-pro';
 import useGridStatePersist from '../../../hooks/useGridStatePersist';
 import { getErrorMessage } from '../../../utils/api';
+import { clickable } from '../../../utils/a11y';
 
 interface PropsType {
   values?: any;
@@ -526,7 +527,7 @@ const Customers = ({ openModal, handleCloseModal }: PropsType) => {
               currentCustomer
             ) && (
               <Typography
-                onClick={() => setViewOrUpdate('update')}
+                {...clickable(() => setViewOrUpdate('update'))}
                 style={{ cursor: 'pointer' }}
                 variant="subtitle1"
                 mr={2}
@@ -536,7 +537,7 @@ const Customers = ({ openModal, handleCloseModal }: PropsType) => {
             )
           ) : (
             <Typography
-              onClick={() => setViewOrUpdate('view')}
+              {...clickable(() => setViewOrUpdate('view'))}
               style={{ cursor: 'pointer' }}
               variant="subtitle1"
               mr={2}
@@ -549,10 +550,10 @@ const Customers = ({ openModal, handleCloseModal }: PropsType) => {
             currentCustomer
           ) && (
             <Typography
-              onClick={() => {
+              {...clickable(() => {
                 setIsCustomerDetailsOpen(false);
                 setOpenDelete(true);
-              }}
+              })}
               variant="subtitle1"
               style={{ cursor: 'pointer' }}
             >

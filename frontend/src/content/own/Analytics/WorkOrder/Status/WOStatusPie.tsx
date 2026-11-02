@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from '../../../../../store';
 import { useCallback, useEffect } from 'react';
 import { getIncompleteByStatus } from '../../../../../slices/analytics/workOrder';
 import Loading from '../../Loading';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusPieProps {
   handleOpenModal: (
@@ -99,9 +100,9 @@ function WOStatusPie({ handleOpenModal, start, end }: WOStatusPieProps) {
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, title);
-                }}
+                })}
               />
             ))}
           </Pie>

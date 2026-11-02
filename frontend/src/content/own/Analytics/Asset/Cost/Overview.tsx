@@ -7,6 +7,7 @@ import { useContext, useEffect } from 'react';
 import Loading from '../../Loading';
 import { getAssetsCosts } from '../../../../../slices/analytics/asset';
 import { CompanySettingsContext } from '../../../../../contexts/CompanySettingsContext';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusNumbersProps {
   handleOpenModal: (
@@ -73,13 +74,12 @@ function Overview({ handleOpenModal, start, end }: WOStatusNumbersProps) {
                   variant="h2"
                   fontWeight="bold"
                   style={{ cursor: data.config ? 'pointer' : 'auto' }}
-                  onClick={() =>
+                  {...(data.config ? clickable(() =>
                     handleOpenModal(
                       data.config.columns,
                       data.config.filters,
                       t('The numbers')
-                    )
-                  }
+                    )) : {})}
                 >
                   {data.value}
                 </Typography>

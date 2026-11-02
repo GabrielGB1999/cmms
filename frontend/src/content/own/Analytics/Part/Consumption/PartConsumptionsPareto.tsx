@@ -19,6 +19,7 @@ import { getRandomColor } from '../../../../../utils/overall';
 import Loading from '../../Loading';
 import { getDayAndMonth } from '../../../../../utils/dates';
 import { getPartConsumptionsByPart } from '../../../../../slices/analytics/part';
+import { clickable } from '../../../../../utils/a11y';
 
 interface DowntimesByMonthProps {
   handleOpenModal: (
@@ -79,9 +80,9 @@ function PartConsumptionsPareto({ handleOpenModal, start, end }: DowntimesByMont
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>

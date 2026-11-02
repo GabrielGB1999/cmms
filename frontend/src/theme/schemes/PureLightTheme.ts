@@ -351,6 +351,11 @@ export const PureLightTheme = createTheme({
     },
     MuiCssBaseline: {
       styleOverrides: {
+        // Buttons disable the ripple, so keyboard focus needs its own visible ring
+        '*:focus-visible': {
+          outline: `2px solid ${colors.primary.main}`,
+          outlineOffset: 2
+        },
         'html, body': {
           width: '100%',
           height: '100%'

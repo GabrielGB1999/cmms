@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from '../../../../../store';
 import { useEffect } from 'react';
 import { getIncompleteByPriority } from '../../../../../slices/analytics/workOrder';
 import Loading from '../../Loading';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusIncompleteProps {
   handleOpenModal: (
@@ -99,9 +100,9 @@ function IncompleteWO({ handleOpenModal, start, end }: WOStatusIncompleteProps) 
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>

@@ -45,6 +45,7 @@ import NoRowsMessageWrapper from '../components/NoRowsMessageWrapper';
 import { formatSelectMultiple } from '../../../utils/formatters';
 import { useGridApiRef } from '@mui/x-data-grid-pro';
 import useGridStatePersist from '../../../hooks/useGridStatePersist';
+import { clickable } from '../../../utils/a11y';
 
 interface PropsType {
   setAction: (p: () => () => void) => void;
@@ -364,7 +365,7 @@ const Sets = ({ setAction }: PropsType) => {
               <Grid item xs={12} lg={3} key={set.id}>
                 <Card
                   style={{ cursor: 'pointer' }}
-                  onClick={() => handleOpenDetails(set.id)}
+                  {...clickable(() => handleOpenDetails(set.id))}
                 >
                   <CardMedia
                     component="img"

@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import Loading from '../../Loading';
 import { getDowntimesByAsset, getMTBFByAsset } from '../../../../../slices/analytics/asset';
 import { getRandomColor } from '../../../../../utils/overall';
+import { clickable } from '../../../../../utils/a11y';
 
 interface WOStatusIncompleteProps {
   handleOpenModal: (
@@ -76,9 +77,9 @@ function MTBFByAsset({ handleOpenModal, start, end, assetColors }: WOStatusIncom
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>

@@ -41,6 +41,7 @@ import i18n from 'i18next';
 import RecentWorkOrders from './RecentWorkOrders';
 import { useNavigate } from 'react-router-dom';
 import useDateLocale from '../../../hooks/useDateLocale';
+import { clickable } from '../../../utils/a11y';
 
 interface RequestDetailsProps {
   preventiveMaintenance: PreventiveMaintenance;
@@ -288,7 +289,7 @@ export default function PMDetails({
                         height: 250,
                         cursor: 'pointer'
                       }}
-                      onClick={() => setIsImageViewerOpen(true)}
+                      {...clickable(() => setIsImageViewerOpen(true))}
                     />
                   </Grid>
                 )}

@@ -20,6 +20,7 @@ import { getRandomColor } from '../../../../../utils/overall';
 import Loading from '../../Loading';
 import { getDowntimesByDate } from '../../../../../slices/analytics/asset';
 import { getDayAndMonth } from '../../../../../utils/dates';
+import { clickable } from '../../../../../utils/a11y';
 
 interface DowntimesByDateProps {
   handleOpenModal: (
@@ -80,9 +81,9 @@ function DowntimesByDate({ handleOpenModal, start, end }: DowntimesByDateProps) 
               <Cell
                 key={index}
                 fill={entry.color}
-                onClick={() => {
+                {...clickable(() => {
                   handleOpenModal(columns, entry.filters, t(title));
-                }}
+                })}
               />
             ))}
           </Bar>
