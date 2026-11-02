@@ -7,7 +7,7 @@ import Overview from './Overview';
 import WOStatusPie from './WOStatusPie';
 import IncompleteWO from './IncompleteWO';
 import HoursWorked from './HoursWorked';
-import { Filter } from '../WOModal';
+import { Filter } from '../../WOModal';
 import CustomDateRangePicker from '../../CustomDateRangePicker';
 import StatusByDate from './StatusByDate';
 

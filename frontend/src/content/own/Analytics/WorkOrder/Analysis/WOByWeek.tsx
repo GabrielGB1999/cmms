@@ -11,7 +11,7 @@ import {
   YAxis
 } from 'recharts';
 import AnalyticsCard from '../../AnalyticsCard';
-import { Filter } from '../WOModal';
+import { Filter } from '../../WOModal';
 import { useDispatch, useSelector } from '../../../../../store';
 import { useEffect } from 'react';
 import { getCompleteByWeek } from '../../../../../slices/analytics/workOrder';

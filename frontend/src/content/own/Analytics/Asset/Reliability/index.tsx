@@ -7,7 +7,7 @@ import Overview from './Overview';
 import RepairTimeByAsset from './RepairTimeByAsset';
 import DowntimesByAsset from './DowntimesByAsset';
 import MeantimesTrends from './MeantimesTrends';
-import { Filter } from '../WOModal';
+import { Filter } from '../../WOModal';
 import CustomDateRangePicker from '../../CustomDateRangePicker';
 import { useDispatch, useSelector } from '../../../../../store';
 import { getAssetsMini } from '../../../../../slices/asset';

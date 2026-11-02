@@ -1,5 +1,5 @@
 import AnalyticsLayout from '../AnalyticsLayout';
-import WOModal, { Filter } from './WOModal';
+import WOModal, { Filter } from '../WOModal';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Analysis from './Analysis';

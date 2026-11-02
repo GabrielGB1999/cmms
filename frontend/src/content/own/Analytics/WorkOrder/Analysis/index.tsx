@@ -6,7 +6,7 @@ import { TitleContext } from '../../../../../contexts/TitleContext';
 import Overview from './Overview';
 import WOByPrimaryUser from './WOByPrimaryUser';
 import Costs from './Costs';
-import { Filter } from '../WOModal';
+import { Filter } from '../../WOModal';
 import WOByPriority from './WOByPriority';
 import WOByCompletedBy from './WOByCompletedBy';
 import WOByCategory from './WOByCategory';

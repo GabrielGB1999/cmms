@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import { TitleContext } from '../../../../../contexts/TitleContext';
 import Overview from './Overview';
 import DowntimesAndCosts from './DowntimesAndCosts';
-import { Filter } from '../WOModal';
+import { Filter } from '../../WOModal';
 import DowntimesByDate from './DowntimesByDate';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
