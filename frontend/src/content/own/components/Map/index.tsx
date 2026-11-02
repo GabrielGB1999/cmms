@@ -1,13 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import {
-  GoogleMap,
-  InfoWindow,
+  MapContainer,
   Marker,
-  withGoogleMap,
-  withScriptjs
-} from 'react-google-maps';
-import { mapStyle } from './mapStyle';
-import { googleMapsConfig } from '../../../../config';
+  Popup,
+  TileLayer,
+  useMap,
+  useMapEvents
+} from 'react-leaflet';
 import { Box, Link, Typography } from '@mui/material';
 
 interface Location {
@@ -24,88 +25,40 @@ interface MapProps {
   onSelect?: (coordinates: { lat: number; lng: number }) => void;
 }
 
-function LocalMap({ locations, select, onSelect, selected }) {
-  const mapRef = useRef<GoogleMap>(null);
-  const [selectedLocation, setSelectedLocation] = useState<Location>();
-  const [selectedCoordinates, setSelectedCoordinates] = useState<{
-    lat: number;
-    lng: number;
-  }>();
+// Leaflet's bundled marker images do not survive webpack, so point it at our own.
+const markerIcon = L.icon({
+  iconUrl: '/static/images/markers/red.png',
+  iconSize: [25, 25],
+  iconAnchor: [12, 25],
+  popupAnchor: [0, -25]
+});
 
+/**
+ * The map is usually created while its container is still being laid out (inside a dialog, or
+ * behind a tab), so Leaflet measures it at the wrong size. Re-measure once it has settled.
+ */
+function ResizeOnMount() {
+  const map = useMap();
   useEffect(() => {
-    const bounds = new window.google.maps.LatLngBounds();
-    if (locations.length) {
-      locations.forEach((location) => bounds.extend(location.coordinates));
-      mapRef.current.fitBounds(bounds);
-    }
-  }, [mapRef]);
-
-  const defaultCenter = { lat: 0, lng: 0 };
-  return (
-    <GoogleMap
-      ref={mapRef}
-      onClick={(event) => {
-        if (select && onSelect) {
-          const coordinates = {
-            lat: event.latLng.lat(),
-            lng: event.latLng.lng()
-          };
-          setSelectedCoordinates(coordinates);
-          onSelect(coordinates);
-        }
-      }}
-      defaultCenter={selected ?? defaultCenter}
-      defaultZoom={locations?.length ? 6 : 2}
-      defaultOptions={{ styles: mapStyle }}
-      options={{ streetViewControl: false }}
-    >
-      {!select && (
-        <>
-          {locations.map((location, index) => (
-            <Marker
-              key={index}
-              position={location.coordinates}
-              title={location.title}
-              onClick={() => setSelectedLocation(location)}
-              icon={{
-                url: '/static/images/markers/red.png',
-                scaledSize: new window.google.maps.Size(25, 25)
-              }}
-            />
-          ))}
-          {selectedLocation && (
-            <InfoWindow
-              onCloseClick={() => setSelectedLocation(null)}
-              position={selectedLocation.coordinates}
-            >
-              <Box>
-                <Link
-                  variant="h6"
-                  color="primary"
-                  href={`/app/locations/${selectedLocation.id}`}
-                >
-                  {selectedLocation.title}
-                </Link>
-                <Typography variant="subtitle1">
-                  {selectedLocation.address}
-                </Typography>
-              </Box>
-            </InfoWindow>
-          )}
-        </>
-      )}
-      {select && (
-        <Marker
-          position={selectedCoordinates ?? selected}
-          icon={{
-            url: '/static/images/markers/red.png',
-            scaledSize: new window.google.maps.Size(25, 25)
-          }}
-        />
-      )}
-    </GoogleMap>
-  );
+    const timeout = setTimeout(() => map.invalidateSize(), 250);
+    return () => clearTimeout(timeout);
+  }, [map]);
+  return null;
 }
+
+function ClickToSelect({
+  onSelect
+}: {
+  onSelect: (coordinates: { lat: number; lng: number }) => void;
+}) {
+  useMapEvents({
+    click(event) {
+      onSelect({ lat: event.latlng.lat, lng: event.latlng.lng });
+    }
+  });
+  return null;
+}
+
 export default function Map({
   dimensions,
   locations = [],
@@ -113,32 +66,83 @@ export default function Map({
   selected,
   onSelect
 }: MapProps) {
-  const { apiKey } = googleMapsConfig;
+  const [selectedCoordinates, setSelectedCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  }>();
 
-  const MapWrapped = withScriptjs(
-    withGoogleMap(() => (
-      <LocalMap
-        locations={locations}
-        select={select}
-        onSelect={onSelect}
-        selected={selected}
-      />
-    ))
-  );
+  // MapContainer only reads its view props on mount, like Google's old defaultCenter/defaultZoom,
+  // so the map keeps whatever the user has panned or zoomed to while the screen re-renders.
+  const initialView = useMemo(() => {
+    if (locations.length)
+      return {
+        bounds: L.latLngBounds(
+          locations.map(({ coordinates }) => [coordinates.lat, coordinates.lng])
+        ),
+        boundsOptions: { padding: [40, 40] as [number, number], maxZoom: 12 }
+      };
+    return {
+      center: (selected ?? { lat: 0, lng: 0 }) as L.LatLngExpression,
+      zoom: selected ? 6 : 2
+    };
+  }, []);
+
+  const marker = selectedCoordinates ?? selected;
 
   return (
     <div
       style={{
-        width: dimensions.width ?? 500,
-        height: dimensions.height ?? 500
+        width: dimensions?.width ?? 500,
+        height: dimensions?.height ?? 500
       }}
     >
-      <MapWrapped
-        googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${apiKey}`}
-        loadingElement={<div style={{ height: `100%` }} />}
-        containerElement={<div style={{ height: `100%` }} />}
-        mapElement={<div style={{ height: `100%` }} />}
-      />
+      <MapContainer
+        {...initialView}
+        style={{ height: '100%', width: '100%' }}
+        worldCopyJump
+      >
+        <ResizeOnMount />
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
+        />
+        {select ? (
+          <>
+            <ClickToSelect
+              onSelect={(coordinates) => {
+                setSelectedCoordinates(coordinates);
+                onSelect?.(coordinates);
+              }}
+            />
+            {marker && <Marker position={marker} icon={markerIcon} />}
+          </>
+        ) : (
+          locations.map((location) => (
+            <Marker
+              key={location.id}
+              position={location.coordinates}
+              title={location.title}
+              icon={markerIcon}
+            >
+              <Popup>
+                <Box>
+                  <Link
+                    variant="h6"
+                    color="primary"
+                    href={`/app/locations/${location.id}`}
+                  >
+                    {location.title}
+                  </Link>
+                  <Typography variant="subtitle1">
+                    {location.address}
+                  </Typography>
+                </Box>
+              </Popup>
+            </Marker>
+          ))
+        )}
+      </MapContainer>
     </div>
   );
 }
