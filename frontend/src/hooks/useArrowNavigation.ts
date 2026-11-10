@@ -235,7 +235,19 @@ export default function useArrowNavigation() {
             field.selectionStart === field.selectionEnd &&
             field.selectionStart ===
               (key === 'ArrowUp' ? 0 : field.value.length)));
-      if (active?.closest(OWNS_ARROWS) && !leavesTextField) return;
+      // Left/Right leave a text field once the caret is at that end, which is how
+      // the calendar button beside a date field is reached. Not in an
+      // autocomplete, where Left at the start walks its chips.
+      // (selectionStart is null for number/email inputs: those keep the arrows)
+      const leavesSideways =
+        (key === 'ArrowLeft' || key === 'ArrowRight') &&
+        active instanceof HTMLInputElement &&
+        !active.closest('.MuiAutocomplete-root') &&
+        field.selectionStart !== null &&
+        field.selectionStart === field.selectionEnd &&
+        field.selectionStart === (key === 'ArrowLeft' ? 0 : field.value.length);
+      if (active?.closest(OWNS_ARROWS) && !leavesTextField && !leavesSideways)
+        return;
 
       if (moveFocus(active, key)) event.preventDefault();
     };

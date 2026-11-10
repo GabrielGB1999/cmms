@@ -356,6 +356,14 @@ export const GreyGooseTheme = createTheme({
           outline: `2px solid ${colors.primary.main}`,
           outlineOffset: 2
         },
+        // The clock's focusable list has no size, so its ring was a thin bar
+        // above the dial; stretch it over the dial instead
+        '.MuiClockPicker-root [role=listbox]:focus-visible': {
+          position: 'absolute',
+          inset: 0,
+          borderRadius: '50%',
+          pointerEvents: 'none'
+        },
         'html, body': {
           width: '100%',
           height: '100%'

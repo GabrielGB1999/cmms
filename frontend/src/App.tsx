@@ -6,6 +6,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import useAuth from 'src/hooks/useAuth';
 import useArrowNavigation from 'src/hooks/useArrowNavigation';
+import usePickerKeyboard from 'src/hooks/usePickerKeyboard';
 
 import { Alert, CssBaseline } from '@mui/material';
 import ThemeProvider from './theme/ThemeProvider';
@@ -99,6 +100,7 @@ const DemoCleaningAlert = () => {
 function App() {
   const content = useRoutes(router);
   useArrowNavigation();
+  usePickerKeyboard();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { logo } = useBrand();
