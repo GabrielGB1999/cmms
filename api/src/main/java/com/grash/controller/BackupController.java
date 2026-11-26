@@ -7,6 +7,7 @@ import com.grash.model.enums.RoleCode;
 import com.grash.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
@@ -41,12 +41,12 @@ public class BackupController {
 
     @PostMapping("")
     @PreAuthorize("hasRole('ROLE_CLIENT')")
-    public SuccessResponse backup(@RequestBody Map<String, String> body, HttpServletRequest req) {
+    public SuccessResponse backup(@RequestBody BackupRequest body, HttpServletRequest req) {
         OwnUser user = userService.whoami(req);
         if (user.getRole().getCode() != RoleCode.ADMIN) {
             throw new CustomException("Access denied", HttpStatus.FORBIDDEN);
         }
-        String path = body.get("path");
+        String path = body.getPath();
         if (!isSafePath(path)) {
             throw new CustomException("Invalid path: use an absolute path like /var/backups/atlas",
                     HttpStatus.BAD_REQUEST);
@@ -78,6 +78,12 @@ public class BackupController {
         } finally {
             RUNNING.set(false);
         }
+    }
+
+    // A class rather than Map: TenantAspect reflects over request-body fields, which fails on JDK types.
+    @Data
+    public static class BackupRequest {
+        private String path;
     }
 
     static boolean isSafePath(String path) {
