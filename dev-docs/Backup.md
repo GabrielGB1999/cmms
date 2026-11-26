@@ -192,3 +192,21 @@ docker network ls
 ```
 
 If your Atlas CMMS network is not named `atlas-cmms_default`, you'll need to update the network name in the scripts.
+## Backing up from the web app
+
+Users with the **Administrator** role see a **System backup** card on their **My profile** page.
+Enter an absolute folder on the server host (e.g. `/var/backups/atlas`) and press **Back up now**.
+The API runs `scripts/backup/atlas-backup.sh backup --output <folder>` and the archive
+(`atlas_backup_YYYYMMDD_HHMMSS.tar.gz`) is written to that folder on the host. Restore is still
+done from the command line as described above.
+
+How it works (`docker-compose.yml`, `api` service): the script folder is mounted at `/app/backup`,
+the host's Docker socket is mounted so the script can `docker exec`/`docker run` as it does on the
+host, and `/var/tmp/atlas-backup` is shared at the same path for scratch files.
+
+**Security note:** mounting `/var/run/docker.sock` gives the API container root-equivalent access to
+the host. Remove that line if you don't want the button; the rest of the app is unaffected (the
+button then fails with an error).
+
+The request waits until the backup finishes. If you're behind a reverse proxy with a short read
+timeout, large backups may show an error in the browser while still completing on the server.

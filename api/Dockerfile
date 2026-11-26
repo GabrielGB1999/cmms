@@ -7,6 +7,9 @@ RUN mvn clean package -DskipTests
 # Runtime Stage
 FROM amazoncorretto:17-alpine
 
+# bash + docker CLI for the admin backup endpoint (scripts/backup/atlas-backup.sh)
+RUN apk add --no-cache bash docker-cli
+
 # Set the working directory in the container
 WORKDIR /app
 
