@@ -116,6 +116,29 @@
   @media (max-width: 560px) { .which div { grid-template-columns: 1fr; gap: .15rem; } }
 
   footer { color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+
+  @media print {
+    @page { size: A4; margin: 14mm 14mm 16mm; }
+    :root { --bg: #ffffff; }
+    body { font-size: 11pt; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    /* Chromium overlaps content when a page break falls inside a grid, so print uses block flow */
+    main, section, header, .section-head, ol.steps, .which { display: block; max-width: none; }
+    main > * + *, section > * + *, header > * + *, .section-head > * + * { margin-top: .9rem; }
+    main > section { margin-top: 1.6rem; }
+    .which div + div { margin-top: .5rem; }
+    ol.steps > li { display: block; position: relative; padding-left: 3.15rem; break-inside: avoid; }
+    .table-wrap, table { overflow: visible; }
+    ol.steps > li + li { margin-top: 1.2rem; }
+    ol.steps > li > * + * { margin-top: .7rem; }
+    ol.steps > li::before { position: absolute; left: 0; top: 0; }
+    ol.steps > li > p:first-of-type { padding-top: .35rem; }
+    header { padding-top: 0; }
+    #ordenes, #solicitudes, #riesgos { break-before: page; }
+    figure, .note, .which div, tr, ol.steps > li > p { break-inside: avoid; }
+    h2, h3, .section-head { break-after: avoid; }
+    figure img { box-shadow: none; max-height: 100mm; width: auto; max-width: 100%; }
+    .tasks a { break-inside: avoid; }
+  }
 </style>
 
 <main>
