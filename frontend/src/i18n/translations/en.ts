@@ -1491,6 +1491,15 @@ const locale = {
   subscription_will_cancel_on: 'Subscription will cancel on {{date}}',
   open_api_docs: 'Open API docs',
   delete_account: 'Delete account',
+  system_backup: 'System backup',
+  system_backup_description:
+    'Back up the database and all uploaded files with the backup script. Administrators only.',
+  backup_path: 'Backup folder',
+  backup_path_description:
+    'Absolute folder on the server host where the backup archive is written, e.g. /var/backups/atlas',
+  backup_now: 'Back up now',
+  backup_in_progress: 'Backing up…',
+  backup_failed: 'Backup failed',
   csv_separator: 'CSV separator',
   Advantages: 'Advantages',
   open_source_cmms: 'Open-Source CMMS',

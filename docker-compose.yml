@@ -22,10 +22,21 @@ services:
       - minio
     volumes:
       - ./logo:/app/static/images
+      # Admin "Back up now" button (My profile) runs the backup script through the host's Docker.
+      # Note: access to the Docker socket is root-equivalent on the host.
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./scripts/backup:/app/backup:ro
+      - /var/tmp/atlas-backup:/var/tmp/atlas-backup
     environment:
       DB_URL: postgres/atlas
       DB_USER: ${POSTGRES_USER}
       DB_PWD: ${POSTGRES_PWD}
+      # read by scripts/backup/atlas-backup.sh
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PWD: ${POSTGRES_PWD}
+      MINIO_USER: ${MINIO_USER}
+      MINIO_PASSWORD: ${MINIO_PASSWORD}
+      ATLAS_BACKUP_TMP: /var/tmp/atlas-backup
       PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8080}
       PUBLIC_FRONT_URL: ${PUBLIC_FRONT_URL}
       GCP_BUCKET_NAME: ${GCP_BUCKET_NAME}

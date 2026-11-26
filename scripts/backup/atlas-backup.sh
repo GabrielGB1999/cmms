@@ -4,13 +4,17 @@
 # This script allows users to backup and restore the Atlas CMMS system
 
 # Default variables - Will be overridden by .env file if it exists
-POSTGRES_USER="rootUser"
-POSTGRES_PWD="mypassword"
-MINIO_USER="minio"
-MINIO_PASSWORD="minio123"
+# (environment variables win over these defaults, e.g. when run from the API container)
+POSTGRES_USER="${POSTGRES_USER:-rootUser}"
+POSTGRES_PWD="${POSTGRES_PWD:-mypassword}"
+MINIO_USER="${MINIO_USER:-minio}"
+MINIO_PASSWORD="${MINIO_PASSWORD:-minio123}"
 
-# Directory where backups will be stored
+# Directory where backups will be stored (override with --output)
 BACKUP_DIR="./atlas_backups"
+# Scratch space; inside a container it must be bind-mounted at the same path on the host,
+# because the helper containers below mount it through the host's Docker daemon.
+TMP_BASE="${ATLAS_BACKUP_TMP:-/tmp}"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
 # Function to display usage information
@@ -24,6 +28,7 @@ show_usage() {
     echo "Options:"
     echo "  --skip-db             Skip database backup/restore"
     echo "  --skip-files          Skip MinIO files backup/restore"
+    echo "  --output <dir>        Directory to write the backup to (default ./atlas_backups)"
     echo "  --help                Display this help message"
     exit 1
 }
@@ -79,7 +84,7 @@ load_env_file() {
 # Function to backup the system
 backup_atlas_cmms() {
     BACKUP_FILENAME="atlas_backup_${TIMESTAMP}.tar.gz"
-    TEMP_DIR="/tmp/atlas_backup_$TIMESTAMP"
+    TEMP_DIR="$TMP_BASE/atlas_backup_$TIMESTAMP"
 
     echo "Starting Atlas CMMS backup..."
 
@@ -155,12 +160,24 @@ EOL
         fi
     fi
 
-    # Create backup directory if it doesn't exist
-    mkdir -p "$BACKUP_DIR"
-
-    # Create backup archive
     echo "Creating backup archive..."
-    tar -czf "$BACKUP_DIR/$BACKUP_FILENAME" -C "$TEMP_DIR" .
+    if [ -f /.dockerenv ]; then
+        # Running inside a container (the API's admin backup button): BACKUP_DIR is a host path,
+        # so let the host's Docker daemon write the archive there.
+        docker run --rm \
+            -v "$TEMP_DIR:/src:ro" \
+            -v "$BACKUP_DIR:/out" \
+            alpine:latest tar -czf "/out/$BACKUP_FILENAME" -C /src .
+    else
+        mkdir -p "$BACKUP_DIR"
+        tar -czf "$BACKUP_DIR/$BACKUP_FILENAME" -C "$TEMP_DIR" .
+    fi
+
+    if [ $? -ne 0 ]; then
+        echo "Error: Creating the backup archive failed."
+        rm -rf "$TEMP_DIR"
+        exit 1
+    fi
 
     # Clean up
     rm -rf "$TEMP_DIR"
@@ -185,7 +202,7 @@ restore_atlas_cmms() {
     fi
 
     # Create temp directory for extraction
-    TEMP_DIR="/tmp/atlas_restore_$TIMESTAMP"
+    TEMP_DIR="$TMP_BASE/atlas_restore_$TIMESTAMP"
 
     echo "Starting Atlas CMMS restore..."
 
@@ -309,6 +326,10 @@ while [ "$#" -gt 0 ]; do
             ;;
         --skip-files)
             SKIP_FILES=true
+            ;;
+        --output)
+            shift
+            BACKUP_DIR="$1"
             ;;
         --help)
             show_usage
